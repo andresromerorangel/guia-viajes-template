@@ -3,8 +3,569 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plantilla Cartilla de Viaje - Página Única Dinámica</title>
+    <title>Plantilla Cartilla de Viaje - Sistema Completo</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- ===== SECCIÓN DE CONFIGURACIÓN DE VARIABLES ===== -->
+    <script>
+        // 🎯 CONFIGURACIÓN PRINCIPAL DE LA PLANTILLA
+        const TEMPLATE_CONFIG = {
+            // === INFORMACIÓN BÁSICA ===
+            pais: "Japón",
+            nombre_pais: "Japón - Tierra del Sol Naciente",
+            fechas: "Marzo - Mayo 2024",
+            duracion: "14 días",
+            coste_nivel: 3, // 1-5 (1=muy barato, 5=muy caro)
+            moneda: "Yen (JPY)",
+            enchufe: "Tipo A/B",
+            emergencia: "110/119",
+            embajada: "+81-3-3408-8000",
+            idioma: "Japonés",
+            fecha_creacion: "Enero 2024",
+            creditos: "Fotos: @viajero_digital, Unsplash",
+            
+            // === CONFIGURACIÓN DE MAPA ===
+            mapa_tipo: "upload", // upload, auto, interactive, static
+            mapa_url: "", // URL de imagen personalizada
+            mapa_centro: [36.2048, 138.2529], // Centro del país [lat, lng]
+            
+            // === CIUDADES/UBICACIONES ===
+            ciudad1: "Tokio — Capital moderna y tradicional",
+            ciudad1_coords: [35.6762, 139.6503], // [lat, lng]
+            ciudad2: "Kioto — Templos y cultura ancestral",
+            ciudad2_coords: [35.0116, 135.7681],
+            ciudad3: "Osaka — Gastronomía y entretenimiento",
+            ciudad3_coords: [34.6937, 135.5023],
+            ciudad4: "Hiroshima — Historia y memoria",
+            ciudad4_coords: [34.3853, 132.4553],
+            ciudad5: "Nara — Ciervos sagrados y templos",
+            ciudad5_coords: [34.6851, 135.8048],
+            
+            // === ITINERARIO POR DÍAS ===
+            dia1: "Tokio - Shibuya",
+            actividad1: "Explorar el famoso cruce de Shibuya, visitar el santuario Meiji y caminar por Harajuku. Cena en Ginza.",
+            
+            dia2: "Tokio - Asakusa",
+            actividad2: "Templo Sensoji, mercado Nakamise, crucero por el río Sumida y subida a Tokyo Skytree al atardecer.",
+            
+            dia3: "Tokio - Akihabara",
+            actividad3: "Distrito electrónico, tiendas de anime y manga, cafés de criadas. Tarde en jardines del Palacio Imperial.",
+            
+            dia4: "Viaje a Kioto",
+            actividad4: "Viaje en Shinkansen a Kioto. Check-in y paseo nocturno por Gion, distrito de las geishas.",
+            
+            dia5: "Kioto - Templos",
+            actividad5: "Templo Kiyomizu-dera, bosque de bambú Arashiyama y Templo Dorado (Kinkaku-ji).",
+            
+            // === TOP LUGARES ===
+            lugar1: "Templo Sensoji",
+            ciudad_lugar1: "Tokio",
+            desc_lugar1: "Templo budista más antiguo de Tokio",
+            tipo_lugar1: "must", // must, skip, eco, family
+            
+            lugar2: "Bosque de Bambú",
+            ciudad_lugar2: "Kioto", 
+            desc_lugar2: "Sendero mágico entre bambúes gigantes",
+            tipo_lugar2: "eco",
+            
+            lugar3: "Shibuya Crossing",
+            ciudad_lugar3: "Tokio",
+            desc_lugar3: "El cruce peatonal más famoso del mundo",
+            tipo_lugar3: "must",
+            
+            lugar4: "Parque de Nara",
+            ciudad_lugar4: "Nara",
+            desc_lugar4: "Ciervos sagrados en libertad",
+            tipo_lugar4: "family",
+            
+            // === CONSEJOS RÁPIDOS ===
+            tip1: "Compra JR Pass antes de llegar - ahorro significativo en transporte",
+            tip2: "Aprende frases básicas: arigatou gozaimasu (gracias), sumimasen (perdón)",
+            tip3: "Siempre lleva efectivo - muchos lugares no aceptan tarjetas",
+            tip4: "Descarga Google Translate con cámara para carteles en japonés",
+            tip5: "Quítate los zapatos al entrar en casas, templos y ryokans",
+            tip6: "No comas caminando - se considera de mala educación",
+            tip7: "Los trenes son extremadamente puntuales - llega 5 min antes",
+            tip8: "Respeta las colas y no hables en el teléfono en el tren",
+            
+            // === IMÁGENES (URLs o rutas) ===
+            img_hero: "", // Imagen principal 3:1
+            img1: "", // 1:1
+            img2: "", // 1:1  
+            img3: "", // 1:1
+            img4: "", // 1:1
+            img5: "", // 1:1
+            img6: "", // 1:1
+            
+            // === LOGO ===
+            logo: "", // URL del logo del canal
+        };
+        
+        // 🔧 FUNCIÓN DE DETECCIÓN AUTOMÁTICA DE CANTIDADES
+        function detectConfigCounts(config) {
+            const counts = {
+                ciudades: 0,
+                dias: 0, 
+                lugares: 0,
+                tips: 0,
+                fotos: 0
+            };
+            
+            for (let key in config) {
+                if (key.startsWith('ciudad') && /\d+$/.test(key) && !key.includes('_')) {
+                    const num = parseInt(key.replace('ciudad', ''));
+                    counts.ciudades = Math.max(counts.ciudades, num);
+                }
+                if (key.startsWith('dia') && /\d+$/.test(key)) {
+                    const num = parseInt(key.replace('dia', ''));
+                    counts.dias = Math.max(counts.dias, num);
+                }
+                if (key.startsWith('lugar') && /\d+$/.test(key)) {
+                    const num = parseInt(key.replace('lugar', ''));
+                    counts.lugares = Math.max(counts.lugares, num);
+                }
+                if (key.startsWith('tip') && /\d+$/.test(key)) {
+                    const num = parseInt(key.replace('tip', ''));
+                    counts.tips = Math.max(counts.tips, num);
+                }
+                if (key.startsWith('img') && /\d+$/.test(key)) {
+                    const num = parseInt(key.replace('img', ''));
+                    counts.fotos = Math.max(counts.fotos, num);
+                }
+            }
+            
+            return counts;
+        }
+        
+        // 🎯 FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
+        function initializeFromConfig() {
+            const config = TEMPLATE_CONFIG;
+            const counts = detectConfigCounts(config);
+            
+            console.log('🎯 Inicializando plantilla con configuración:', counts);
+            
+            updateBasicInfo(config);
+            generateCities(config, counts.ciudades);
+            generateDays(config, counts.dias);  
+            generatePlaces(config, counts.lugares);
+            generateTips(config, counts.tips);
+            loadImages(config, counts.fotos);
+            loadLogo(config);
+            
+            // Inicializar mapa
+            initializeMap(config);
+            
+            counters.cities = counts.ciudades;
+            counters.days = counts.dias;
+            counters.places = counts.lugares; 
+            counters.tips = counts.tips;
+            counters.photos = counts.fotos + 1;
+            
+            reinitializeJS();
+            
+            console.log('✅ Plantilla inicializada correctamente');
+        }
+        
+        // 📝 FUNCIONES DE ACTUALIZACIÓN
+        function updateBasicInfo(config) {
+            document.querySelector('[data-var="PAIS"]').innerHTML = config.pais + '<span class="char-counter">0/30</span>';
+            document.querySelector('[data-var="NOMBRE_PAIS"]').innerHTML = config.nombre_pais + '<span class="char-counter">0/25</span>';
+            document.querySelector('[data-var="FECHAS"]').innerHTML = config.fechas + '<span class="char-counter">0/20</span>';
+            document.querySelector('[data-var="DURACION"]').innerHTML = config.duracion + '<span class="char-counter">0/15</span>';
+            document.querySelector('[data-var="MONEDA"]').textContent = config.moneda;
+            document.querySelector('[data-var="ENCHUFE"]').textContent = config.enchufe;
+            document.querySelector('[data-var="EMERGENCIA"]').textContent = config.emergencia;
+            document.querySelector('[data-var="EMBAJADA"]').textContent = config.embajada;
+            document.querySelector('[data-var="IDIOMA"]').textContent = config.idioma;
+            document.querySelector('[data-var="FECHA_CREACION"]').textContent = config.fecha_creacion;
+            document.querySelector('[data-var="CREDITOS"]').textContent = config.creditos;
+            
+            if (config.coste_nivel) {
+                const circles = document.querySelectorAll('.cost-circle');
+                const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
+                circles.forEach((circle, index) => {
+                    if (index < config.coste_nivel) {
+                        circle.classList.remove('empty');
+                    } else {
+                        circle.classList.add('empty'); 
+                    }
+                });
+                document.querySelector('.cost-text').textContent = `${config.coste_nivel}/5 — ${labels[config.coste_nivel-1]}`;
+            }
+        }
+        
+        function generateCities(config, count) {
+            const container = document.querySelector('#citiesList');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const cityKey = `ciudad${i}`;
+                if (config[cityKey]) {
+                    const cityElement = createCityElement(i, config[cityKey]);
+                    container.appendChild(cityElement);
+                }
+            }
+            
+            document.querySelector('#cityCounter').textContent = `${count}/12 ciudades`;
+            regenerateMapPins(count, config);
+        }
+        
+        function createCityElement(number, text) {
+            const div = document.createElement('div');
+            div.className = 'component flow-item';
+            div.setAttribute('data-component', 'CITY_ITEM');
+            div.style.cssText = 'display: flex; align-items: center; gap: 8px; font-size: 9px;';
+            
+            div.innerHTML = `
+                <div style="width: 16px; height: 16px; background: var(--teal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600;">${number}</div>
+                <span class="editable" data-limit="25" data-var="CIUDAD_${number}">${text}</span>
+                <div class="component-controls">
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        function generateDays(config, count) {
+            const container = document.querySelector('#itineraryList');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const dayKey = `dia${i}`;
+                const activityKey = `actividad${i}`;
+                if (config[dayKey]) {
+                    const dayElement = createDayElement(i, config[dayKey], config[activityKey] || '');
+                    container.appendChild(dayElement);
+                }
+            }
+            
+            document.querySelector('#dayCounter').textContent = `${count}/10 días`;
+        }
+        
+        function createDayElement(number, dayText, activityText) {
+            const div = document.createElement('div');
+            div.className = 'itinerary-card component flow-item';
+            div.setAttribute('data-component', 'ITINERARY_CARD');
+            
+            div.innerHTML = `
+                <div class="day-title">
+                    🕐 <span class="editable" data-limit="20" data-var="DIA_${number}">${dayText}</span>
+                </div>
+                <div class="day-activity editable" data-limit="120" data-var="ACTIVIDAD_${number}">${activityText}<span class="char-counter">0/120</span></div>
+                <div class="component-controls">
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        function generatePlaces(config, count) {
+            const container = document.querySelector('#placesList');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const lugarKey = `lugar${i}`;
+                if (config[lugarKey]) {
+                    const placeElement = createPlaceElement(i, config);
+                    container.appendChild(placeElement);
+                }
+            }
+            
+            document.querySelector('#placeCounter').textContent = `${count}/12 lugares`;
+        }
+        
+        function createPlaceElement(number, config) {
+            const lugar = config[`lugar${number}`] || '';
+            const ciudad = config[`ciudad_lugar${number}`] || '';
+            const desc = config[`desc_lugar${number}`] || '';
+            const tipo = config[`tipo_lugar${number}`] || 'must';
+            
+            const badges = {
+                'must': 'MUST',
+                'skip': 'SKIP', 
+                'eco': 'ECO',
+                'family': 'FAMILY'
+            };
+            
+            const div = document.createElement('div');
+            div.className = 'place-item component flow-item';
+            div.setAttribute('data-component', 'PLACE_ITEM');
+            
+            div.innerHTML = `
+                <span class="place-badge ${tipo}" onclick="cyclePlaceBadge(this)">${badges[tipo]}</span>
+                <div class="place-text">
+                    <div class="place-name editable" data-limit="20" data-var="LUGAR_${number}">${lugar}</div>
+                    <div style="font-size: 9px; color: var(--text-light);">
+                        <span class="editable" data-limit="15" data-var="CIUDAD_LUGAR_${number}">${ciudad}</span> — 
+                        <span class="editable" data-limit="30" data-var="DESC_LUGAR_${number}">${desc}</span>
+                    </div>
+                </div>
+                <div class="component-controls">
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        function generateTips(config, count) {
+            const container = document.querySelector('#tipsList');
+            container.innerHTML = '';
+            
+            const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
+            
+            for (let i = 1; i <= count; i++) {
+                const tipKey = `tip${i}`;
+                if (config[tipKey]) {
+                    const tipElement = createTipElement(i, config[tipKey], iconos[i-1] || '💡');
+                    container.appendChild(tipElement);
+                }
+            }
+            
+            document.querySelector('#tipCounter').textContent = `${count}/12 consejos`;
+        }
+        
+        function createTipElement(number, text, icon) {
+            const div = document.createElement('div');
+            div.className = 'tip-item component flow-item';
+            div.setAttribute('data-component', 'TIP_ITEM');
+            
+            div.innerHTML = `
+                <div class="tip-icon">${icon}</div>
+                <span class="editable" data-limit="80" data-var="TIP_${number}">${text}<span class="char-counter">0/80</span></span>
+                <div class="component-controls">
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        function loadImages(config, count) {
+            if (config.img_hero) {
+                loadImageToFrame(document.querySelector('[data-frame="IMG_HERO"]'), null, config.img_hero);
+            }
+            
+            for (let i = 1; i <= count; i++) {
+                const imgKey = `img${i}`;
+                if (config[imgKey]) {
+                    const frame = document.querySelector(`[data-frame="IMG_${i}"]`);
+                    if (frame) {
+                        loadImageToFrame(frame, null, config[imgKey]);
+                    }
+                }
+            }
+        }
+        
+        function loadLogo(config) {
+            if (config.logo) {
+                const logoSlot = document.querySelector('.logo-slot');
+                const img = logoSlot.querySelector('img');
+                const placeholder = logoSlot.querySelector('.logo-placeholder');
+                
+                img.src = config.logo;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+                logoSlot.classList.add('has-logo');
+            }
+        }
+        
+        // ===== FUNCIONES DE MAPA INTEGRADAS =====
+        function initializeMap(config) {
+            const mapType = config.mapa_tipo || 'static';
+            
+            switch(mapType) {
+                case 'upload':
+                    setupMapUpload();
+                    break;
+                case 'auto':
+                    generateCountryMap(config.pais);
+                    break;
+                default:
+                    setupStaticMap();
+                    break;
+            }
+        }
+        
+        function setupMapUpload() {
+            const uploadBtn = document.getElementById('uploadMapBtn');
+            if (uploadBtn) {
+                uploadBtn.style.display = 'inline-flex';
+                uploadBtn.onclick = uploadMapImage;
+            }
+            
+            showMapMessage('Haz clic en "📤 Subir Mapa" para cargar una imagen del país', 'info');
+        }
+        
+        function uploadMapImage() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const mapContainer = document.querySelector('.map-container');
+                        
+                        // Limpiar contenido anterior
+                        mapContainer.innerHTML = '';
+                        
+                        // Crear imagen de fondo
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        img.style.cssText = `
+                            width: 100%;
+                            height: 100%;
+                            object-fit: contain;
+                            object-position: center;
+                        `;
+                        img.alt = 'Mapa personalizado';
+                        
+                        mapContainer.appendChild(img);
+                        mapContainer.classList.add('has-custom-map');
+                        
+                        // Restaurar pins existentes sobre la nueva imagen
+                        setTimeout(() => {
+                            const existingPins = document.querySelectorAll('.map-pin');
+                            existingPins.forEach(pin => {
+                                mapContainer.appendChild(pin);
+                            });
+                        }, 100);
+                        
+                        showMapMessage('Mapa cargado correctamente. Los pins se mantienen posicionados.', 'success');
+                        
+                        // Actualizar variable en config para persistencia
+                        TEMPLATE_CONFIG.mapa_url = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+        
+        function generateCountryMap(pais) {
+            showMapMessage(`Generando mapa de ${pais}... (En implementación real usaría OpenStreetMap API)`, 'info');
+            
+            setTimeout(() => {
+                const mapContainer = document.querySelector('.map-container');
+                mapContainer.innerHTML = `
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #e8f5e8, #d4e8d4); position: relative; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                        <div style="text-align: center; color: #666;">
+                            <h4>🗾 ${pais}</h4>
+                            <p style="font-size: 11px; margin-top: 8px;">Mapa auto-generado</p>
+                            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.7); border-radius: 4px; font-size: 9px;">
+                                Implementación: OpenStreetMap API
+                            </div>
+                        </div>
+                    </div>
+                `;
+                showMapMessage('Mapa generado automáticamente', 'success');
+            }, 1000);
+        }
+        
+        function setupStaticMap() {
+            // Mantener el SVG original como fallback
+            showMapMessage('Usando mapa decorativo por defecto', 'info');
+        }
+        
+        function regenerateMapPins(count, config) {
+            const mapContainer = document.querySelector('.map-container');
+            
+            // Limpiar pins existentes
+            mapContainer.querySelectorAll('.map-pin').forEach(pin => pin.remove());
+            
+            // Crear nuevos pins con posicionamiento inteligente
+            for (let i = 1; i <= count; i++) {
+                const pin = document.createElement('div');
+                pin.className = 'map-pin component';
+                pin.setAttribute('data-component', 'MAP_PIN');
+                pin.setAttribute('data-pin', i.toString());
+                pin.textContent = i.toString();
+                
+                // Usar coordenadas si están disponibles o posición predeterminada
+                const coordsKey = `ciudad${i}_coords`;
+                let position;
+                
+                if (config[coordsKey]) {
+                    // En implementación real, convertir GPS a píxeles
+                    // Por ahora usar posiciones predeterminadas distribuidas
+                    const positions = [
+                        {top: '25%', left: '70%'}, // Ciudad 1
+                        {top: '40%', left: '65%'}, // Ciudad 2
+                        {top: '45%', left: '60%'}, // Ciudad 3
+                        {top: '30%', left: '55%'}, // Ciudad 4
+                        {top: '50%', left: '75%'}, // Ciudad 5
+                    ];
+                    position = positions[i-1] || {top: '50%', left: '50%'};
+                } else {
+                    // Posición aleatoria como fallback
+                    position = {
+                        top: (Math.random() * 60 + 20) + '%',
+                        left: (Math.random() * 60 + 20) + '%'
+                    };
+                }
+                
+                pin.style.top = position.top;
+                pin.style.left = position.left;
+                
+                mapContainer.appendChild(pin);
+                setupMapPinSingle(pin);
+            }
+        }
+        
+        function showMapMessage(message, type = 'info') {
+            let messageEl = document.getElementById('mapMessage');
+            if (!messageEl) {
+                messageEl = document.createElement('div');
+                messageEl.id = 'mapMessage';
+                messageEl.style.cssText = `
+                    margin: 8px 0;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    text-align: center;
+                `;
+                document.querySelector('.map-section').insertBefore(messageEl, document.querySelector('.map-container'));
+            }
+            
+            const colors = {
+                info: 'background: #e6f3ff; color: #0066cc; border-left: 3px solid #0066cc;',
+                success: 'background: #e6f7e6; color: #28a745; border-left: 3px solid #28a745;',
+                error: 'background: #ffe6e6; color: #d63384; border-left: 3px solid #d63384;'
+            };
+            
+            messageEl.style.cssText += colors[type] || colors.info;
+            messageEl.textContent = message;
+            messageEl.style.display = 'block';
+            
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    messageEl.style.display = 'none';
+                }, 4000);
+            }
+        }
+        
+        function reinitializeJS() {
+            document.querySelectorAll('.editable').forEach(setupEditableElement);
+            setupPhotoDragDrop();
+            setupMapPins();
+            setupCostRating();
+            updateAllCounters();
+            
+            setTimeout(() => {
+                expandPageToFit();
+                checkOverflow();
+            }, 100);
+        }
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -22,7 +583,7 @@
             --text-light: #666;
             --safe-margin: 20mm;
             --bleed: 3mm;
-            --gap: 16px; /* Dynamic gap for compacting */
+            --gap: 16px;
         }
 
         body {
@@ -33,35 +594,32 @@
             overflow-x: hidden;
         }
 
-        /* LAYER: BACKGROUND */
         .document-container {
             width: 100%;
             min-height: 100vh;
             background: var(--sand);
         }
 
-        /* REMOVE PAGINATION - Single Dynamic Page */
         .page {
             width: 210mm;
             min-height: 297mm;
-            height: auto; /* Auto-expand instead of fixed height */
+            height: auto;
             margin: 0 auto 20px;
             background: var(--sand);
             position: relative;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            page-break-inside: avoid; /* Avoid breaking when printing */
-            overflow: visible; /* Allow content to show */
+            page-break-inside: avoid;
+            overflow: visible;
         }
 
         .page-content {
             padding: var(--safe-margin);
-            height: auto; /* Auto height instead of fixed */
+            height: auto;
             display: flex;
             flex-direction: column;
             gap: var(--gap);
         }
 
-        /* LAYER: BANNER - Master Header with Logo Slot */
         .master-header {
             height: 80px;
             background: linear-gradient(135deg, var(--teal-primary), var(--teal-light));
@@ -74,7 +632,6 @@
             flex-shrink: 0;
         }
 
-        /* ADD LOGO SLOT */
         .logo-slot {
             width: 56px;
             height: 36px;
@@ -116,7 +673,7 @@
             background: var(--white);
             border-radius: 4px;
             border: 2px solid var(--teal-primary);
-            margin-right: 12px; /* Updated margin */
+            margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -145,7 +702,6 @@
             font-weight: 500;
         }
 
-        /* LAYER: FOOTER - Master Footer */
         .master-footer {
             margin-top: auto;
             padding-top: 12px;
@@ -156,36 +712,27 @@
             flex-shrink: 0;
         }
 
-        /* Main Content Area - No Overflow Hidden */
+        /* MANTENER LAYOUT DE 2 COLUMNAS ORIGINAL */
         .content-area {
             flex: 1;
             display: grid;
             grid-template-columns: 38% 62%;
             gap: var(--gap);
-            overflow: visible; /* Allow content to show */
+            overflow: visible;
         }
 
-        /* LAYER: SIDEBAR - No Overflow Hidden */
-        .left-column {
+        .left-column, .right-column {
             display: flex;
             flex-direction: column;
             gap: var(--gap);
-            overflow: visible; /* Allow content to show */
+            overflow: visible;
         }
 
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: var(--gap);
-            overflow: visible; /* Allow content to show */
-        }
-
-        /* Auto-Expand Containers */
         .flow-container {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            overflow: visible; /* Allow content to show */
+            overflow: visible;
         }
 
         .flow-item {
@@ -193,7 +740,6 @@
             break-inside: avoid;
         }
 
-        /* Component System with Enhanced Controls */
         .component {
             position: relative;
             transition: all 0.2s ease;
@@ -247,7 +793,6 @@
             color: var(--white);
         }
 
-        /* Section Headers with Counters */
         .section-header {
             display: flex;
             align-items: center;
@@ -301,7 +846,6 @@
             cursor: not-allowed;
         }
 
-        /* LAYER: SUMMARY_CARD */
         .summary-card {
             background: var(--white);
             border-radius: 12px;
@@ -328,7 +872,6 @@
             color: var(--teal-primary);
         }
 
-        /* Cost Rating Component */
         .cost-rating {
             display: flex;
             align-items: center;
@@ -363,7 +906,6 @@
             color: var(--text-light);
         }
 
-        /* LAYER: PHOTOS - Image Frames System */
         .photo-section {
             background: var(--white);
             border-radius: 12px;
@@ -444,12 +986,36 @@
             cursor: pointer;
         }
 
-        /* LAYER: MAP_ROUTE */
+        /* SECCIÓN DE MAPA MEJORADA */
         .map-section {
             background: var(--white);
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1);
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .map-btn {
+            background: var(--teal-light);
+            color: var(--white);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: none; /* Oculto por defecto, se muestra según configuración */
+        }
+
+        .map-btn:hover {
+            background: var(--teal-primary);
+            transform: translateY(-1px);
         }
 
         .map-container {
@@ -460,6 +1026,12 @@
             position: relative;
             overflow: hidden;
             margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .map-container.has-custom-map {
+            border: 2px solid var(--teal-primary);
+            background: #f8f9fa;
         }
 
         .map-route {
@@ -486,13 +1058,13 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
             cursor: move;
             transition: transform 0.2s;
+            z-index: 5;
         }
 
         .map-pin:hover {
             transform: scale(1.1);
         }
 
-        /* LAYER: ITINERARY */
         .itinerary-section {
             background: var(--white);
             border-radius: 12px;
@@ -526,7 +1098,6 @@
             line-height: 1.3;
         }
 
-        /* LAYER: TOP_PLACES */
         .top-places {
             background: var(--white);
             border-radius: 12px;
@@ -570,7 +1141,6 @@
             color: var(--teal-primary);
         }
 
-        /* LAYER: QUICK_TIPS */
         .quick-tips {
             background: var(--white);
             border-radius: 12px;
@@ -609,7 +1179,6 @@
             flex-shrink: 0;
         }
 
-        /* Editable System with Character Limits */
         .editable {
             background: rgba(255, 107, 97, 0.1);
             padding: 2px 4px;
@@ -641,18 +1210,6 @@
             font-weight: 600;
         }
 
-        .truncated {
-            position: relative;
-        }
-
-        .read-more {
-            color: var(--teal-primary);
-            cursor: pointer;
-            font-size: 8px;
-            text-decoration: underline;
-        }
-
-        /* Control Panel */
         .control-panel {
             position: fixed;
             top: 20px;
@@ -689,8 +1246,8 @@
         .autoextend-btn { background: var(--teal-light); color: var(--white); }
         .autoextend-btn.active { background: var(--teal-primary); }
         .compact-btn { background: #FF9800; color: var(--white); }
+        .reload-config-btn { background: #9C27B0; color: var(--white); }
 
-        /* Status Indicators */
         .status-bar {
             display: flex;
             align-items: center;
@@ -718,12 +1275,6 @@
         .status-dot.warning { background: #FF9800; }
         .status-dot.error { background: var(--coral); }
 
-        /* LAYER: TEMPLATE_VARIABLES - Hidden Data Layer */
-        .template-variables {
-            display: none;
-        }
-
-        /* Responsive Design */
         @media screen and (max-width: 1200px) {
             .page {
                 transform: scale(0.8);
@@ -741,7 +1292,6 @@
             }
         }
 
-        /* Print Styles */
         @media print {
             body { margin: 0; background: var(--white); }
             .page { 
@@ -751,12 +1301,11 @@
                 min-height: 297mm;
                 page-break-inside: avoid;
             }
-            .control-panel, .help-panel {
+            .control-panel {
                 display: none !important;
             }
         }
 
-        /* Animation Classes */
         .fade-in {
             animation: fadeIn 0.3s ease-in;
         }
@@ -766,67 +1315,42 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Overflow Indicators */
-        .overflow-warning {
-            border: 2px solid var(--coral) !important;
-            background: rgba(255, 107, 97, 0.1) !important;
-        }
-
-        .overflow-indicator {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--coral);
-            color: var(--white);
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .config-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #9C27B0, #673AB7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
             font-size: 10px;
             font-weight: 600;
-        }
-
-        /* Compact Mode Styles */
-        .compact-mode {
-            --gap: 8px;
-        }
-
-        .compact-mode .tips-grid {
-            gap: 6px;
-        }
-
-        .compact-mode .photo-grid {
-            gap: 6px;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
         }
     </style>
 </head>
 <body>
-    <!-- Control Panel -->
+    <!-- Indicador de sistema de configuración -->
+    <div class="config-indicator">
+        🎯 CONFIGURACIÓN + MAPAS ACTIVOS
+    </div>
+
+    <!-- Panel de control -->
     <div class="control-panel">
+        <button class="control-btn-main reload-config-btn" onclick="initializeFromConfig()">🔄 Recargar Config</button>
         <button class="control-btn-main help-btn" onclick="toggleHelp()">❓ Ayuda</button>
         <button class="control-btn-main save-btn" onclick="autosaveJSON()">💾 Guardar</button>
         <button class="control-btn-main undo-btn" onclick="undo()" id="undoBtn" disabled>↶ Deshacer</button>
         <button class="control-btn-main autoextend-btn active" onclick="toggleAutoExtend()" id="autoExtendBtn">📏 Auto-extendido ON</button>
         <button class="control-btn-main compact-btn" onclick="compactLayout()" id="compactBtn" style="display: none;">📐 Compactar</button>
         <button class="control-btn-main export-btn" onclick="exportTemplate('A4')">📄 PDF A4</button>
-        <button class="control-btn-main export-btn" onclick="exportTemplate('SOCIAL')">📱 Social</button>
         <button class="control-btn-main preview-btn" onclick="togglePreview()">👁️ Vista previa</button>
         
         <div class="status-bar">
             <div class="status-indicator">
                 <div class="status-dot" id="saveStatus"></div>
-                <span id="saveText">Guardado</span>
+                <span id="saveText">Sistema Integrado</span>
             </div>
             <div class="status-indicator">
                 <span id="pageCount">Página 1 de 1</span>
@@ -834,50 +1358,13 @@
         </div>
     </div>
 
-    <!-- LAYER: TEMPLATE_VARIABLES - Hidden Data Layer for CSV/JSON Export -->
-    <div class="template-variables">
-        <!-- Master Variables -->
-        <div data-var="PAIS" data-type="text" data-limit="30">{{PAIS}}</div>
-        <div data-var="FECHAS" data-type="text" data-limit="20">{{FECHAS}}</div>
-        <div data-var="DURACION" data-type="text" data-limit="15">{{DURACION}}</div>
-        <div data-var="COSTE" data-type="number" data-range="1-5">{{COSTE}}</div>
-        <div data-var="MONEDA" data-type="text" data-limit="10">{{MONEDA}}</div>
-        <div data-var="ENCHUFE" data-type="text" data-limit="10">{{ENCHUFE}}</div>
-        <div data-var="EMERGENCIA" data-type="text" data-limit="15">{{EMERGENCIA}}</div>
-        <div data-var="EMBAJADA" data-type="text" data-limit="15">{{EMBAJADA}}</div>
-        <div data-var="IDIOMA" data-type="text" data-limit="20">{{IDIOMA}}</div>
-        
-        <!-- Image Variables with ALT text -->
-        <div data-var="IMG_HERO" data-type="image" data-ratio="3:1" data-alt="ALT_IMG_HERO">{{IMG_HERO}}</div>
-        <div data-var="IMG_1" data-type="image" data-ratio="1:1" data-alt="ALT_IMG_1">{{IMG_1}}</div>
-        <div data-var="IMG_2" data-type="image" data-ratio="1:1" data-alt="ALT_IMG_2">{{IMG_2}}</div>
-        <div data-var="IMG_3" data-type="image" data-ratio="1:1" data-alt="ALT_IMG_3">{{IMG_3}}</div>
-        <div data-var="IMG_4" data-type="image" data-ratio="1:1" data-alt="ALT_IMG_4">{{IMG_4}}</div>
-        <div data-var="IMG_5" data-type="image" data-ratio="1:1" data-alt="ALT_IMG_5">{{IMG_5}}</div>
-        <div data-var="IMG_6" data-type="image" data-ratio="1:1" data-alt="ALT_IMG_6">{{IMG_6}}</div>
-        
-        <!-- Dynamic Arrays -->
-        <div data-var="CIUDADES" data-type="array" data-max="12" data-item-limit="25">{{CIUDADES}}</div>
-        <div data-var="DIAS" data-type="array" data-max="10" data-item-limit="20,120">{{DIAS}}</div>
-        <div data-var="LUGARES" data-type="array" data-max="12" data-item-limit="20,15,30">{{LUGARES}}</div>
-        <div data-var="TIPS" data-type="array" data-max="12" data-item-limit="80">{{TIPS}}</div>
-        
-        <!-- Page Metadata -->
-        <div data-var="page_index" data-type="number">{{page_index}}</div>
-        <div data-var="total_pages" data-type="number">{{total_pages}}</div>
-        <div data-var="FECHA_CREACION" data-type="date">{{FECHA_CREACION}}</div>
-        <div data-var="CREDITOS" data-type="text" data-limit="50">{{CREDITOS}}</div>
-    </div>
-
-    <!-- Document Container -->
+    <!-- Documento principal -->
     <div class="document-container">
-        <!-- Single Dynamic Page -->
         <div class="page" id="page-1" data-page="1">
             <div class="page-content">
-                <!-- LAYER: BANNER - Master Header with Logo Slot -->
+                <!-- Header -->
                 <div class="master-header">
-                    <!-- ADD LOGO SLOT -->
-                    <div class="logo-slot" aria-label="logo" title="Logo del canal" onclick="uploadLogo(this)">
+                    <div class="logo-slot" onclick="uploadLogo(this)">
                         <img src="" alt="Logo" style="display: none;" />
                         <div class="logo-placeholder">LOGO<br><small>Click</small></div>
                     </div>
@@ -886,11 +1373,11 @@
                     <div class="page-indicator">Página <span class="page-number">1</span> de <span class="total-pages">1</span></div>
                 </div>
 
-                <!-- Main Content Area -->
+                <!-- Área de contenido principal (2 COLUMNAS) -->
                 <div class="content-area">
-                    <!-- LAYER: SIDEBAR - Left Column -->
+                    <!-- Columna izquierda -->
                     <div class="left-column">
-                        <!-- LAYER: SUMMARY_CARD -->
+                        <!-- Tarjeta resumen -->
                         <div class="summary-card component flow-item">
                             <div class="summary-title editable" data-limit="25" data-var="NOMBRE_PAIS">{{NOMBRE DEL PAÍS}}<span class="char-counter">0/25</span></div>
                             <div class="summary-item">
@@ -902,7 +1389,7 @@
                                 <span class="editable" data-limit="15" data-var="DURACION">{{Duración (días)}}<span class="char-counter">0/15</span></span>
                             </div>
                             
-                            <!-- Cost Rating Component -->
+                            <!-- Componente de calificación de coste -->
                             <div class="cost-rating component" data-component="COST_RATING">
                                 <span class="summary-label">Coste:</span>
                                 <div class="cost-circles">
@@ -935,17 +1422,16 @@
                             </div>
                         </div>
 
-                        <!-- LAYER: PHOTOS -->
+                        <!-- Sección de fotos -->
                         <div class="photo-section flow-item">
                             <div class="section-header">
                                 <div class="section-title">Fotos del Viaje</div>
                                 <div class="section-controls">
-                                    <span class="item-counter" id="photoCounter">3/7 fotos</span>
+                                    <span class="item-counter" id="photoCounter">0/7 fotos</span>
                                     <button class="add-btn" onclick="addPhoto()" id="addPhotoBtn">+ Foto</button>
                                 </div>
                             </div>
                             
-                            <!-- Hero Photo Frame -->
                             <div class="photo-frame hero component" data-component="PHOTO_FRAME" data-frame="IMG_HERO">
                                 <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">3:1 Hero</div>
                                 <div class="photo-placeholder">
@@ -958,42 +1444,12 @@
                                 </div>
                             </div>
 
-                            <!-- Mini Photos Grid -->
                             <div class="photo-grid" id="photoGrid">
-                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_1">
-                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
-                                    <div class="photo-placeholder">
-                                        📷 IMG_1<br>
-                                        <small>Drag & Drop</small>
-                                    </div>
-                                    <div class="photo-controls">
-                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                                    </div>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_2">
-                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
-                                    <div class="photo-placeholder">
-                                        📷 IMG_2<br>
-                                        <small>Drag & Drop</small>
-                                    </div>
-                                    <div class="photo-controls">
-                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                                    </div>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
+                                <!-- Las fotos se generarán dinámicamente -->
                             </div>
                         </div>
 
-                        <!-- Language Info -->
+                        <!-- Información rápida -->
                         <div style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1);" class="flow-item">
                             <div style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: var(--teal-primary); margin-bottom: 12px;">Información Rápida</div>
                             <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; margin-bottom: 8px;">
@@ -1003,230 +1459,85 @@
                         </div>
                     </div>
 
-                    <!-- Right Column -->
+                    <!-- Columna derecha -->
                     <div class="right-column">
-                        <!-- LAYER: MAP_ROUTE -->
+                        <!-- SECCIÓN DEL MAPA MEJORADA -->
                         <div class="map-section flow-item">
                             <div class="section-header">
                                 <div class="section-title">Ruta del Viaje</div>
                                 <div class="section-controls">
-                                    <span class="item-counter" id="cityCounter">3/12 ciudades</span>
+                                    <span class="item-counter" id="cityCounter">0/12 ciudades</span>
                                     <button class="add-btn" onclick="addCity()" id="addCityBtn">+ Ciudad</button>
                                 </div>
+                            </div>
+                            
+                            <!-- Controles de mapa integrados -->
+                            <div class="map-controls">
+                                <button class="map-btn" id="uploadMapBtn" onclick="uploadMapImage()">📤 Subir Mapa</button>
+                                <button class="map-btn" onclick="autoPlacePins()">🎯 Auto-ubicar</button>
+                                <button class="map-btn" onclick="resetMapPins()">🔄 Reset Pins</button>
                             </div>
                             
                             <div class="map-container">
                                 <svg class="map-route" viewBox="0 0 100 100">
                                     <path d="M 20 30 Q 40 20 60 40 T 80 70" stroke="var(--teal-primary)" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
                                 </svg>
-                                <div class="map-pin component" data-component="MAP_PIN" data-pin="1" style="top: 20%; left: 20%;">1</div>
-                                <div class="map-pin component" data-component="MAP_PIN" data-pin="2" style="top: 40%; left: 50%;">2</div>
-                                <div class="map-pin component" data-component="MAP_PIN" data-pin="3" style="top: 60%; left: 75%;">3</div>
                                 <div style="position: absolute; bottom: 8px; right: 8px; width: 40px; height: 40px; background: var(--teal-primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px; text-align: center; line-height: 1.1;">QR<br>Map</div>
                             </div>
                             
                             <div class="flow-container" id="citiesList">
-                                <div class="component flow-item" data-component="CITY_ITEM" style="display: flex; align-items: center; gap: 8px; font-size: 9px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600;">1</div>
-                                    <span class="editable" data-limit="25" data-var="CIUDAD_1">{{Ciudad 1 — descripción breve}}</span>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                <div class="component flow-item" data-component="CITY_ITEM" style="display: flex; align-items: center; gap: 8px; font-size: 9px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600;">2</div>
-                                    <span class="editable" data-limit="25" data-var="CIUDAD_2">{{Ciudad 2 — descripción breve}}</span>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                <div class="component flow-item" data-component="CITY_ITEM" style="display: flex; align-items: center; gap: 8px; font-size: 9px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600;">3</div>
-                                    <span class="editable" data-limit="25" data-var="CIUDAD_3">{{Ciudad 3 — descripción breve}}</span>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
+                                <!-- Las ciudades se generarán dinámicamente -->
                             </div>
                         </div>
 
-                        <!-- LAYER: ITINERARY -->
+                        <!-- Itinerario -->
                         <div class="itinerary-section flow-item">
                             <div class="section-header">
                                 <div class="section-title">Itinerario</div>
                                 <div class="section-controls">
-                                    <span class="item-counter" id="dayCounter">3/10 días</span>
+                                    <span class="item-counter" id="dayCounter">0/10 días</span>
                                     <button class="add-btn" onclick="addItineraryDay()" id="addDayBtn">+ Día</button>
                                 </div>
                             </div>
                             
                             <div class="flow-container" id="itineraryList">
-                                <div class="itinerary-card component flow-item" data-component="ITINERARY_CARD">
-                                    <div class="day-title">
-                                        🕐 <span class="editable" data-limit="20" data-var="DIA_1">{{Día 1: Ciudad}}</span>
-                                    </div>
-                                    <div class="day-activity editable" data-limit="120" data-var="ACTIVIDAD_1">{{Actividad principal del día - descripción breve}}<span class="char-counter">0/120</span></div>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="itinerary-card component flow-item" data-component="ITINERARY_CARD">
-                                    <div class="day-title">
-                                        🕐 <span class="editable" data-limit="20" data-var="DIA_2">{{Día 2: Ciudad}}</span>
-                                    </div>
-                                    <div class="day-activity editable" data-limit="120" data-var="ACTIVIDAD_2">{{Actividad principal del día - descripción breve}}<span class="char-counter">0/120</span></div>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="itinerary-card component flow-item" data-component="ITINERARY_CARD">
-                                    <div class="day-title">
-                                        🕐 <span class="editable" data-limit="20" data-var="DIA_3">{{Día 3: Ciudad}}</span>
-                                    </div>
-                                    <div class="day-activity editable" data-limit="120" data-var="ACTIVIDAD_3">{{Actividad principal del día - descripción breve}}<span class="char-counter">0/120</span></div>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
+                                <!-- Los días se generarán dinámicamente -->
                             </div>
                         </div>
 
-                        <!-- LAYER: TOP_PLACES -->
+                        <!-- Top lugares -->
                         <div class="top-places flow-item">
                             <div class="section-header">
                                 <div class="section-title">Top Lugares</div>
                                 <div class="section-controls">
-                                    <span class="item-counter" id="placeCounter">3/12 lugares</span>
+                                    <span class="item-counter" id="placeCounter">0/12 lugares</span>
                                     <button class="add-btn" onclick="addPlace()" id="addPlaceBtn">+ Lugar</button>
                                 </div>
                             </div>
                             
                             <div class="flow-container" id="placesList">
-                                <div class="place-item component flow-item" data-component="PLACE_ITEM">
-                                    <span class="place-badge must" onclick="cyclePlaceBadge(this)">MUST</span>
-                                    <div class="place-text">
-                                        <div class="place-name editable" data-limit="20" data-var="LUGAR_1">{{Lugar}}</div>
-                                        <div style="font-size: 9px; color: var(--text-light);">
-                                            <span class="editable" data-limit="15" data-var="CIUDAD_LUGAR_1">{{Ciudad}}</span> — 
-                                            <span class="editable" data-limit="30" data-var="DESC_LUGAR_1">{{Descripción breve}}</span>
-                                        </div>
-                                    </div>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="place-item component flow-item" data-component="PLACE_ITEM">
-                                    <span class="place-badge eco" onclick="cyclePlaceBadge(this)">ECO</span>
-                                    <div class="place-text">
-                                        <div class="place-name editable" data-limit="20" data-var="LUGAR_2">{{Lugar}}</div>
-                                        <div style="font-size: 9px; color: var(--text-light);">
-                                            <span class="editable" data-limit="15" data-var="CIUDAD_LUGAR_2">{{Ciudad}}</span> — 
-                                            <span class="editable" data-limit="30" data-var="DESC_LUGAR_2">{{Descripción breve}}</span>
-                                        </div>
-                                    </div>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="place-item component flow-item" data-component="PLACE_ITEM">
-                                    <span class="place-badge skip" onclick="cyclePlaceBadge(this)">SKIP</span>
-                                    <div class="place-text">
-                                        <div class="place-name editable" data-limit="20" data-var="LUGAR_3">{{Lugar}}</div>
-                                        <div style="font-size: 9px; color: var(--text-light);">
-                                            <span class="editable" data-limit="15" data-var="CIUDAD_LUGAR_3">{{Ciudad}}</span> — 
-                                            <span class="editable" data-limit="30" data-var="DESC_LUGAR_3">{{Descripción breve}}</span>
-                                        </div>
-                                    </div>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
+                                <!-- Los lugares se generarán dinámicamente -->
                             </div>
                         </div>
 
-                        <!-- LAYER: QUICK_TIPS -->
+                        <!-- Consejos rápidos -->
                         <div class="quick-tips flow-item">
                             <div class="section-header">
                                 <div class="section-title">Consejos Rápidos</div>
                                 <div class="section-controls">
-                                    <span class="item-counter" id="tipCounter">6/12 consejos</span>
+                                    <span class="item-counter" id="tipCounter">0/12 consejos</span>
                                     <button class="add-btn" onclick="addTip()" id="addTipBtn">+ Consejo</button>
                                 </div>
                             </div>
                             
                             <div class="tips-grid" id="tipsList">
-                                <div class="tip-item component flow-item" data-component="TIP_ITEM">
-                                    <div class="tip-icon">💰</div>
-                                    <span class="editable" data-limit="80" data-var="TIP_1">{{Consejo sobre dinero}}<span class="char-counter">0/80</span></span>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="tip-item component flow-item" data-component="TIP_ITEM">
-                                    <div class="tip-icon">🚌</div>
-                                    <span class="editable" data-limit="80" data-var="TIP_2">{{Consejo sobre transporte}}<span class="char-counter">0/80</span></span>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="tip-item component flow-item" data-component="TIP_ITEM">
-                                    <div class="tip-icon">🔒</div>
-                                    <span class="editable" data-limit="80" data-var="TIP_3">{{Consejo sobre seguridad}}<span class="char-counter">0/80</span></span>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="tip-item component flow-item" data-component="TIP_ITEM">
-                                    <div class="tip-icon">📱</div>
-                                    <span class="editable" data-limit="80" data-var="TIP_4">{{Consejo sobre tecnología}}<span class="char-counter">0/80</span></span>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="tip-item component flow-item" data-component="TIP_ITEM">
-                                    <div class="tip-icon">🍽️</div>
-                                    <span class="editable" data-limit="80" data-var="TIP_5">{{Consejo sobre comida}}<span class="char-counter">0/80</span></span>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="tip-item component flow-item" data-component="TIP_ITEM">
-                                    <div class="tip-icon">⚡</div>
-                                    <span class="editable" data-limit="80" data-var="TIP_6">{{Consejo general}}<span class="char-counter">0/80</span></span>
-                                    <div class="component-controls">
-                                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                                        <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                                    </div>
-                                </div>
+                                <!-- Los consejos se generarán dinámicamente -->
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- LAYER: FOOTER - Master Footer -->
+                <!-- Footer -->
                 <div class="master-footer">
                     <div>
                         <strong>Fecha de creación:</strong> <span class="editable" data-limit="15" data-var="FECHA_CREACION">{{Fecha de creación}}</span> | 
@@ -1238,15 +1549,16 @@
         </div>
     </div>
 
+    <!-- JAVASCRIPT COMPLETO INTEGRADO -->
     <script>
-        // ===== CORE SYSTEM VARIABLES =====
+        // ===== VARIABLES GLOBALES =====
         let counters = {
-            photos: 3,
-            cities: 3,
-            days: 3,
-            places: 3,
-            tips: 6,
-            pages: 1 // Always 1 for single page
+            photos: 0,
+            cities: 0,
+            days: 0,
+            places: 0,
+            tips: 0,
+            pages: 1
         };
 
         const limits = {
@@ -1257,26 +1569,83 @@
             tips: 12
         };
 
-        // Undo system - stack of last 10 changes
         let undoStack = [];
         const MAX_UNDO = 10;
-        
-        // AUTO-EXTEND FUNCTIONS - Auto-extend system instead of pagination
         let autoExtendEnabled = true;
 
-        // ===== AUTO-EXTEND FUNCTIONS =====
+        // ===== INICIALIZACIÓN AL CARGAR LA PÁGINA =====
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFromConfig();
+            loadFromLocalStorage();
+            setupEventListeners();
+            console.log('🎯 Sistema completo cargado: Variables + Mapas integrados');
+        });
+
+        // ===== FUNCIONES DE MAPA ESPECÍFICAS =====
+        function autoPlacePins() {
+            const config = TEMPLATE_CONFIG;
+            const pins = document.querySelectorAll('.map-pin');
+            
+            if (pins.length === 0) {
+                showMapMessage('Primero carga ciudades para auto-ubicar', 'error');
+                return;
+            }
+            
+            showMapMessage('Auto-ubicando ciudades...', 'info');
+            
+            // Posiciones predeterminadas mejoradas para Japón
+            const positions = [
+                {top: '25%', left: '70%'}, // Tokio
+                {top: '40%', left: '65%'}, // Kioto
+                {top: '45%', left: '60%'}, // Osaka
+                {top: '30%', left: '55%'}, // Hiroshima
+                {top: '50%', left: '75%'}, // Nara
+            ];
+            
+            pins.forEach((pin, index) => {
+                setTimeout(() => {
+                    const pos = positions[index] || {
+                        top: (Math.random() * 60 + 20) + '%',
+                        left: (Math.random() * 60 + 20) + '%'
+                    };
+                    
+                    pin.style.top = pos.top;
+                    pin.style.left = pos.left;
+                    
+                    // Animación de confirmación
+                    pin.style.transform = 'scale(1.3)';
+                    setTimeout(() => {
+                        pin.style.transform = 'scale(1)';
+                    }, 300);
+                }, index * 200);
+            });
+        }
         
-        // Convert mm to pixels (96 DPI standard)
+        function resetMapPins() {
+            const pins = document.querySelectorAll('.map-pin');
+            pins.forEach(pin => pin.remove());
+            
+            showMapMessage('Pins eliminados', 'success');
+            
+            // Regenerar pins básicos si hay ciudades
+            const citiesCount = counters.cities;
+            if (citiesCount > 0) {
+                setTimeout(() => {
+                    regenerateMapPins(citiesCount, TEMPLATE_CONFIG);
+                }, 500);
+            }
+        }
+
+        // ===== FUNCIONES JAVASCRIPT ORIGINALES (MANTENIDAS) =====
+        
         function mmToPx(mm) {
             return mm * (96 / 25.4);
         }
 
-        // Check if element fits in current page without creating new pages
         function elementFitsInPage(el) {
             const page = document.querySelector('.page');
             const pageContent = page.querySelector('.page-content');
             
-            // Compute used height inside page-content
             const used = Array.from(pageContent.children).reduce((h, child) => {
                 return h + child.offsetHeight + parseFloat(getComputedStyle(child).marginBottom || 0);
             }, 0);
@@ -1287,68 +1656,24 @@
             return used <= available;
         }
 
-        // Expand page to fit content instead of creating new pages
         function expandPageToFit() {
             const page = document.querySelector('.page');
-            
-            // Let content determine height
             page.style.height = 'auto';
-            
-            // Optionally increase min-height if very short
             page.style.minHeight = '297mm';
-            
-            // Update UI indicators
             counters.pages = 1;
             updatePageCounters();
-            
-            console.log('📏 Página expandida automáticamente para ajustar contenido');
         }
 
-        // Clear IDs from cloned elements to avoid duplicates
         function clearIDs(clone) {
-            // Remove id from all nodes in the clone
             clone.querySelectorAll('[id]').forEach(el => {
                 el.removeAttribute('id');
             });
             
-            // Use data-* attributes for templates instead
             if (clone.dataset.component) {
                 clone.dataset.cloned = 'true';
             }
         }
 
-        // ===== INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeTemplate();
-            loadFromLocalStorage();
-            setupEventListeners();
-            console.log('🎯 Plantilla Página Única Dinámica Canva Code cargada correctamente');
-        });
-
-        function initializeTemplate() {
-            // Initialize all editable elements
-            document.querySelectorAll('.editable').forEach(setupEditableElement);
-            
-            // Initialize drag and drop for photos
-            setupPhotoDragDrop();
-            
-            // Initialize map pins dragging
-            setupMapPins();
-            
-            // Initialize cost rating circles
-            setupCostRating();
-            
-            // Update all counters
-            updateAllCounters();
-            
-            // Initial page expansion check
-            setTimeout(() => {
-                expandPageToFit();
-                checkOverflow();
-            }, 100);
-        }
-
-        // Toggle auto-extend functionality
         function toggleAutoExtend() {
             autoExtendEnabled = !autoExtendEnabled;
             const btn = document.getElementById('autoExtendBtn');
@@ -1356,7 +1681,6 @@
             if (autoExtendEnabled) {
                 btn.textContent = '📏 Auto-extendido ON';
                 btn.classList.add('active');
-                // Trigger immediate expansion if enabled
                 setTimeout(() => {
                     expandPageToFit();
                     checkOverflow();
@@ -1364,33 +1688,21 @@
             } else {
                 btn.textContent = '📏 Auto-extendido OFF';
                 btn.classList.remove('active');
-                // Show compact button when auto-extend is off
                 document.getElementById('compactBtn').style.display = 'block';
             }
-            
-            console.log(`📏 Auto-extendido ${autoExtendEnabled ? 'activado' : 'desactivado'}`);
         }
 
-        // Compact layout by reducing gaps
         function compactLayout() {
             document.body.classList.add('compact-mode');
-            
-            // Reduce gaps using CSS variables
             document.documentElement.style.setProperty('--gap', '8px');
-            
-            // Hide compact button after use
             document.getElementById('compactBtn').style.display = 'none';
             
-            // Re-check after compacting
             setTimeout(() => {
                 expandPageToFit();
                 checkOverflow();
             }, 200);
-            
-            console.log('📐 Layout compactado para optimizar espacio');
         }
 
-        // ADD LOGO SLOT - Logo upload functionality
         function uploadLogo(logoSlot) {
             const input = document.createElement('input');
             input.type = 'file';
@@ -1407,8 +1719,6 @@
                         img.style.display = 'block';
                         placeholder.style.display = 'none';
                         logoSlot.classList.add('has-logo');
-                        
-                        console.log('🎨 Logo cargado correctamente');
                     };
                     reader.readAsDataURL(file);
                 }
@@ -1417,22 +1727,18 @@
         }
 
         function setupEventListeners() {
-            // Auto-save every 30 seconds
             setInterval(autosaveJSON, 30000);
-            
-            // Window resize handler
             window.addEventListener('resize', debounce(() => {
                 expandPageToFit();
                 checkOverflow();
             }, 300));
         }
 
-        // ===== EDITABLE SYSTEM WITH CHARACTER LIMITS =====
         function setupEditableElement(element) {
             const limit = parseInt(element.dataset.limit) || 100;
             
             element.addEventListener('click', function() {
-                saveState(); // Save state before editing
+                saveState();
                 this.contentEditable = true;
                 this.focus();
                 this.style.background = 'rgba(255, 107, 97, 0.3)';
@@ -1442,7 +1748,6 @@
             element.addEventListener('input', function() {
                 updateCharCounter(this);
                 enforceLimit(this, limit);
-                // REMOVE PAGINATION - Use expandPageToFit instead of flowToNextPage
                 debounce(() => {
                     expandPageToFit();
                     checkOverflow();
@@ -1452,7 +1757,7 @@
             element.addEventListener('blur', function() {
                 this.contentEditable = false;
                 this.style.background = 'rgba(255, 107, 97, 0.1)';
-                autosaveJSON(); // Auto-save on blur
+                autosaveJSON();
             });
 
             element.addEventListener('keydown', function(e) {
@@ -1462,7 +1767,6 @@
                 }
             });
 
-            // Initialize character counter
             updateCharCounter(element);
         }
 
@@ -1474,7 +1778,6 @@
                 counter.textContent = `${current}/${limit}`;
                 counter.className = current > limit ? 'char-counter warning' : 'char-counter';
                 
-                // Add overflow warning if text is too long
                 if (current > limit) {
                     element.classList.add('overflow-warning');
                 } else {
@@ -1498,14 +1801,11 @@
                 } else {
                     element.textContent = truncated;
                 }
-                
-                // Show truncation indicator
                 showTruncationWarning(element);
             }
         }
 
         function showTruncationWarning(element) {
-            // Add visual indicator for truncated content
             if (!element.querySelector('.truncated-indicator')) {
                 const indicator = document.createElement('span');
                 indicator.className = 'truncated-indicator';
@@ -1518,15 +1818,13 @@
             alert('Texto demasiado largo. Considera reducir el contenido o usar el modo compacto.');
         }
 
-        // ===== COMPONENT MANAGEMENT =====
-        
+        // Mantener todas las demás funciones del JavaScript original...
         function duplicateComponent(button) {
-            saveState(); // Save state before action
+            saveState();
             
             const component = button.closest('.component');
             const componentType = component.dataset.component;
             
-            // Check limits
             const sectionLimits = {
                 'ITINERARY_CARD': 'days',
                 'PLACE_ITEM': 'places',
@@ -1542,29 +1840,18 @@
             }
             
             const clone = component.cloneNode(true);
-            
-            // Clear IDs to avoid duplicates
             clearIDs(clone);
-            
-            // Update any numbering or content
             updateClonedComponent(clone, componentType);
-            
-            // Insert clone
             component.parentElement.insertBefore(clone, component.nextSibling);
             
-            // Update counter
             if (limitKey) {
                 counters[limitKey]++;
                 updateCounterDisplay(limitKey);
             }
             
-            // Setup editable elements in clone
             clone.querySelectorAll('.editable').forEach(setupEditableElement);
-            
-            // Add animation
             clone.classList.add('fade-in');
             
-            // REMOVE PAGINATION - Use expandPageToFit instead of flowToNextPage
             setTimeout(() => {
                 expandPageToFit();
                 checkOverflow();
@@ -1572,19 +1859,17 @@
         }
 
         function deleteComponent(button) {
-            saveState(); // Save state before action
+            saveState();
             
             const component = button.closest('.component');
             const componentType = component.dataset.component;
             
-            // Prevent deletion if it's the last one
             const siblings = component.parentElement.querySelectorAll(`[data-component="${componentType}"]`);
             if (siblings.length <= 1) {
                 alert('Debe mantener al menos un elemento');
                 return;
             }
             
-            // Add animation before removal
             component.style.transition = 'all 0.3s ease';
             component.style.opacity = '0';
             component.style.transform = 'translateX(-20px)';
@@ -1592,7 +1877,6 @@
             setTimeout(() => {
                 component.remove();
                 
-                // Update counter
                 const sectionLimits = {
                     'ITINERARY_CARD': 'days',
                     'PLACE_ITEM': 'places',
@@ -1608,14 +1892,12 @@
                 }
                 
                 reindexCounters();
-                // REMOVE PAGINATION - Use expandPageToFit instead of checkOverflow
                 expandPageToFit();
                 checkOverflow();
             }, 300);
         }
 
         function updateClonedComponent(clone, componentType) {
-            // Update specific component types
             if (componentType === 'CITY_ITEM') {
                 const number = clone.querySelector('div[style*="background: var(--teal-primary)"]');
                 if (number) {
@@ -1630,7 +1912,6 @@
                 }
             }
             
-            // Clear editable content
             clone.querySelectorAll('.editable').forEach(el => {
                 const placeholder = el.dataset.var || 'Nuevo elemento';
                 const counter = el.querySelector('.char-counter');
@@ -1654,7 +1935,6 @@
                 const maxLimit = limits[type];
                 counterEl.textContent = `${counters[type]}/${maxLimit} ${getTypeLabel(type)}`;
                 
-                // Update button state
                 const addBtnId = `add${type.charAt(0).toUpperCase() + type.slice(1, -1)}Btn`;
                 const addBtn = document.getElementById(addBtnId);
                 if (addBtn) {
@@ -1684,7 +1964,6 @@
         }
 
         function updatePageCounters() {
-            // Always show "Página 1 de 1" for single page
             document.querySelectorAll('.total-pages').forEach(el => {
                 el.textContent = '1';
             });
@@ -1693,7 +1972,6 @@
                 el.textContent = '1';
             });
             
-            // Update control panel
             const pageCountEl = document.getElementById('pageCount');
             if (pageCountEl) {
                 pageCountEl.textContent = 'Página 1 de 1';
@@ -1702,8 +1980,7 @@
             counters.pages = 1;
         }
 
-        // ===== ADD FUNCTIONS =====
-        
+        // Funciones de añadir elementos
         function addItineraryDay() {
             if (counters.days >= limits.days) {
                 alert(`Máximo ${limits.days} días permitidos`);
@@ -1713,24 +1990,15 @@
             saveState();
             
             const container = document.querySelector('#itineraryList');
-            const template = container.querySelector('.itinerary-card').cloneNode(true);
+            const dayElement = createDayElement(counters.days + 1, `Día ${counters.days + 1}: Ciudad`, '');
+            container.appendChild(dayElement);
             
-            // Clear IDs
-            clearIDs(template);
-            
-            // Update content
-            template.querySelector('.editable[data-var*="DIA"]').innerHTML = `{{Día ${counters.days + 1}: Ciudad}}<span class="char-counter">0/20</span>`;
-            template.querySelector('.day-activity').innerHTML = `{{Actividad del día ${counters.days + 1}}}<span class="char-counter">0/120</span>`;
-            
-            container.appendChild(template);
             counters.days++;
             updateCounterDisplay('days');
             
-            // Setup editable elements
-            template.querySelectorAll('.editable').forEach(setupEditableElement);
-            template.classList.add('fade-in');
+            dayElement.querySelectorAll('.editable').forEach(setupEditableElement);
+            dayElement.classList.add('fade-in');
             
-            // REMOVE PAGINATION - Use expandPageToFit instead of flowToNextPage
             setTimeout(() => {
                 expandPageToFit();
                 checkOverflow();
@@ -1746,25 +2014,21 @@
             saveState();
             
             const container = document.querySelector('#placesList');
-            const template = container.querySelector('.place-item').cloneNode(true);
+            const config = {
+                [`lugar${counters.places + 1}`]: `Lugar ${counters.places + 1}`,
+                [`ciudad_lugar${counters.places + 1}`]: 'Ciudad',
+                [`desc_lugar${counters.places + 1}`]: 'Descripción',
+                [`tipo_lugar${counters.places + 1}`]: 'must'
+            };
+            const placeElement = createPlaceElement(counters.places + 1, config);
+            container.appendChild(placeElement);
             
-            // Clear IDs
-            clearIDs(template);
-            
-            // Update content
-            template.querySelector('.place-name').innerHTML = `{{Lugar ${counters.places + 1}}}`;
-            template.querySelectorAll('.editable')[1].innerHTML = `{{Ciudad}}`;
-            template.querySelectorAll('.editable')[2].innerHTML = `{{Descripción}}`;
-            
-            container.appendChild(template);
             counters.places++;
             updateCounterDisplay('places');
             
-            // Setup editable elements
-            template.querySelectorAll('.editable').forEach(setupEditableElement);
-            template.classList.add('fade-in');
+            placeElement.querySelectorAll('.editable').forEach(setupEditableElement);
+            placeElement.classList.add('fade-in');
             
-            // REMOVE PAGINATION - Use expandPageToFit instead of flowToNextPage
             setTimeout(() => {
                 expandPageToFit();
                 checkOverflow();
@@ -1780,23 +2044,16 @@
             saveState();
             
             const container = document.querySelector('#tipsList');
-            const template = container.querySelector('.tip-item').cloneNode(true);
+            const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
+            const tipElement = createTipElement(counters.tips + 1, `Consejo ${counters.tips + 1}`, iconos[counters.tips] || '💡');
+            container.appendChild(tipElement);
             
-            // Clear IDs
-            clearIDs(template);
-            
-            // Update content
-            template.querySelector('.editable').innerHTML = `{{Consejo ${counters.tips + 1}}}<span class="char-counter">0/80</span>`;
-            
-            container.appendChild(template);
             counters.tips++;
             updateCounterDisplay('tips');
             
-            // Setup editable elements
-            template.querySelectorAll('.editable').forEach(setupEditableElement);
-            template.classList.add('fade-in');
+            tipElement.querySelectorAll('.editable').forEach(setupEditableElement);
+            tipElement.classList.add('fade-in');
             
-            // REMOVE PAGINATION - Use expandPageToFit instead of flowToNextPage
             setTimeout(() => {
                 expandPageToFit();
                 checkOverflow();
@@ -1812,27 +2069,16 @@
             saveState();
             
             const container = document.querySelector('#citiesList');
-            const template = container.querySelector('[data-component="CITY_ITEM"]').cloneNode(true);
+            const cityElement = createCityElement(counters.cities + 1, `Ciudad ${counters.cities + 1} — descripción`);
+            container.appendChild(cityElement);
             
-            // Clear IDs
-            clearIDs(template);
-            
-            // Update content
-            template.querySelector('div[style*="background: var(--teal-primary)"]').textContent = counters.cities + 1;
-            template.querySelector('.editable').innerHTML = `{{Ciudad ${counters.cities + 1} — descripción}}`;
-            
-            container.appendChild(template);
             counters.cities++;
             updateCounterDisplay('cities');
-            
-            // Add new map pin
             addMapPin(counters.cities);
             
-            // Setup editable elements
-            template.querySelectorAll('.editable').forEach(setupEditableElement);
-            template.classList.add('fade-in');
+            cityElement.querySelectorAll('.editable').forEach(setupEditableElement);
+            cityElement.classList.add('fade-in');
             
-            // REMOVE PAGINATION - Use expandPageToFit instead of flowToNextPage
             setTimeout(() => {
                 expandPageToFit();
                 checkOverflow();
@@ -1848,30 +2094,34 @@
             saveState();
             
             const container = document.querySelector('#photoGrid');
-            const template = container.querySelector('.photo-frame').cloneNode(true);
+            const photoFrame = document.createElement('div');
+            photoFrame.className = 'photo-frame mini component';
+            photoFrame.setAttribute('data-component', 'PHOTO_FRAME');
+            photoFrame.setAttribute('data-frame', `IMG_${counters.photos}`);
             
-            // Clear IDs
-            clearIDs(template);
+            photoFrame.innerHTML = `
+                <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                <div class="photo-placeholder">
+                    📷 IMG_${counters.photos}<br>
+                    <small>Drag & Drop</small>
+                </div>
+                <div class="photo-controls">
+                    <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
+                    <button class="photo-btn" onclick="removePhoto(this)">×</button>
+                </div>
+                <div class="component-controls">
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                </div>
+            `;
             
-            // Update content
-            template.dataset.frame = `IMG_${counters.photos}`;
-            template.querySelector('.photo-placeholder').innerHTML = `📷 IMG_${counters.photos}<br><small>Drag & Drop</small>`;
-            
-            // Reset photo state
-            template.style.backgroundImage = '';
-            template.classList.remove('has-image');
-            const title = template.querySelector('.photo-title');
-            if (title) title.remove();
-            
-            container.appendChild(template);
+            container.appendChild(photoFrame);
             counters.photos++;
             updateCounterDisplay('photos');
             
-            // Setup drag and drop
-            setupPhotoDragDropSingle(template);
-            template.classList.add('fade-in');
+            setupPhotoDragDropSingle(photoFrame);
+            photoFrame.classList.add('fade-in');
             
-            // REMOVE PAGINATION - Use expandPageToFit instead
             setTimeout(() => {
                 expandPageToFit();
             }, 100);
@@ -1885,9 +2135,8 @@
             pin.dataset.pin = number;
             pin.textContent = number;
             
-            // Random position
-            const randomTop = Math.random() * 60 + 20; // 20-80%
-            const randomLeft = Math.random() * 60 + 20; // 20-80%
+            const randomTop = Math.random() * 60 + 20;
+            const randomLeft = Math.random() * 60 + 20;
             pin.style.top = randomTop + '%';
             pin.style.left = randomLeft + '%';
             
@@ -1895,8 +2144,6 @@
             setupMapPinSingle(pin);
         }
 
-        // ===== PHOTO MANAGEMENT =====
-        
         function setupPhotoDragDrop() {
             document.querySelectorAll('.photo-frame').forEach(setupPhotoDragDropSingle);
         }
@@ -1936,7 +2183,19 @@
             });
         }
 
-        function loadImageToFrame(frame, file) {
+        function loadImageToFrame(frame, file, url = null) {
+            if (url) {
+                frame.style.backgroundImage = `url(${url})`;
+                frame.style.backgroundSize = 'cover';
+                frame.style.backgroundPosition = 'center';
+                frame.classList.add('has-image');
+                
+                const placeholder = frame.querySelector('.photo-placeholder');
+                if (placeholder) placeholder.style.display = 'none';
+                
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 frame.style.backgroundImage = `url(${e.target.result})`;
@@ -1944,11 +2203,9 @@
                 frame.style.backgroundPosition = 'center';
                 frame.classList.add('has-image');
                 
-                // Hide placeholder
                 const placeholder = frame.querySelector('.photo-placeholder');
                 if (placeholder) placeholder.style.display = 'none';
                 
-                // Add photo title if not exists
                 let title = frame.querySelector('.photo-title');
                 if (!title) {
                     title = document.createElement('div');
@@ -1959,7 +2216,6 @@
                     setupEditableElement(title);
                 }
                 
-                // REMOVE PAGINATION - Use expandPageToFit instead of checkOverflow
                 setTimeout(() => {
                     expandPageToFit();
                 }, 100);
@@ -1993,8 +2249,6 @@
             if (placeholder) placeholder.style.display = 'block';
         }
 
-        // ===== MAP PIN MANAGEMENT =====
-        
         function setupMapPins() {
             document.querySelectorAll('.map-pin').forEach(setupMapPinSingle);
         }
@@ -2027,9 +2281,8 @@
                 const newLeft = startLeft + (deltaX / containerRect.width) * 100;
                 const newTop = startTop + (deltaY / containerRect.height) * 100;
                 
-                // Constrain to container bounds
-                const constrainedLeft = Math.max(5, Math.min(95, newLeft));
-                const constrainedTop = Math.max(5, Math.min(95, newTop));
+                const constrainedLeft = Math.max(2, Math.min(98, newLeft));
+                const constrainedTop = Math.max(2, Math.min(98, newTop));
                 
                 pin.style.left = constrainedLeft + '%';
                 pin.style.top = constrainedTop + '%';
@@ -2043,8 +2296,6 @@
             });
         }
 
-        // ===== COST RATING SYSTEM =====
-        
         function setupCostRating() {
             document.querySelectorAll('.cost-circle').forEach((circle, index) => {
                 circle.addEventListener('click', function() {
@@ -2061,7 +2312,6 @@
                         }
                     });
                     
-                    // Update cost text
                     const costText = this.parentElement.parentElement.querySelector('.cost-text');
                     const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
                     costText.textContent = `${value}/5 — ${labels[value-1]}`;
@@ -2069,8 +2319,6 @@
             });
         }
 
-        // ===== BADGE CYCLING =====
-        
         function cyclePlaceBadge(badge) {
             saveState();
             
@@ -2083,24 +2331,18 @@
             badge.textContent = labels[nextIndex];
         }
 
-        // ===== OVERFLOW CHECKING =====
-        
-        // Enhanced checkOverflow for single page - mark items but don't move them
         function checkOverflow() {
-            // Check all elements for visual overflow warnings
             const allElements = document.querySelectorAll('.flow-item, .component');
             let hasOverflow = false;
             
             allElements.forEach(item => {
-                // Simple visual check - if element is very tall or causes scroll
                 const rect = item.getBoundingClientRect();
                 const pageRect = document.querySelector('.page').getBoundingClientRect();
                 
-                if (rect.bottom > pageRect.bottom + 100) { // 100px tolerance
+                if (rect.bottom > pageRect.bottom + 100) {
                     item.classList.add('overflow-warning');
                     hasOverflow = true;
                     
-                    // Add overflow indicator
                     if (!item.querySelector('.overflow-indicator')) {
                         const indicator = document.createElement('div');
                         indicator.className = 'overflow-indicator';
@@ -2115,16 +2357,12 @@
                 }
             });
             
-            // Show compact button if there's overflow and auto-extend is off
             if (hasOverflow && !autoExtendEnabled) {
                 document.getElementById('compactBtn').style.display = 'block';
             }
         }
 
         function reindexCounters() {
-            // Reasigna numeración de días, pins y actualiza etiquetas
-            
-            // Update day numbers
             const dayCards = document.querySelectorAll('[data-component="ITINERARY_CARD"]');
             dayCards.forEach((card, index) => {
                 const dayTitle = card.querySelector('.day-title .editable');
@@ -2134,7 +2372,6 @@
                 }
             });
             
-            // Update city numbers
             const cityItems = document.querySelectorAll('[data-component="CITY_ITEM"]');
             cityItems.forEach((item, index) => {
                 const numberEl = item.querySelector('div[style*="background: var(--teal-primary)"]');
@@ -2143,7 +2380,6 @@
                 }
             });
             
-            // Update map pins
             const mapPins = document.querySelectorAll('[data-component="MAP_PIN"]');
             mapPins.forEach((pin, index) => {
                 pin.textContent = index + 1;
@@ -2151,18 +2387,14 @@
             });
         }
 
-        // ===== UNDO SYSTEM =====
-        
         function saveState() {
             const state = serializeTemplate();
             undoStack.push(JSON.stringify(state));
             
-            // Keep only last MAX_UNDO states
             if (undoStack.length > MAX_UNDO) {
                 undoStack.shift();
             }
             
-            // Enable undo button
             const undoBtn = document.getElementById('undoBtn');
             if (undoBtn) {
                 undoBtn.disabled = false;
@@ -2176,36 +2408,25 @@
             if (previousState) {
                 restoreTemplate(JSON.parse(previousState));
                 
-                // Disable undo button if no more states
                 const undoBtn = document.getElementById('undoBtn');
                 if (undoBtn && undoStack.length === 0) {
                     undoBtn.disabled = true;
                 }
-                
-                console.log('↶ Estado anterior restaurado');
             }
         }
 
-        // ===== AUTOSAVE SYSTEM =====
-        
         function autosaveJSON() {
             try {
                 const templateData = serializeTemplate();
-                localStorage.setItem('canva_travel_template_single', JSON.stringify(templateData));
+                localStorage.setItem('canva_travel_template_integrated', JSON.stringify(templateData));
                 
-                // Update status indicator
                 const statusDot = document.getElementById('saveStatus');
                 const statusText = document.getElementById('saveText');
                 if (statusDot && statusText) {
                     statusDot.className = 'status-dot';
                     statusText.textContent = 'Guardado';
                 }
-                
-                console.log('💾 Template auto-guardado en localStorage');
             } catch (error) {
-                console.error('Error al guardar:', error);
-                
-                // Update status indicator
                 const statusDot = document.getElementById('saveStatus');
                 const statusText = document.getElementById('saveText');
                 if (statusDot && statusText) {
@@ -2217,11 +2438,10 @@
 
         function loadFromLocalStorage() {
             try {
-                const saved = localStorage.getItem('canva_travel_template_single');
+                const saved = localStorage.getItem('canva_travel_template_integrated');
                 if (saved) {
                     const templateData = JSON.parse(saved);
                     restoreTemplate(templateData);
-                    console.log('📂 Template cargado desde localStorage');
                 }
             } catch (error) {
                 console.error('Error al cargar:', error);
@@ -2230,22 +2450,24 @@
 
         function serializeTemplate() {
             const data = {
-                version: '3.1-single',
+                version: '5.0-integrated',
                 timestamp: new Date().toISOString(),
                 counters: { ...counters },
                 autoExtendEnabled: autoExtendEnabled,
                 editableContent: {},
                 images: {},
-                components: {}
+                components: {},
+                mapData: {
+                    type: TEMPLATE_CONFIG.mapa_tipo,
+                    url: TEMPLATE_CONFIG.mapa_url
+                }
             };
             
-            // Serialize editable content
             document.querySelectorAll('.editable').forEach(el => {
                 const varName = el.dataset.var || `editable_${Date.now()}_${Math.random()}`;
                 data.editableContent[varName] = el.textContent.replace(/\d+\/\d+/, '').trim();
             });
             
-            // Serialize images
             document.querySelectorAll('.photo-frame.has-image').forEach(frame => {
                 const frameId = frame.dataset.frame || `img_${Date.now()}`;
                 data.images[frameId] = {
@@ -2254,30 +2476,34 @@
                 };
             });
             
-            // Serialize logo
             const logoImg = document.querySelector('.logo-slot img');
             if (logoImg && logoImg.src) {
                 data.logo = logoImg.src;
             }
             
-            // Serialize component states
             document.querySelectorAll('.cost-circle:not(.empty)').forEach((circle, index) => {
                 data.components.costRating = index + 1;
             });
+            
+            // Guardar posiciones de pins del mapa
+            const mapPins = document.querySelectorAll('.map-pin');
+            data.components.mapPins = Array.from(mapPins).map(pin => ({
+                number: pin.textContent,
+                top: pin.style.top,
+                left: pin.style.left
+            }));
             
             return data;
         }
 
         function restoreTemplate(data) {
-            if (!data || !data.version || !data.version.includes('3')) {
+            if (!data || !data.version || !data.version.includes('5')) {
                 console.warn('Versión de template incompatible');
                 return;
             }
             
-            // Restore counters
             counters = { ...data.counters };
             
-            // Restore auto-extend setting
             if (data.autoExtendEnabled !== undefined) {
                 autoExtendEnabled = data.autoExtendEnabled;
                 const btn = document.getElementById('autoExtendBtn');
@@ -2287,7 +2513,6 @@
                 }
             }
             
-            // Restore editable content
             Object.entries(data.editableContent).forEach(([varName, content]) => {
                 const element = document.querySelector(`[data-var="${varName}"]`);
                 if (element) {
@@ -2296,7 +2521,6 @@
                 }
             });
             
-            // Restore images
             Object.entries(data.images).forEach(([frameId, imageData]) => {
                 const frame = document.querySelector(`[data-frame="${frameId}"]`);
                 if (frame) {
@@ -2318,7 +2542,6 @@
                 }
             });
             
-            // Restore logo
             if (data.logo) {
                 const logoSlot = document.querySelector('.logo-slot');
                 const img = logoSlot.querySelector('img');
@@ -2330,7 +2553,6 @@
                 logoSlot.classList.add('has-logo');
             }
             
-            // Restore component states
             if (data.components.costRating) {
                 const circles = document.querySelectorAll('.cost-circle');
                 circles.forEach((circle, index) => {
@@ -2342,7 +2564,31 @@
                 });
             }
             
-            // Re-initialize
+            // Restaurar mapa personalizado
+            if (data.mapData && data.mapData.url) {
+                TEMPLATE_CONFIG.mapa_url = data.mapData.url;
+                const mapContainer = document.querySelector('.map-container');
+                const img = document.createElement('img');
+                img.src = data.mapData.url;
+                img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; object-position: center;';
+                mapContainer.innerHTML = '';
+                mapContainer.appendChild(img);
+                mapContainer.classList.add('has-custom-map');
+            }
+            
+            // Restaurar posiciones de pins
+            if (data.components.mapPins) {
+                setTimeout(() => {
+                    data.components.mapPins.forEach(pinData => {
+                        const pin = document.querySelector(`[data-pin="${pinData.number}"]`);
+                        if (pin) {
+                            pin.style.top = pinData.top;
+                            pin.style.left = pinData.left;
+                        }
+                    });
+                }, 100);
+            }
+            
             updateAllCounters();
             document.querySelectorAll('.editable').forEach(setupEditableElement);
             setTimeout(() => {
@@ -2350,8 +2596,6 @@
             }, 100);
         }
 
-        // ===== EXPORT FUNCTIONS =====
-        
         function exportTemplate(format) {
             switch (format) {
                 case 'A4':
@@ -2366,17 +2610,14 @@
         }
 
         function exportA4PDF() {
-            // Hide controls for clean export
-            document.querySelectorAll('.component-controls, .add-btn, .control-panel').forEach(el => {
+            document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls').forEach(el => {
                 el.style.display = 'none';
             });
             
-            // Trigger print dialog
             window.print();
             
-            // Restore controls after print
             setTimeout(() => {
-                document.querySelectorAll('.component-controls, .add-btn, .control-panel').forEach(el => {
+                document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls').forEach(el => {
                     el.style.display = '';
                 });
             }, 1000);
@@ -2386,63 +2627,67 @@
             alert('Exportación a formatos sociales (1080x1350, 1080x1920) disponible en Canva. Usa "Descargar" en el editor para obtener PNG de alta calidad.');
         }
 
-        // ===== CONTROL PANEL FUNCTIONS =====
-        
         function toggleHelp() {
-            alert(`🎯 GUÍA DE USO - Plantilla Página Única Dinámica V3.1
+            alert(`🎯 GUÍA DE USO - Sistema Integrado V5.0
 
-📝 EDITAR TEXTO:
-• Haz clic en cualquier texto con borde punteado
-• Límites: Título 30 chars, Descripción 120 chars
-• Presiona Enter para guardar
+🔧 SISTEMA DE CONFIGURACIÓN:
+• Variables centralizadas en TEMPLATE_CONFIG al inicio del código
+• Detección automática de cantidades: ciudad1, ciudad2, etc.
+• Sistema de mapas integrado con múltiples opciones
 
-🖼️ IMÁGENES Y LOGO:
-• Haz clic o arrastra imágenes a los marcos
-• Hero: ratio 3:1, Minis: ratio 1:1
-• Logo: Haz clic en "LOGO" en el header
-• Formatos: JPG/PNG sRGB recomendado
+📝 VARIABLES DISPONIBLES:
+• Básicas: pais, fechas, duracion, moneda, etc.
+• Mapa: mapa_tipo, mapa_url, ciudad1_coords, etc.
+• Ciudades: ciudad1, ciudad2, ciudad3, etc.
+• Días: dia1, actividad1, dia2, actividad2, etc.
+• Lugares: lugar1, ciudad_lugar1, desc_lugar1, tipo_lugar1, etc.
+• Consejos: tip1, tip2, tip3, etc.
+• Imágenes: img_hero, img1, img2, etc.
 
-➕ AÑADIR ELEMENTOS:
-• Usa botones "+ Añadir" en cada sección
-• Máximos: 10 días, 12 lugares, 12 consejos
-• Hover sobre elementos para duplicar/eliminar
+🗺️ SISTEMA DE MAPAS:
+• "📤 Subir Mapa": Carga imagen personalizada del país
+• "🎯 Auto-ubicar": Posiciona pins inteligentemente
+• "🔄 Reset Pins": Elimina y regenera pins
+• Pins arrastrables para ajuste manual
 
-📏 PÁGINA DINÁMICA:
-• Auto-extendido ON: La página se alarga automáticamente
-• Auto-extendido OFF: Activa modo compacto con límites visuales
-• Botón "Compactar": Reduce espacios para optimizar
-• Sin paginación: Todo en una sola página fluida
+🎯 FLUJO DE TRABAJO:
+1. Modifica TEMPLATE_CONFIG con datos del país
+2. Guarda como index.html
+3. Sube a GitHub Pages
+4. Personaliza mapa si es necesario
+5. Exporta a PDF cuando esté listo
 
-🎯 COMPONENTES INTERACTIVOS:
-• Calificación: Haz clic en círculos (1-5)
-• Badges: Haz clic para cambiar tipo
-• Pins del mapa: Arrastra para reposicionar
-• Auto-extendido: Activa/desactiva expansión automática
+📊 CONFIGURACIÓN DE MAPA:
+mapa_tipo: "upload" - Permite subir imagen
+mapa_tipo: "auto" - Auto-genera desde APIs
+mapa_tipo: "static" - Usa diseño SVG original
 
-💾 GUARDADO:
-• Auto-guardado cada 30 segundos
-• Deshacer: hasta 10 acciones
-• Datos guardados en tu navegador
+🖼️ SUBIR MAPA:
+1. Busca mapa libre en: OpenStreetMap, Natural Earth, Wikimedia
+2. Click "📤 Subir Mapa"
+3. Selecciona imagen del país
+4. Los pins se mantienen sobre el nuevo mapa
+5. Arrastra pins a posiciones correctas
 
-🔧 FUNCIONES TÉCNICAS:
-• mmToPx(): Convierte mm a píxeles
-• elementFitsInPage(): Verifica si elemento cabe
-• expandPageToFit(): Expande página automáticamente
-• clearIDs(): Limpia IDs duplicados en clones
-• toggleAutoExtend(): Activa/desactiva auto-extensión
+💡 FUENTES DE MAPAS LIBRES:
+• Natural Earth: naturalearthdata.com (dominio público)
+• Wikimedia Commons: commons.wikimedia.org
+• OpenStreetMap: openstreetmap.org
+• MapChart: mapchart.net (crear personalizados)
 
-🚀 NOVEDADES V3.1:
-• Página única que se alarga automáticamente
-• Logo slot con carga de imágenes
-• Sin fragmentación en múltiples páginas
-• Modo compacto cuando auto-extendido está OFF
-• Optimización de espacios dinámicos`);
+🚀 CARACTERÍSTICAS INTEGRADAS:
+• Layout 2 columnas mantenido
+• Sistema de variables completo
+• Mapas con carga de imágenes
+• Funcionalidad PDF preservada
+• Auto-guardado y deshacer
+• Responsive y compatible GitHub Pages`);
         }
 
         function togglePreview() {
             const isPreview = document.body.classList.toggle('preview-mode');
             
-            document.querySelectorAll('.component-controls, .add-btn').forEach(el => {
+            document.querySelectorAll('.component-controls, .add-btn, .map-controls').forEach(el => {
                 el.style.display = isPreview ? 'none' : '';
             });
             
@@ -2452,8 +2697,6 @@
             }
         }
 
-        // ===== UTILITY FUNCTIONS =====
-        
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -2466,58 +2709,42 @@
             };
         }
 
-        // ===== CONSOLE WELCOME MESSAGE =====
+        // Mensaje de bienvenida en consola
         console.log(`
-🎯 CANVA CODE - PLANTILLA PÁGINA ÚNICA DINÁMICA V3.1
-====================================================
+🎯 SISTEMA INTEGRADO: VARIABLES + MAPAS V5.0
+============================================
 
-✅ Página única que se alarga automáticamente
-✅ Logo slot con carga de imágenes
-✅ Auto-extensión inteligente de contenido
-✅ Límites de caracteres con truncamiento
-✅ Sistema de deshacer (10 niveles)
-✅ Auto-guardado cada 30s
-✅ Exportación A4 PDF de página única
-✅ Componentes interactivos
-✅ Drag & drop para imágenes y logo
-✅ Pins de mapa arrastrables
-✅ Conversión mm→px precisa
-✅ Modo compacto cuando auto-extendido OFF
-✅ Sin fragmentación en múltiples páginas
+✅ Sistema de configuración centralizada
+✅ Mapas con carga de imágenes
+✅ Layout 2 columnas mantenido
+✅ Detección automática de cantidades
+✅ Pins arrastrables en mapas
+✅ Compatible con GitHub Pages
+✅ Exportación PDF funcional
+✅ Auto-guardado y sistema de deshacer
 
-📊 LÍMITES ACTUALES:
-• Fotos: ${counters.photos}/${limits.photos}
-• Ciudades: ${counters.cities}/${limits.cities}
-• Días: ${counters.days}/${limits.days}
-• Lugares: ${counters.places}/${limits.places}
-• Consejos: ${counters.tips}/${limits.tips}
-• Páginas: ${counters.pages} (siempre 1)
-• Auto-extendido: ${autoExtendEnabled ? 'ON' : 'OFF'}
+📊 CONFIGURACIÓN ACTUAL:
+• País: ${TEMPLATE_CONFIG.pais}
+• Tipo de mapa: ${TEMPLATE_CONFIG.mapa_tipo}
+• Ciudades detectadas: ${detectConfigCounts(TEMPLATE_CONFIG).ciudades}
+• Días detectados: ${detectConfigCounts(TEMPLATE_CONFIG).dias}
+• Lugares detectados: ${detectConfigCounts(TEMPLATE_CONFIG).lugares}
+• Consejos detectados: ${detectConfigCounts(TEMPLATE_CONFIG).tips}
 
-🔧 FUNCIONES DISPONIBLES:
-• mmToPx(mm) - Convertir mm a píxeles
-• elementFitsInPage(el) - Verificar si elemento cabe en página
-• expandPageToFit() - Expandir página automáticamente
-• clearIDs(clone) - Limpiar IDs duplicados
-• toggleAutoExtend() - Activar/desactivar auto-extensión
-• compactLayout() - Reducir espacios para compactar
-• uploadLogo(slot) - Cargar logo
-• autosaveJSON() - Guardar manualmente
-• undo() - Deshacer última acción
-• checkOverflow() - Verificar desbordamiento visual
-• exportTemplate('A4') - Exportar PDF
-• togglePreview() - Alternar vista previa
+🗺️ SISTEMA DE MAPAS:
+• Subir imagen: Funcional
+• Auto-ubicar pins: Implementado
+• Reset pins: Disponible
+• Guardado de posiciones: Activo
 
-🚀 MEJORAS V3.1:
-• REMOVE PAGINATION: Sin creación de páginas múltiples
-• ADD LOGO SLOT: Slot para logo con funcionalidad completa
-• AUTO-EXTEND FUNCTIONS: Sistema de auto-extensión
-• Página única fluida que se alarga según contenido
-• Modo compacto opcional para optimizar espacio
-• IDs únicos sin duplicación en clones
+🔧 PERSONALIZACIÓN:
+• Modifica TEMPLATE_CONFIG al inicio
+• Click "🔄 Recargar Config" para aplicar
+• Usa "📤 Subir Mapa" para imagen personalizada
+• Arrastra pins para posicionar ciudades
 
-¡Página única lista para usar! 🎯
+¡Sistema completo listo para GitHub Pages! 🚀
         `);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e6df5be54cbbba',t:'MTc1Nzc1ODQxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
