@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plantilla Cartilla de Viaje - Sistema Completo</title>
+    <title>Plantilla Cartilla de Viaje - V5.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <!-- ===== SECCIÓN DE CONFIGURACIÓN DE VARIABLES ===== -->
@@ -19,10 +19,12 @@
             moneda: "Yen (JPY)",
             enchufe: "Tipo A/B",
             emergencia: "110/119",
-            embajada: "+81-3-3408-8000",
             idioma: "Japonés",
             fecha_creacion: "Enero 2024",
             creditos: "Fotos: @viajero_digital, Unsplash",
+            
+            // === INFORMACIÓN RÁPIDA (NUEVA) ===
+            info_adicional: "Mejor época: Primavera (sakura) y otoño",
             
             // === CONFIGURACIÓN DE MAPA ===
             mapa_tipo: "upload", // upload, auto, interactive, static
@@ -38,8 +40,7 @@
             ciudad3_coords: [34.6937, 135.5023],
             ciudad4: "Hiroshima — Historia y memoria",
             ciudad4_coords: [34.3853, 132.4553],
-            //ciudad5: "Nara — Ciervos sagrados y templos",
-            //ciudad5_coords: [34.6851, 135.8048],
+            // Añade más ciudades: ciudad5, ciudad6, etc.
             
             // === ITINERARIO POR DÍAS ===
             dia1: "Tokio - Shibuya",
@@ -144,11 +145,15 @@
             
             console.log('🎯 Inicializando plantilla con configuración:', counts);
             
+            // IMPORTANTE: Limpiar contenedores antes de regenerar
+            clearAllContainers();
+            
             updateBasicInfo(config);
             generateCities(config, counts.ciudades);
             generateDays(config, counts.dias);  
             generatePlaces(config, counts.lugares);
             generateTips(config, counts.tips);
+            generatePhotoGrid(counts.fotos);
             loadImages(config, counts.fotos);
             loadLogo(config);
             
@@ -159,11 +164,28 @@
             counters.days = counts.dias;
             counters.places = counts.lugares; 
             counters.tips = counts.tips;
-            counters.photos = counts.fotos + 1;
+            counters.photos = counts.fotos + 1; // +1 por la hero
             
             reinitializeJS();
             
+            // Validar configuración
+            validateConfig();
+            updateCompletionProgress();
+            
             console.log('✅ Plantilla inicializada correctamente');
+        }
+        
+        // 🧹 LIMPIAR CONTENEDORES ANTES DE REGENERAR
+        function clearAllContainers() {
+            document.querySelector('#citiesList').innerHTML = '';
+            document.querySelector('#itineraryList').innerHTML = '';
+            document.querySelector('#placesList').innerHTML = '';
+            document.querySelector('#tipsList').innerHTML = '';
+            document.querySelector('#photoGrid').innerHTML = '';
+            
+            // Limpiar pins del mapa
+            const mapContainer = document.querySelector('.map-container');
+            mapContainer.querySelectorAll('.map-pin').forEach(pin => pin.remove());
         }
         
         // 📝 FUNCIONES DE ACTUALIZACIÓN
@@ -172,11 +194,11 @@
             document.querySelector('[data-var="NOMBRE_PAIS"]').innerHTML = config.nombre_pais + '<span class="char-counter">0/25</span>';
             document.querySelector('[data-var="FECHAS"]').innerHTML = config.fechas + '<span class="char-counter">0/20</span>';
             document.querySelector('[data-var="DURACION"]').innerHTML = config.duracion + '<span class="char-counter">0/15</span>';
-            document.querySelector('[data-var="MONEDA"]').textContent = config.moneda;
-            document.querySelector('[data-var="ENCHUFE"]').textContent = config.enchufe;
-            document.querySelector('[data-var="EMERGENCIA"]').textContent = config.emergencia;
-            document.querySelector('[data-var="EMBAJADA"]').textContent = config.embajada;
-            document.querySelector('[data-var="IDIOMA"]').textContent = config.idioma;
+            document.querySelector('[data-var="MONEDA"]').innerHTML = config.moneda + '<span class="char-counter">0/15</span>';
+            document.querySelector('[data-var="ENCHUFE"]').innerHTML = config.enchufe + '<span class="char-counter">0/15</span>';
+            document.querySelector('[data-var="EMERGENCIA"]').innerHTML = config.emergencia + '<span class="char-counter">0/15</span>';
+            document.querySelector('[data-var="IDIOMA"]').innerHTML = config.idioma + '<span class="char-counter">0/20</span>';
+            document.querySelector('[data-var="INFO_ADICIONAL"]').innerHTML = config.info_adicional + '<span class="char-counter">0/50</span>';
             document.querySelector('[data-var="FECHA_CREACION"]').textContent = config.fecha_creacion;
             document.querySelector('[data-var="CREDITOS"]').textContent = config.creditos;
             
@@ -220,8 +242,8 @@
                 <div style="width: 16px; height: 16px; background: var(--teal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600;">${number}</div>
                 <span class="editable" data-limit="25" data-var="CIUDAD_${number}">${text}</span>
                 <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar ciudad">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar ciudad">×</button>
                 </div>
             `;
             
@@ -255,8 +277,8 @@
                 </div>
                 <div class="day-activity editable" data-limit="120" data-var="ACTIVIDAD_${number}">${activityText}<span class="char-counter">0/120</span></div>
                 <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar día">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar día">×</button>
                 </div>
             `;
             
@@ -305,8 +327,8 @@
                     </div>
                 </div>
                 <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar lugar">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar lugar">×</button>
                 </div>
             `;
             
@@ -322,7 +344,7 @@
             for (let i = 1; i <= count; i++) {
                 const tipKey = `tip${i}`;
                 if (config[tipKey]) {
-                    const tipElement = createTipElement(i, config[tipKey], iconos[i-1] || '💡');
+                    const tipElement = createTipElement(i, config[tipKey], iconos[(i-1) % iconos.length] || '💡');
                     container.appendChild(tipElement);
                 }
             }
@@ -339,12 +361,42 @@
                 <div class="tip-icon">${icon}</div>
                 <span class="editable" data-limit="80" data-var="TIP_${number}">${text}<span class="char-counter">0/80</span></span>
                 <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar consejo">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar consejo">×</button>
                 </div>
             `;
             
             return div;
+        }
+        
+        function generatePhotoGrid(count) {
+            const container = document.querySelector('#photoGrid');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const photoFrame = document.createElement('div');
+                photoFrame.className = 'photo-frame mini component';
+                photoFrame.setAttribute('data-component', 'PHOTO_FRAME');
+                photoFrame.setAttribute('data-frame', `IMG_${i}`);
+                
+                photoFrame.innerHTML = `
+                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                    <div class="photo-placeholder">
+                        📷 IMG_${i}<br>
+                        <small>Drag & Drop</small>
+                    </div>
+                    <div class="photo-controls">
+                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
+                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
+                    </div>
+                    <div class="component-controls">
+                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar foto">⧉</button>
+                        <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar foto">×</button>
+                    </div>
+                `;
+                
+                container.appendChild(photoFrame);
+            }
         }
         
         function loadImages(config, count) {
@@ -373,6 +425,54 @@
                 img.style.display = 'block';
                 placeholder.style.display = 'none';
                 logoSlot.classList.add('has-logo');
+            }
+        }
+        
+        // ===== VALIDACIÓN Y PROGRESO =====
+        function validateConfig() {
+            const requiredFields = ['pais', 'nombre_pais', 'fechas', 'duracion', 'moneda', 'idioma'];
+            const missing = [];
+            
+            requiredFields.forEach(field => {
+                if (!TEMPLATE_CONFIG[field] || TEMPLATE_CONFIG[field] === '') {
+                    missing.push(field);
+                }
+            });
+            
+            if (missing.length > 0) {
+                showValidationWarning(missing);
+            }
+        }
+        
+        function showValidationWarning(missingFields) {
+            const warningEl = document.getElementById('validationWarning');
+            if (warningEl) {
+                warningEl.innerHTML = `⚠️ Campos incompletos: ${missingFields.join(', ')}`;
+                warningEl.style.display = 'block';
+            }
+        }
+        
+        function updateCompletionProgress() {
+            const totalFields = Object.keys(TEMPLATE_CONFIG).length;
+            const filledFields = Object.values(TEMPLATE_CONFIG).filter(val => val !== '' && val !== null && val !== undefined).length;
+            
+            const percentage = Math.round((filledFields / totalFields) * 100);
+            
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            if (progressBar && progressText) {
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = `Completitud: ${percentage}%`;
+                
+                // Cambiar color según porcentaje
+                if (percentage >= 80) {
+                    progressBar.style.background = '#4CAF50'; // Verde
+                } else if (percentage >= 50) {
+                    progressBar.style.background = '#FF9800'; // Amarillo
+                } else {
+                    progressBar.style.background = '#FF6B61'; // Rojo
+                }
             }
         }
         
@@ -414,7 +514,8 @@
                     reader.onload = function(event) {
                         const mapContainer = document.querySelector('.map-container');
                         
-                        // Limpiar contenido anterior
+                        // Limpiar contenido anterior (excepto pins)
+                        const existingPins = Array.from(mapContainer.querySelectorAll('.map-pin'));
                         mapContainer.innerHTML = '';
                         
                         // Crear imagen de fondo
@@ -431,15 +532,12 @@
                         mapContainer.appendChild(img);
                         mapContainer.classList.add('has-custom-map');
                         
-                        // Restaurar pins existentes sobre la nueva imagen
-                        setTimeout(() => {
-                            const existingPins = document.querySelectorAll('.map-pin');
-                            existingPins.forEach(pin => {
-                                mapContainer.appendChild(pin);
-                            });
-                        }, 100);
+                        // Restaurar pins existentes
+                        existingPins.forEach(pin => {
+                            mapContainer.appendChild(pin);
+                        });
                         
-                        showMapMessage('Mapa cargado correctamente. Los pins se mantienen posicionados.', 'success');
+                        showMapMessage('Mapa cargado correctamente. Arrastra los pins a las ubicaciones correctas.', 'success');
                         
                         // Actualizar variable en config para persistencia
                         TEMPLATE_CONFIG.mapa_url = event.target.result;
@@ -455,6 +553,8 @@
             
             setTimeout(() => {
                 const mapContainer = document.querySelector('.map-container');
+                const existingPins = Array.from(mapContainer.querySelectorAll('.map-pin'));
+                
                 mapContainer.innerHTML = `
                     <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #e8f5e8, #d4e8d4); position: relative; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
                         <div style="text-align: center; color: #666;">
@@ -466,12 +566,16 @@
                         </div>
                     </div>
                 `;
+                
+                existingPins.forEach(pin => {
+                    mapContainer.appendChild(pin);
+                });
+                
                 showMapMessage('Mapa generado automáticamente', 'success');
             }, 1000);
         }
         
         function setupStaticMap() {
-            // Mantener el SVG original como fallback
             showMapMessage('Usando mapa decorativo por defecto', 'info');
         }
         
@@ -494,14 +598,15 @@
                 let position;
                 
                 if (config[coordsKey]) {
-                    // En implementación real, convertir GPS a píxeles
-                    // Por ahora usar posiciones predeterminadas distribuidas
+                    // Posiciones predefinidas para Japón
                     const positions = [
                         {top: '25%', left: '70%'}, // Ciudad 1
                         {top: '40%', left: '65%'}, // Ciudad 2
                         {top: '45%', left: '60%'}, // Ciudad 3
                         {top: '30%', left: '55%'}, // Ciudad 4
                         {top: '50%', left: '75%'}, // Ciudad 5
+                        {top: '35%', left: '68%'}, // Ciudad 6
+                        {top: '42%', left: '72%'}, // Ciudad 7
                     ];
                     position = positions[i-1] || {top: '50%', left: '50%'};
                 } else {
@@ -517,6 +622,62 @@
                 
                 mapContainer.appendChild(pin);
                 setupMapPinSingle(pin);
+            }
+        }
+        
+        function autoPlacePins() {
+            const config = TEMPLATE_CONFIG;
+            const pins = document.querySelectorAll('.map-pin');
+            
+            if (pins.length === 0) {
+                showMapMessage('Primero carga ciudades para auto-ubicar', 'error');
+                return;
+            }
+            
+            showMapMessage('Auto-ubicando ciudades...', 'info');
+            
+            // Posiciones predeterminadas mejoradas
+            const positions = [
+                {top: '25%', left: '70%'}, // Tokio
+                {top: '40%', left: '65%'}, // Kioto
+                {top: '45%', left: '60%'}, // Osaka
+                {top: '30%', left: '55%'}, // Hiroshima
+                {top: '50%', left: '75%'}, // Nara
+                {top: '35%', left: '68%'}, // Ciudad 6
+                {top: '42%', left: '72%'}, // Ciudad 7
+            ];
+            
+            pins.forEach((pin, index) => {
+                setTimeout(() => {
+                    const pos = positions[index] || {
+                        top: (Math.random() * 60 + 20) + '%',
+                        left: (Math.random() * 60 + 20) + '%'
+                    };
+                    
+                    pin.style.top = pos.top;
+                    pin.style.left = pos.left;
+                    
+                    // Animación de confirmación
+                    pin.style.transform = 'scale(1.3)';
+                    setTimeout(() => {
+                        pin.style.transform = 'scale(1)';
+                    }, 300);
+                }, index * 200);
+            });
+        }
+        
+        function resetMapPins() {
+            const pins = document.querySelectorAll('.map-pin');
+            pins.forEach(pin => pin.remove());
+            
+            showMapMessage('Pins eliminados', 'success');
+            
+            // Regenerar pins básicos si hay ciudades
+            const citiesCount = counters.cities;
+            if (citiesCount > 0) {
+                setTimeout(() => {
+                    regenerateMapPins(citiesCount, TEMPLATE_CONFIG);
+                }, 500);
             }
         }
         
@@ -712,7 +873,6 @@
             flex-shrink: 0;
         }
 
-        /* MANTENER LAYOUT DE 2 COLUMNAS ORIGINAL */
         .content-area {
             flex: 1;
             display: grid;
@@ -986,7 +1146,6 @@
             cursor: pointer;
         }
 
-        /* SECCIÓN DE MAPA MEJORADA */
         .map-section {
             background: var(--white);
             border-radius: 12px;
@@ -1010,7 +1169,7 @@
             font-size: 10px;
             cursor: pointer;
             transition: all 0.2s;
-            display: none; /* Oculto por defecto, se muestra según configuración */
+            display: none;
         }
 
         .map-btn:hover {
@@ -1222,6 +1381,7 @@
             padding: 12px;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            max-width: 200px;
         }
 
         .control-btn-main {
@@ -1232,10 +1392,34 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.2s;
+            position: relative;
         }
 
         .control-btn-main:hover {
             transform: translateY(-1px);
+        }
+
+        /* Tooltips */
+        .control-btn-main::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-right: 8px;
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            font-size: 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .control-btn-main:hover::after {
+            opacity: 1;
         }
 
         .help-btn { background: var(--teal-primary); color: var(--white); }
@@ -1247,14 +1431,15 @@
         .autoextend-btn.active { background: var(--teal-primary); }
         .compact-btn { background: #FF9800; color: var(--white); }
         .reload-config-btn { background: #9C27B0; color: var(--white); }
+        .upload-multiple-btn { background: #2196F3; color: var(--white); }
 
         .status-bar {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
+            gap: 4px;
             font-size: 10px;
             color: var(--text-light);
-            padding: 4px 0;
+            padding: 8px 0;
             border-top: 1px solid #eee;
             margin-top: 8px;
         }
@@ -1274,6 +1459,40 @@
 
         .status-dot.warning { background: #FF9800; }
         .status-dot.error { background: var(--coral); }
+
+        .progress-container {
+            margin-top: 8px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 9px;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .validation-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 8px;
+            margin: 8px 0;
+            font-size: 10px;
+            border-radius: 4px;
+            display: none;
+        }
 
         @media screen and (max-width: 1200px) {
             .page {
@@ -1301,8 +1520,15 @@
                 min-height: 297mm;
                 page-break-inside: avoid;
             }
-            .control-panel {
+            .control-panel, .validation-warning, #mapMessage {
                 display: none !important;
+            }
+            .component-controls, .photo-controls, .map-controls {
+                display: none !important;
+            }
+            .editable {
+                background: transparent !important;
+                border: none !important;
             }
         }
 
@@ -1328,33 +1554,109 @@
             z-index: 1000;
             box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
         }
+
+        /* Tutorial Modal */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tutorial-modal {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .tutorial-step {
+            margin: 20px 0;
+        }
+
+        .tutorial-step h3 {
+            color: var(--teal-primary);
+            margin-bottom: 10px;
+        }
+
+        .tutorial-btn {
+            background: var(--teal-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
     </style>
 </head>
 <body>
     <!-- Indicador de sistema de configuración -->
     <div class="config-indicator">
-        🎯 CONFIGURACIÓN + MAPAS ACTIVOS
+        🎯 V5.1 - MEJORADO
     </div>
 
     <!-- Panel de control -->
     <div class="control-panel">
-        <button class="control-btn-main reload-config-btn" onclick="initializeFromConfig()">🔄 Recargar Config</button>
-        <button class="control-btn-main help-btn" onclick="toggleHelp()">❓ Ayuda</button>
-        <button class="control-btn-main save-btn" onclick="autosaveJSON()">💾 Guardar</button>
-        <button class="control-btn-main undo-btn" onclick="undo()" id="undoBtn" disabled>↶ Deshacer</button>
-        <button class="control-btn-main autoextend-btn active" onclick="toggleAutoExtend()" id="autoExtendBtn">📏 Auto-extendido ON</button>
-        <button class="control-btn-main compact-btn" onclick="compactLayout()" id="compactBtn" style="display: none;">📐 Compactar</button>
-        <button class="control-btn-main export-btn" onclick="exportTemplate('A4')">📄 PDF A4</button>
-        <button class="control-btn-main preview-btn" onclick="togglePreview()">👁️ Vista previa</button>
+        <button class="control-btn-main reload-config-btn" onclick="initializeFromConfig()" data-tooltip="Cargar desde TEMPLATE_CONFIG">🔄 Recargar Config</button>
+        <button class="control-btn-main upload-multiple-btn" onclick="uploadMultipleImages()" data-tooltip="Cargar varias imágenes a la vez">📸 Cargar Fotos</button>
+        <button class="control-btn-main help-btn" onclick="toggleHelp()" data-tooltip="Ver guía de uso">❓ Ayuda</button>
+        <button class="control-btn-main save-btn" onclick="autosaveJSON()" data-tooltip="Guardar progreso manualmente">💾 Guardar</button>
+        <button class="control-btn-main undo-btn" onclick="undo()" id="undoBtn" disabled data-tooltip="Deshacer última acción">↶ Deshacer</button>
+        <button class="control-btn-main autoextend-btn active" onclick="toggleAutoExtend()" id="autoExtendBtn" data-tooltip="Auto-ajustar altura de página">📏 Auto ON</button>
+        <button class="control-btn-main export-btn" onclick="exportTemplate('A4')" data-tooltip="Exportar a PDF para imprimir">📄 PDF A4</button>
+        <button class="control-btn-main preview-btn" onclick="togglePreview()" data-tooltip="Ver sin controles de edición">👁️ Preview</button>
+        
+        <div class="validation-warning" id="validationWarning"></div>
+        
+        <div class="progress-container">
+            <div class="progress-bar-bg">
+                <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+            </div>
+            <div class="progress-text" id="progressText">Completitud: 0%</div>
+        </div>
         
         <div class="status-bar">
             <div class="status-indicator">
                 <div class="status-dot" id="saveStatus"></div>
-                <span id="saveText">Sistema Integrado</span>
+                <span id="saveText">Listo</span>
             </div>
             <div class="status-indicator">
                 <span id="pageCount">Página 1 de 1</span>
             </div>
+        </div>
+    </div>
+
+    <!-- Tutorial de primer uso -->
+    <div class="tutorial-overlay" id="tutorialOverlay">
+        <div class="tutorial-modal">
+            <h2>¡Bienvenido! 🎉</h2>
+            <p style="margin: 15px 0;">Te guiaré en 3 pasos simples para crear tu guía:</p>
+            
+            <div class="tutorial-step">
+                <h3>🎯 Paso 1: Configura tu país</h3>
+                <p>Modifica <code>TEMPLATE_CONFIG</code> al inicio del código HTML con los datos de tu destino</p>
+            </div>
+            
+            <div class="tutorial-step">
+                <h3>🗺️ Paso 2: Sube tu mapa</h3>
+                <p>Haz clic en "📤 Subir Mapa" y selecciona la imagen del país</p>
+            </div>
+            
+            <div class="tutorial-step">
+                <h3>📄 Paso 3: Exporta a PDF</h3>
+                <p>Cuando termines, haz clic en "📄 PDF A4" para descargar</p>
+            </div>
+            
+            <button class="tutorial-btn" onclick="closeTutorial()">¡Entendido, empecemos!</button>
+            <button class="tutorial-btn" onclick="closeTutorial(true)" style="background: #666;">No mostrar de nuevo</button>
         </div>
     </div>
 
@@ -1405,19 +1707,15 @@
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">💰</div>
-                                    <span class="editable" data-limit="10" data-var="MONEDA">{{Moneda}}</span>
+                                    <span class="editable" data-limit="15" data-var="MONEDA">{{Moneda}}<span class="char-counter">0/15</span></span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🔌</div>
-                                    <span class="editable" data-limit="10" data-var="ENCHUFE">{{Enchufe}}</span>
+                                    <span class="editable" data-limit="15" data-var="ENCHUFE">{{Enchufe}}<span class="char-counter">0/15</span></span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🆘</div>
-                                    <span class="editable" data-limit="15" data-var="EMERGENCIA">{{Tel. emergencia}}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🏛️</div>
-                                    <span class="editable" data-limit="15" data-var="EMBAJADA">{{Embajada}}</span>
+                                    <span class="editable" data-limit="15" data-var="EMERGENCIA">{{Tel. emergencia}}<span class="char-counter">0/15</span></span>
                                 </div>
                             </div>
                         </div>
@@ -1428,7 +1726,7 @@
                                 <div class="section-title">Fotos del Viaje</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="photoCounter">0/7 fotos</span>
-                                    <button class="add-btn" onclick="addPhoto()" id="addPhotoBtn">+ Foto</button>
+                                    <button class="add-btn" onclick="addPhoto()" id="addPhotoBtn" title="Añadir nueva foto">+ Foto</button>
                                 </div>
                             </div>
                             
@@ -1454,7 +1752,11 @@
                             <div style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: var(--teal-primary); margin-bottom: 12px;">Información Rápida</div>
                             <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; margin-bottom: 8px;">
                                 <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🗣️</div>
-                                <span class="editable" data-limit="20" data-var="IDIOMA">{{Idioma principal}}</span>
+                                <span class="editable" data-limit="20" data-var="IDIOMA">{{Idioma principal}}<span class="char-counter">0/20</span></span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
+                                <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">ℹ️</div>
+                                <span class="editable" data-limit="50" data-var="INFO_ADICIONAL">{{Info adicional}}<span class="char-counter">0/50</span></span>
                             </div>
                         </div>
                     </div>
@@ -1467,15 +1769,15 @@
                                 <div class="section-title">Ruta del Viaje</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="cityCounter">0/12 ciudades</span>
-                                    <button class="add-btn" onclick="addCity()" id="addCityBtn">+ Ciudad</button>
+                                    <button class="add-btn" onclick="addCity()" id="addCityBtn" title="Añadir nueva ciudad">+ Ciudad</button>
                                 </div>
                             </div>
                             
                             <!-- Controles de mapa integrados -->
                             <div class="map-controls">
                                 <button class="map-btn" id="uploadMapBtn" onclick="uploadMapImage()">📤 Subir Mapa</button>
-                                <button class="map-btn" onclick="autoPlacePins()">🎯 Auto-ubicar</button>
-                                <button class="map-btn" onclick="resetMapPins()">🔄 Reset Pins</button>
+                                <button class="map-btn" onclick="autoPlacePins()" style="display: inline-flex;">🎯 Auto-ubicar</button>
+                                <button class="map-btn" onclick="resetMapPins()" style="display: inline-flex;">🔄 Reset Pins</button>
                             </div>
                             
                             <div class="map-container">
@@ -1496,7 +1798,7 @@
                                 <div class="section-title">Itinerario</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="dayCounter">0/10 días</span>
-                                    <button class="add-btn" onclick="addItineraryDay()" id="addDayBtn">+ Día</button>
+                                    <button class="add-btn" onclick="addItineraryDay()" id="addDayBtn" title="Añadir nuevo día">+ Día</button>
                                 </div>
                             </div>
                             
@@ -1511,7 +1813,7 @@
                                 <div class="section-title">Top Lugares</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="placeCounter">0/12 lugares</span>
-                                    <button class="add-btn" onclick="addPlace()" id="addPlaceBtn">+ Lugar</button>
+                                    <button class="add-btn" onclick="addPlace()" id="addPlaceBtn" title="Añadir nuevo lugar">+ Lugar</button>
                                 </div>
                             </div>
                             
@@ -1526,7 +1828,7 @@
                                 <div class="section-title">Consejos Rápidos</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="tipCounter">0/12 consejos</span>
-                                    <button class="add-btn" onclick="addTip()" id="addTipBtn">+ Consejo</button>
+                                    <button class="add-btn" onclick="addTip()" id="addTipBtn" title="Añadir nuevo consejo">+ Consejo</button>
                                 </div>
                             </div>
                             
@@ -1549,7 +1851,7 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT COMPLETO INTEGRADO -->
+    <!-- JAVASCRIPT COMPLETO (Parte 2 - Funciones operativas) -->
     <script>
         // ===== VARIABLES GLOBALES =====
         let counters = {
@@ -1575,69 +1877,106 @@
 
         // ===== INICIALIZACIÓN AL CARGAR LA PÁGINA =====
         document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar tutorial solo la primera vez
+            if (!localStorage.getItem('tutorial_completed')) {
+                document.getElementById('tutorialOverlay').style.display = 'flex';
+            }
+            
             initializeFromConfig();
             loadFromLocalStorage();
             setupEventListeners();
-            console.log('🎯 Sistema completo cargado: Variables + Mapas integrados');
+            setupKeyboardShortcuts();
+            console.log('🎯 Sistema V5.1 cargado correctamente');
         });
 
-        // ===== FUNCIONES DE MAPA ESPECÍFICAS =====
-        function autoPlacePins() {
-            const config = TEMPLATE_CONFIG;
-            const pins = document.querySelectorAll('.map-pin');
-            
-            if (pins.length === 0) {
-                showMapMessage('Primero carga ciudades para auto-ubicar', 'error');
-                return;
-            }
-            
-            showMapMessage('Auto-ubicando ciudades...', 'info');
-            
-            // Posiciones predeterminadas mejoradas para Japón
-            const positions = [
-                {top: '25%', left: '70%'}, // Tokio
-                {top: '40%', left: '65%'}, // Kioto
-                {top: '45%', left: '60%'}, // Osaka
-                {top: '30%', left: '55%'}, // Hiroshima
-                {top: '50%', left: '75%'}, // Nara
-            ];
-            
-            pins.forEach((pin, index) => {
-                setTimeout(() => {
-                    const pos = positions[index] || {
-                        top: (Math.random() * 60 + 20) + '%',
-                        left: (Math.random() * 60 + 20) + '%'
-                    };
-                    
-                    pin.style.top = pos.top;
-                    pin.style.left = pos.left;
-                    
-                    // Animación de confirmación
-                    pin.style.transform = 'scale(1.3)';
-                    setTimeout(() => {
-                        pin.style.transform = 'scale(1)';
-                    }, 300);
-                }, index * 200);
-            });
-        }
-        
-        function resetMapPins() {
-            const pins = document.querySelectorAll('.map-pin');
-            pins.forEach(pin => pin.remove());
-            
-            showMapMessage('Pins eliminados', 'success');
-            
-            // Regenerar pins básicos si hay ciudades
-            const citiesCount = counters.cities;
-            if (citiesCount > 0) {
-                setTimeout(() => {
-                    regenerateMapPins(citiesCount, TEMPLATE_CONFIG);
-                }, 500);
+        // ===== TUTORIAL =====
+        function closeTutorial(dontShowAgain = false) {
+            document.getElementById('tutorialOverlay').style.display = 'none';
+            if (dontShowAgain) {
+                localStorage.setItem('tutorial_completed', 'true');
             }
         }
 
-        // ===== FUNCIONES JAVASCRIPT ORIGINALES (MANTENIDAS) =====
-        
+        // ===== ATAJOS DE TECLADO =====
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+S o Cmd+S para guardar
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    autosaveJSON();
+                    showToast('Guardado manualmente');
+                }
+                
+                // Ctrl+Z o Cmd+Z para deshacer
+                if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                    e.preventDefault();
+                    undo();
+                }
+                
+                // Escape para salir de vista previa
+                if (e.key === 'Escape') {
+                    const isPreview = document.body.classList.contains('preview-mode');
+                    if (isPreview) {
+                        togglePreview();
+                    }
+                }
+                
+                // Ctrl+P o Cmd+P para vista previa (override print dialog)
+                if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                    e.preventDefault();
+                    togglePreview();
+                }
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 6px;
+                z-index: 3000;
+                font-size: 12px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // ===== CARGA MÚLTIPLE DE IMÁGENES =====
+        function uploadMultipleImages() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.multiple = true;
+            input.onchange = function(e) {
+                const files = Array.from(e.target.files);
+                const availableFrames = document.querySelectorAll('.photo-frame:not(.has-image)');
+                
+                if (files.length > availableFrames.length) {
+                    alert(`Solo puedes cargar ${availableFrames.length} imágenes más`);
+                    return;
+                }
+                
+                files.forEach((file, index) => {
+                    if (availableFrames[index]) {
+                        loadImageToFrame(availableFrames[index], file);
+                    }
+                });
+                
+                showToast(`${files.length} imágenes cargadas`);
+            };
+            input.click();
+        }
+
+        // ===== FUNCIONES BÁSICAS =====
         function mmToPx(mm) {
             return mm * (96 / 25.4);
         }
@@ -1679,28 +2018,16 @@
             const btn = document.getElementById('autoExtendBtn');
             
             if (autoExtendEnabled) {
-                btn.textContent = '📏 Auto-extendido ON';
+                btn.textContent = '📏 Auto ON';
                 btn.classList.add('active');
                 setTimeout(() => {
                     expandPageToFit();
                     checkOverflow();
                 }, 100);
             } else {
-                btn.textContent = '📏 Auto-extendido OFF';
+                btn.textContent = '📏 Auto OFF';
                 btn.classList.remove('active');
-                document.getElementById('compactBtn').style.display = 'block';
             }
-        }
-
-        function compactLayout() {
-            document.body.classList.add('compact-mode');
-            document.documentElement.style.setProperty('--gap', '8px');
-            document.getElementById('compactBtn').style.display = 'none';
-            
-            setTimeout(() => {
-                expandPageToFit();
-                checkOverflow();
-            }, 200);
         }
 
         function uploadLogo(logoSlot) {
@@ -1719,6 +2046,9 @@
                         img.style.display = 'block';
                         placeholder.style.display = 'none';
                         logoSlot.classList.add('has-logo');
+                        
+                        // Guardar en config
+                        TEMPLATE_CONFIG.logo = event.target.result;
                     };
                     reader.readAsDataURL(file);
                 }
@@ -1751,6 +2081,7 @@
                 debounce(() => {
                     expandPageToFit();
                     checkOverflow();
+                    updateCompletionProgress();
                 }, 500)();
             });
 
@@ -1801,24 +2132,11 @@
                 } else {
                     element.textContent = truncated;
                 }
-                showTruncationWarning(element);
+                showToast('Límite de caracteres alcanzado');
             }
         }
 
-        function showTruncationWarning(element) {
-            if (!element.querySelector('.truncated-indicator')) {
-                const indicator = document.createElement('span');
-                indicator.className = 'truncated-indicator';
-                indicator.innerHTML = ' <span class="read-more" onclick="expandToNotes(this)">...más</span>';
-                element.appendChild(indicator);
-            }
-        }
-
-        function expandToNotes(readMoreBtn) {
-            alert('Texto demasiado largo. Considera reducir el contenido o usar el modo compacto.');
-        }
-
-        // Mantener todas las demás funciones del JavaScript original...
+        // ===== COMPONENTES =====
         function duplicateComponent(button) {
             saveState();
             
@@ -1908,7 +2226,7 @@
             if (componentType === 'ITINERARY_CARD') {
                 const dayTitle = clone.querySelector('.day-title .editable');
                 if (dayTitle) {
-                    dayTitle.innerHTML = `{{Día ${counters.days + 1}: Ciudad}}<span class="char-counter">0/20</span>`;
+                    dayTitle.innerHTML = `Día ${counters.days + 1}: Ciudad<span class="char-counter">0/20</span>`;
                 }
             }
             
@@ -1980,7 +2298,7 @@
             counters.pages = 1;
         }
 
-        // Funciones de añadir elementos
+        // ===== AÑADIR ELEMENTOS =====
         function addItineraryDay() {
             if (counters.days >= limits.days) {
                 alert(`Máximo ${limits.days} días permitidos`);
@@ -2045,7 +2363,7 @@
             
             const container = document.querySelector('#tipsList');
             const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
-            const tipElement = createTipElement(counters.tips + 1, `Consejo ${counters.tips + 1}`, iconos[counters.tips] || '💡');
+            const tipElement = createTipElement(counters.tips + 1, `Consejo ${counters.tips + 1}`, iconos[counters.tips % iconos.length] || '💡');
             container.appendChild(tipElement);
             
             counters.tips++;
@@ -2097,12 +2415,12 @@
             const photoFrame = document.createElement('div');
             photoFrame.className = 'photo-frame mini component';
             photoFrame.setAttribute('data-component', 'PHOTO_FRAME');
-            photoFrame.setAttribute('data-frame', `IMG_${counters.photos}`);
+            photoFrame.setAttribute('data-frame', `IMG_${counters.photos + 1}`);
             
             photoFrame.innerHTML = `
                 <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
                 <div class="photo-placeholder">
-                    📷 IMG_${counters.photos}<br>
+                    📷 IMG_${counters.photos + 1}<br>
                     <small>Drag & Drop</small>
                 </div>
                 <div class="photo-controls">
@@ -2110,8 +2428,8 @@
                     <button class="photo-btn" onclick="removePhoto(this)">×</button>
                 </div>
                 <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar foto">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar foto">×</button>
                 </div>
             `;
             
@@ -2144,6 +2462,7 @@
             setupMapPinSingle(pin);
         }
 
+        // ===== FOTOS =====
         function setupPhotoDragDrop() {
             document.querySelectorAll('.photo-frame').forEach(setupPhotoDragDropSingle);
         }
@@ -2206,16 +2525,6 @@
                 const placeholder = frame.querySelector('.photo-placeholder');
                 if (placeholder) placeholder.style.display = 'none';
                 
-                let title = frame.querySelector('.photo-title');
-                if (!title) {
-                    title = document.createElement('div');
-                    title.className = 'photo-title editable';
-                    title.dataset.limit = '20';
-                    title.textContent = file.name.split('.')[0];
-                    frame.appendChild(title);
-                    setupEditableElement(title);
-                }
-                
                 setTimeout(() => {
                     expandPageToFit();
                 }, 100);
@@ -2242,13 +2551,11 @@
             frame.style.backgroundImage = '';
             frame.classList.remove('has-image');
             
-            const title = frame.querySelector('.photo-title');
-            if (title) title.remove();
-            
             const placeholder = frame.querySelector('.photo-placeholder');
             if (placeholder) placeholder.style.display = 'block';
         }
 
+        // ===== MAPA =====
         function setupMapPins() {
             document.querySelectorAll('.map-pin').forEach(setupMapPinSingle);
         }
@@ -2315,6 +2622,9 @@
                     const costText = this.parentElement.parentElement.querySelector('.cost-text');
                     const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
                     costText.textContent = `${value}/5 — ${labels[value-1]}`;
+                    
+                    // Actualizar config
+                    TEMPLATE_CONFIG.coste_nivel = value;
                 });
             });
         }
@@ -2342,24 +2652,10 @@
                 if (rect.bottom > pageRect.bottom + 100) {
                     item.classList.add('overflow-warning');
                     hasOverflow = true;
-                    
-                    if (!item.querySelector('.overflow-indicator')) {
-                        const indicator = document.createElement('div');
-                        indicator.className = 'overflow-indicator';
-                        indicator.textContent = '!';
-                        indicator.title = 'Elemento puede estar fuera del área visible';
-                        item.appendChild(indicator);
-                    }
                 } else {
                     item.classList.remove('overflow-warning');
-                    const indicator = item.querySelector('.overflow-indicator');
-                    if (indicator) indicator.remove();
                 }
             });
-            
-            if (hasOverflow && !autoExtendEnabled) {
-                document.getElementById('compactBtn').style.display = 'block';
-            }
         }
 
         function reindexCounters() {
@@ -2387,6 +2683,7 @@
             });
         }
 
+        // ===== DESHACER =====
         function saveState() {
             const state = serializeTemplate();
             undoStack.push(JSON.stringify(state));
@@ -2412,20 +2709,27 @@
                 if (undoBtn && undoStack.length === 0) {
                     undoBtn.disabled = true;
                 }
+                
+                showToast('Cambio deshecho');
             }
         }
 
+        // ===== GUARDAR/CARGAR =====
         function autosaveJSON() {
             try {
                 const templateData = serializeTemplate();
-                localStorage.setItem('canva_travel_template_integrated', JSON.stringify(templateData));
+                localStorage.setItem('canva_travel_template_v51', JSON.stringify(templateData));
                 
                 const statusDot = document.getElementById('saveStatus');
                 const statusText = document.getElementById('saveText');
                 if (statusDot && statusText) {
                     statusDot.className = 'status-dot';
-                    statusText.textContent = 'Guardado';
+                    statusText.textContent = '✅ Guardado';
                 }
+                
+                setTimeout(() => {
+                    if (statusText) statusText.textContent = 'Listo';
+                }, 2000);
             } catch (error) {
                 const statusDot = document.getElementById('saveStatus');
                 const statusText = document.getElementById('saveText');
@@ -2438,7 +2742,7 @@
 
         function loadFromLocalStorage() {
             try {
-                const saved = localStorage.getItem('canva_travel_template_integrated');
+                const saved = localStorage.getItem('canva_travel_template_v51');
                 if (saved) {
                     const templateData = JSON.parse(saved);
                     restoreTemplate(templateData);
@@ -2450,7 +2754,7 @@
 
         function serializeTemplate() {
             const data = {
-                version: '5.0-integrated',
+                version: '5.1',
                 timestamp: new Date().toISOString(),
                 counters: { ...counters },
                 autoExtendEnabled: autoExtendEnabled,
@@ -2471,8 +2775,7 @@
             document.querySelectorAll('.photo-frame.has-image').forEach(frame => {
                 const frameId = frame.dataset.frame || `img_${Date.now()}`;
                 data.images[frameId] = {
-                    backgroundImage: frame.style.backgroundImage,
-                    title: frame.querySelector('.photo-title')?.textContent || ''
+                    backgroundImage: frame.style.backgroundImage
                 };
             });
             
@@ -2485,7 +2788,6 @@
                 data.components.costRating = index + 1;
             });
             
-            // Guardar posiciones de pins del mapa
             const mapPins = document.querySelectorAll('.map-pin');
             data.components.mapPins = Array.from(mapPins).map(pin => ({
                 number: pin.textContent,
@@ -2497,7 +2799,7 @@
         }
 
         function restoreTemplate(data) {
-            if (!data || !data.version || !data.version.includes('5')) {
+            if (!data || !data.version) {
                 console.warn('Versión de template incompatible');
                 return;
             }
@@ -2508,7 +2810,7 @@
                 autoExtendEnabled = data.autoExtendEnabled;
                 const btn = document.getElementById('autoExtendBtn');
                 if (btn) {
-                    btn.textContent = autoExtendEnabled ? '📏 Auto-extendido ON' : '📏 Auto-extendido OFF';
+                    btn.textContent = autoExtendEnabled ? '📏 Auto ON' : '📏 Auto OFF';
                     btn.classList.toggle('active', autoExtendEnabled);
                 }
             }
@@ -2529,16 +2831,6 @@
                     
                     const placeholder = frame.querySelector('.photo-placeholder');
                     if (placeholder) placeholder.style.display = 'none';
-                    
-                    if (imageData.title) {
-                        let title = frame.querySelector('.photo-title');
-                        if (!title) {
-                            title = document.createElement('div');
-                            title.className = 'photo-title editable';
-                            frame.appendChild(title);
-                        }
-                        title.textContent = imageData.title;
-                    }
                 }
             });
             
@@ -2564,19 +2856,23 @@
                 });
             }
             
-            // Restaurar mapa personalizado
             if (data.mapData && data.mapData.url) {
                 TEMPLATE_CONFIG.mapa_url = data.mapData.url;
                 const mapContainer = document.querySelector('.map-container');
+                const existingPins = Array.from(mapContainer.querySelectorAll('.map-pin'));
+                
                 const img = document.createElement('img');
                 img.src = data.mapData.url;
                 img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; object-position: center;';
                 mapContainer.innerHTML = '';
                 mapContainer.appendChild(img);
                 mapContainer.classList.add('has-custom-map');
+                
+                existingPins.forEach(pin => {
+                    mapContainer.appendChild(pin);
+                });
             }
             
-            // Restaurar posiciones de pins
             if (data.components.mapPins) {
                 setTimeout(() => {
                     data.components.mapPins.forEach(pinData => {
@@ -2590,19 +2886,18 @@
             }
             
             updateAllCounters();
+            updateCompletionProgress();
             document.querySelectorAll('.editable').forEach(setupEditableElement);
             setTimeout(() => {
                 expandPageToFit();
             }, 100);
         }
 
+        // ===== EXPORTAR =====
         function exportTemplate(format) {
             switch (format) {
                 case 'A4':
                     exportA4PDF();
-                    break;
-                case 'SOCIAL':
-                    exportSocialFormats();
                     break;
                 default:
                     console.log('Formato no soportado:', format);
@@ -2610,90 +2905,119 @@
         }
 
         function exportA4PDF() {
-            document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls').forEach(el => {
+            document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .validation-warning, #mapMessage').forEach(el => {
                 el.style.display = 'none';
             });
             
-            window.print();
+            document.querySelectorAll('.editable').forEach(el => {
+                el.style.background = 'transparent';
+                el.style.border = 'none';
+            });
             
             setTimeout(() => {
-                document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls').forEach(el => {
-                    el.style.display = '';
-                });
-            }, 1000);
-        }
-
-        function exportSocialFormats() {
-            alert('Exportación a formatos sociales (1080x1350, 1080x1920) disponible en Canva. Usa "Descargar" en el editor para obtener PNG de alta calidad.');
+                window.print();
+                
+                setTimeout(() => {
+                    document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls').forEach(el => {
+                        el.style.display = '';
+                    });
+                    
+                    document.querySelectorAll('.editable').forEach(el => {
+                        el.style.background = '';
+                        el.style.border = '';
+                    });
+                }, 1000);
+            }, 500);
         }
 
         function toggleHelp() {
-            alert(`🎯 GUÍA DE USO - Sistema Integrado V5.0
+            alert(`🎯 GUÍA DE USO - V5.1
+
+✅ CORRECCIONES IMPLEMENTADAS:
+• Campo embajada eliminado
+• Consejos rápidos funcionando correctamente
+• Limpieza automática al recargar (evita duplicados)
+• Sección de información rápida totalmente editable
+• Carga múltiple de imágenes con botón "📸 Cargar Fotos"
 
 🔧 SISTEMA DE CONFIGURACIÓN:
-• Variables centralizadas en TEMPLATE_CONFIG al inicio del código
-• Detección automática de cantidades: ciudad1, ciudad2, etc.
-• Sistema de mapas integrado con múltiples opciones
+• Modifica TEMPLATE_CONFIG al inicio del código
+• Agrega ciudades: ciudad1, ciudad2, ciudad3... hasta ciudad12
+• Agrega días: dia1, actividad1, dia2, actividad2... hasta dia10
+• Agrega lugares: lugar1, ciudad_lugar1, desc_lugar1, tipo_lugar1...
+• Agrega consejos: tip1, tip2, tip3... hasta tip12
+• Click "🔄 Recargar Config" para aplicar cambios
 
-📝 VARIABLES DISPONIBLES:
-• Básicas: pais, fechas, duracion, moneda, etc.
-• Mapa: mapa_tipo, mapa_url, ciudad1_coords, etc.
-• Ciudades: ciudad1, ciudad2, ciudad3, etc.
-• Días: dia1, actividad1, dia2, actividad2, etc.
-• Lugares: lugar1, ciudad_lugar1, desc_lugar1, tipo_lugar1, etc.
-• Consejos: tip1, tip2, tip3, etc.
-• Imágenes: img_hero, img1, img2, etc.
+⌨️ ATAJOS DE TECLADO:
+• Ctrl+S (Cmd+S): Guardar manualmente
+• Ctrl+Z (Cmd+Z): Deshacer última acción
+• Ctrl+P (Cmd+P): Activar vista previa
+• Escape: Salir de vista previa
 
 🗺️ SISTEMA DE MAPAS:
 • "📤 Subir Mapa": Carga imagen personalizada del país
 • "🎯 Auto-ubicar": Posiciona pins inteligentemente
 • "🔄 Reset Pins": Elimina y regenera pins
-• Pins arrastrables para ajuste manual
+• Arrastra pins manualmente para ajustar
 
-🎯 FLUJO DE TRABAJO:
+📸 CARGAR IMÁGENES:
+• "📸 Cargar Fotos": Sube múltiples imágenes a la vez
+• Drag & drop individual en cada marco
+• Click en marco vacío para seleccionar imagen
+
+📊 BARRA DE PROGRESO:
+• Verde (>80%): Guía casi completa
+• Amarillo (50-80%): Faltan algunos datos
+• Rojo (<50%): Muchos campos vacíos
+
+💡 FLUJO RECOMENDADO:
 1. Modifica TEMPLATE_CONFIG con datos del país
-2. Guarda como index.html
-3. Sube a GitHub Pages
-4. Personaliza mapa si es necesario
-5. Exporta a PDF cuando esté listo
+2. Click "🔄 Recargar Config"
+3. Sube mapa con "📤 Subir Mapa"
+4. Carga fotos con "📸 Cargar Fotos"
+5. Ajusta textos haciendo click sobre ellos
+6. Arrastra pins del mapa a posiciones correctas
+7. Revisa con "👁️ Preview"
+8. Exporta con "📄 PDF A4"
 
-📊 CONFIGURACIÓN DE MAPA:
-mapa_tipo: "upload" - Permite subir imagen
-mapa_tipo: "auto" - Auto-genera desde APIs
-mapa_tipo: "static" - Usa diseño SVG original
+✨ MEJORAS V5.1:
+• Tooltips en todos los botones (pasa el mouse)
+• Validación de campos vacíos
+• Barra de progreso de completitud
+• Atajos de teclado
+• Tutorial de primer uso
+• Carga múltiple de imágenes
+• Bugs corregidos
 
-🖼️ SUBIR MAPA:
-1. Busca mapa libre en: OpenStreetMap, Natural Earth, Wikimedia
-2. Click "📤 Subir Mapa"
-3. Selecciona imagen del país
-4. Los pins se mantienen sobre el nuevo mapa
-5. Arrastra pins a posiciones correctas
-
-💡 FUENTES DE MAPAS LIBRES:
-• Natural Earth: naturalearthdata.com (dominio público)
-• Wikimedia Commons: commons.wikimedia.org
-• OpenStreetMap: openstreetmap.org
-• MapChart: mapchart.net (crear personalizados)
-
-🚀 CARACTERÍSTICAS INTEGRADAS:
-• Layout 2 columnas mantenido
-• Sistema de variables completo
-• Mapas con carga de imágenes
-• Funcionalidad PDF preservada
-• Auto-guardado y deshacer
-• Responsive y compatible GitHub Pages`);
+🚀 ¡Tu guía está lista para compartir!`);
         }
 
         function togglePreview() {
             const isPreview = document.body.classList.toggle('preview-mode');
             
-            document.querySelectorAll('.component-controls, .add-btn, .map-controls').forEach(el => {
+            document.querySelectorAll('.component-controls, .add-btn, .map-controls, .validation-warning, #mapMessage').forEach(el => {
                 el.style.display = isPreview ? 'none' : '';
+            });
+            
+            document.querySelectorAll('.editable').forEach(el => {
+                if (isPreview) {
+                    el.style.background = 'transparent';
+                    el.style.border = 'none';
+                    el.contentEditable = false;
+                } else {
+                    el.style.background = '';
+                    el.style.border = '';
+                }
             });
             
             const btn = document.querySelector('.preview-btn');
             if (btn) {
-                btn.textContent = isPreview ? '✏️ Editar' : '👁️ Vista previa';
+                btn.textContent = isPreview ? '✏️ Editar' : '👁️ Preview';
+            }
+            
+            const controlPanel = document.querySelector('.control-panel');
+            if (controlPanel) {
+                controlPanel.style.opacity = isPreview ? '0.5' : '1';
             }
         }
 
@@ -2711,41 +3035,39 @@ mapa_tipo: "static" - Usa diseño SVG original
 
         // Mensaje de bienvenida en consola
         console.log(`
-🎯 SISTEMA INTEGRADO: VARIABLES + MAPAS V5.0
-============================================
+🎯 SISTEMA V5.1 - MEJORADO Y CORREGIDO
+====================================
 
-✅ Sistema de configuración centralizada
-✅ Mapas con carga de imágenes
-✅ Layout 2 columnas mantenido
-✅ Detección automática de cantidades
-✅ Pins arrastrables en mapas
-✅ Compatible con GitHub Pages
-✅ Exportación PDF funcional
-✅ Auto-guardado y sistema de deshacer
+✅ PROBLEMAS CORREGIDOS:
+• ✓ Campo embajada eliminado
+• ✓ Consejos rápidos funcionan correctamente
+• ✓ Limpieza automática (no más duplicados)
+• ✓ Información rápida editable
+• ✓ Carga múltiple de imágenes
+
+🆕 NUEVAS CARACTERÍSTICAS:
+• ⌨️ Atajos de teclado (Ctrl+S, Ctrl+Z, Esc)
+• 📊 Barra de progreso de completitud
+• 💡 Tooltips en todos los botones
+• ⚠️ Validación de campos vacíos
+• 🎓 Tutorial de primer uso
+• 📸 Carga batch de imágenes
 
 📊 CONFIGURACIÓN ACTUAL:
 • País: ${TEMPLATE_CONFIG.pais}
-• Tipo de mapa: ${TEMPLATE_CONFIG.mapa_tipo}
-• Ciudades detectadas: ${detectConfigCounts(TEMPLATE_CONFIG).ciudades}
-• Días detectados: ${detectConfigCounts(TEMPLATE_CONFIG).dias}
-• Lugares detectados: ${detectConfigCounts(TEMPLATE_CONFIG).lugares}
-• Consejos detectados: ${detectConfigCounts(TEMPLATE_CONFIG).tips}
-
-🗺️ SISTEMA DE MAPAS:
-• Subir imagen: Funcional
-• Auto-ubicar pins: Implementado
-• Reset pins: Disponible
-• Guardado de posiciones: Activo
+• Ciudades: ${detectConfigCounts(TEMPLATE_CONFIG).ciudades}
+• Días: ${detectConfigCounts(TEMPLATE_CONFIG).dias}
+• Lugares: ${detectConfigCounts(TEMPLATE_CONFIG).lugares}
+• Consejos: ${detectConfigCounts(TEMPLATE_CONFIG).tips}
 
 🔧 PERSONALIZACIÓN:
-• Modifica TEMPLATE_CONFIG al inicio
+• Edita TEMPLATE_CONFIG al inicio
 • Click "🔄 Recargar Config" para aplicar
 • Usa "📤 Subir Mapa" para imagen personalizada
-• Arrastra pins para posicionar ciudades
+• Usa "📸 Cargar Fotos" para múltiples imágenes
 
-¡Sistema completo listo para GitHub Pages! 🚀
+¡Sistema listo para GitHub Pages! 🚀
         `);
     </script>
 </body>
 </html>
-
