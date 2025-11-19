@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plantilla Cartilla de Viaje - V5.1</title>
+    <title>Plantilla Guía de Viaje V5.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- ===== SECCIÓN DE CONFIGURACIÓN DE VARIABLES ===== -->
+    <!-- ===== CONFIGURACIÓN DE VARIABLES ===== -->
     <script>
-        // 🎯 CONFIGURACIÓN PRINCIPAL DE LA PLANTILLA
+        // 🎯 CONFIGURACIÓN PRINCIPAL - Esta es tu fuente de verdad
         const TEMPLATE_CONFIG = {
             // === INFORMACIÓN BÁSICA ===
             pais: "Japón",
             nombre_pais: "Japón - Tierra del Sol Naciente",
             fechas: "Marzo - Mayo 2024",
             duracion: "14 días",
-            coste_nivel: 3, // 1-5 (1=muy barato, 5=muy caro)
+            coste_nivel: 3, // 1-5
             moneda: "Yen (JPY)",
             enchufe: "Tipo A/B",
             emergencia: "110/119",
@@ -23,46 +23,41 @@
             fecha_creacion: "Enero 2024",
             creditos: "Fotos: @viajero_digital, Unsplash",
             
-            // === INFORMACIÓN RÁPIDA (NUEVA) ===
-            info_adicional: "Mejor época: Primavera (sakura) y otoño",
+            // === PRESUPUESTO ===
+            presupuesto_dia: "8,000 JPY (~$60 USD)",
+            total_gastado: "112,000 JPY (~$840 USD)",
             
             // === CONFIGURACIÓN DE MAPA ===
-            mapa_tipo: "upload", // upload, auto, interactive, static
-            mapa_url: "", // URL de imagen personalizada
-            mapa_centro: [36.2048, 138.2529], // Centro del país [lat, lng]
+            mapa_tipo: "upload",
+            mapa_url: "",
             
-            // === CIUDADES/UBICACIONES ===
+            // === CIUDADES (Si eliminas ciudad4, desaparecerá automáticamente) ===
             ciudad1: "Tokio — Capital moderna y tradicional",
-            ciudad1_coords: [35.6762, 139.6503], // [lat, lng]
             ciudad2: "Kioto — Templos y cultura ancestral",
-            ciudad2_coords: [35.0116, 135.7681],
             ciudad3: "Osaka — Gastronomía y entretenimiento",
-            ciudad3_coords: [34.6937, 135.5023],
-            //ciudad4: "Hiroshima — Historia y memoria",
-            //ciudad4_coords: [34.3853, 132.4553],
-            // Añade más ciudades: ciudad5, ciudad6, etc.
+            // ciudad4: "Hiroshima — Historia y memoria", // ← Comentado = no aparece
             
-            // === ITINERARIO POR DÍAS ===
+            // === ITINERARIO ===
             dia1: "Tokio - Shibuya",
-            actividad1: "Explorar el famoso cruce de Shibuya, visitar el santuario Meiji y caminar por Harajuku. Cena en Ginza.",
+            actividad1: "Explorar el famoso cruce de Shibuya, visitar el santuario Meiji y caminar por Harajuku.",
             
             dia2: "Tokio - Asakusa",
-            actividad2: "Templo Sensoji, mercado Nakamise, crucero por el río Sumida y subida a Tokyo Skytree al atardecer.",
+            actividad2: "Templo Sensoji, mercado Nakamise, crucero por el río Sumida.",
             
             dia3: "Tokio - Akihabara",
-            actividad3: "Distrito electrónico, tiendas de anime y manga, cafés de criadas. Tarde en jardines del Palacio Imperial.",
+            actividad3: "Distrito electrónico, tiendas de anime y manga.",
             
             dia4: "Viaje a Kioto",
-            actividad4: "Viaje en Shinkansen a Kioto. Check-in y paseo nocturno por Gion, distrito de las geishas.",
+            actividad4: "Viaje en Shinkansen. Paseo nocturno por Gion.",
             
             dia5: "Kioto - Templos",
-            actividad5: "Templo Kiyomizu-dera, bosque de bambú Arashiyama y Templo Dorado (Kinkaku-ji).",
+            actividad5: "Kiyomizu-dera, bosque de bambú Arashiyama, Kinkaku-ji.",
             
             // === TOP LUGARES ===
             lugar1: "Templo Sensoji",
             ciudad_lugar1: "Tokio",
             desc_lugar1: "Templo budista más antiguo de Tokio",
-            tipo_lugar1: "must", // must, skip, eco, family
+            tipo_lugar1: "must",
             
             lugar2: "Bosque de Bambú",
             ciudad_lugar2: "Kioto", 
@@ -80,29 +75,29 @@
             tipo_lugar4: "family",
             
             // === CONSEJOS RÁPIDOS ===
-            tip1: "Compra JR Pass antes de llegar - ahorro significativo en transporte",
-            tip2: "Aprende frases básicas: arigatou gozaimasu (gracias), sumimasen (perdón)",
-            tip3: "Siempre lleva efectivo - muchos lugares no aceptan tarjetas",
-            tip4: "Descarga Google Translate con cámara para carteles en japonés",
-            tip5: "Quítate los zapatos al entrar en casas, templos y ryokans",
-            tip6: "No comas caminando - se considera de mala educación",
-            tip7: "Los trenes son extremadamente puntuales - llega 5 min antes",
-            tip8: "Respeta las colas y no hables en el teléfono en el tren",
+            tip1: "Compra JR Pass antes de llegar - ahorro significativo",
+            tip2: "Aprende frases básicas en japonés",
+            tip3: "Siempre lleva efectivo",
+            tip4: "Descarga Google Translate con cámara",
+            tip5: "Quítate los zapatos en templos",
+            tip6: "No comas caminando",
+            tip7: "Los trenes son puntuales",
+            tip8: "Respeta las colas",
             
-            // === IMÁGENES (URLs o rutas) ===
-            img_hero: "", // Imagen principal 3:1
-            img1: "", // 1:1
-            img2: "", // 1:1  
-            img3: "", // 1:1
-            img4: "", // 1:1
-            img5: "", // 1:1
-            img6: "", // 1:1
+            // === IMÁGENES ===
+            img_hero: "",
+            img1: "",
+            img2: "",
+            img3: "",
+            img4: "",
+            img5: "",
+            img6: "",
             
             // === LOGO ===
-            logo: "", // URL del logo del canal
+            logo: "",
         };
-        
-        // 🔧 FUNCIÓN DE DETECCIÓN AUTOMÁTICA DE CANTIDADES
+
+// 🔧 FUNCIÓN DE DETECCIÓN AUTOMÁTICA
         function detectConfigCounts(config) {
             const counts = {
                 ciudades: 0,
@@ -138,70 +133,87 @@
             return counts;
         }
         
-        // 🎯 FUNCIÓN PRINCIPAL DE INICIALIZACIÓN
+        // 🎯 INICIALIZACIÓN PRINCIPAL
         function initializeFromConfig() {
             const config = TEMPLATE_CONFIG;
             const counts = detectConfigCounts(config);
             
-            console.log('🎯 Inicializando plantilla con configuración:', counts);
+            console.log('🎯 Inicializando V5.1 desde TEMPLATE_CONFIG:', counts);
             
-            // IMPORTANTE: Limpiar contenedores antes de regenerar
-            clearAllContainers();
+            // CRÍTICO: Limpiar todo antes de regenerar
+            clearAllSections();
             
+            // Actualizar información básica
             updateBasicInfo(config);
+            
+            // Generar secciones
             generateCities(config, counts.ciudades);
             generateDays(config, counts.dias);  
             generatePlaces(config, counts.lugares);
             generateTips(config, counts.tips);
-            generatePhotoGrid(counts.fotos);
             loadImages(config, counts.fotos);
             loadLogo(config);
             
             // Inicializar mapa
             initializeMap(config);
             
+            // Actualizar contadores
             counters.cities = counts.ciudades;
             counters.days = counts.dias;
             counters.places = counts.lugares; 
             counters.tips = counts.tips;
-            counters.photos = counts.fotos + 1; // +1 por la hero
+            counters.photos = counts.fotos + 1;
             
+            // Reinicializar funcionalidad
             reinitializeJS();
             
-            // Validar configuración
-            validateConfig();
-            updateCompletionProgress();
-            
-            console.log('✅ Plantilla inicializada correctamente');
+            console.log('✅ Plantilla inicializada desde variables');
         }
         
-        // 🧹 LIMPIAR CONTENEDORES ANTES DE REGENERAR
-        function clearAllContainers() {
-            document.querySelector('#citiesList').innerHTML = '';
-            document.querySelector('#itineraryList').innerHTML = '';
-            document.querySelector('#placesList').innerHTML = '';
-            document.querySelector('#tipsList').innerHTML = '';
-            document.querySelector('#photoGrid').innerHTML = '';
+        // 🧹 LIMPIEZA COMPLETA DE SECCIONES
+        function clearAllSections() {
+            // Limpiar ciudades
+            const citiesList = document.querySelector('#citiesList');
+            if (citiesList) citiesList.innerHTML = '';
+            
+            // Limpiar días
+            const itineraryList = document.querySelector('#itineraryList');
+            if (itineraryList) itineraryList.innerHTML = '';
+            
+            // Limpiar lugares
+            const placesList = document.querySelector('#placesList');
+            if (placesList) placesList.innerHTML = '';
+            
+            // Limpiar consejos
+            const tipsList = document.querySelector('#tipsList');
+            if (tipsList) tipsList.innerHTML = '';
             
             // Limpiar pins del mapa
-            const mapContainer = document.querySelector('.map-container');
-            mapContainer.querySelectorAll('.map-pin').forEach(pin => pin.remove());
+            const mapPins = document.querySelectorAll('.map-pin');
+            mapPins.forEach(pin => pin.remove());
+            
+            console.log('🧹 Secciones limpiadas completamente');
         }
         
-        // 📝 FUNCIONES DE ACTUALIZACIÓN
+        // 📝 ACTUALIZAR INFORMACIÓN BÁSICA
         function updateBasicInfo(config) {
-            document.querySelector('[data-var="PAIS"]').innerHTML = config.pais + '<span class="char-counter">0/30</span>';
-            document.querySelector('[data-var="NOMBRE_PAIS"]').innerHTML = config.nombre_pais + '<span class="char-counter">0/25</span>';
-            document.querySelector('[data-var="FECHAS"]').innerHTML = config.fechas + '<span class="char-counter">0/20</span>';
-            document.querySelector('[data-var="DURACION"]').innerHTML = config.duracion + '<span class="char-counter">0/15</span>';
-            document.querySelector('[data-var="MONEDA"]').innerHTML = config.moneda + '<span class="char-counter">0/15</span>';
-            document.querySelector('[data-var="ENCHUFE"]').innerHTML = config.enchufe + '<span class="char-counter">0/15</span>';
-            document.querySelector('[data-var="EMERGENCIA"]').innerHTML = config.emergencia + '<span class="char-counter">0/15</span>';
-            document.querySelector('[data-var="IDIOMA"]').innerHTML = config.idioma + '<span class="char-counter">0/20</span>';
-            document.querySelector('[data-var="INFO_ADICIONAL"]').innerHTML = config.info_adicional + '<span class="char-counter">0/50</span>';
+            // Sin contadores visibles - solo el texto
+            document.querySelector('[data-var="PAIS"]').textContent = config.pais;
+            document.querySelector('[data-var="NOMBRE_PAIS"]').textContent = config.nombre_pais;
+            document.querySelector('[data-var="FECHAS"]').textContent = config.fechas;
+            document.querySelector('[data-var="DURACION"]').textContent = config.duracion;
+            document.querySelector('[data-var="MONEDA"]').textContent = config.moneda;
+            document.querySelector('[data-var="ENCHUFE"]').textContent = config.enchufe;
+            document.querySelector('[data-var="EMERGENCIA"]').textContent = config.emergencia;
+            document.querySelector('[data-var="IDIOMA"]').textContent = config.idioma;
             document.querySelector('[data-var="FECHA_CREACION"]').textContent = config.fecha_creacion;
             document.querySelector('[data-var="CREDITOS"]').textContent = config.creditos;
             
+            // Presupuesto
+            document.querySelector('[data-var="PRESUPUESTO_DIA"]').textContent = config.presupuesto_dia;
+            document.querySelector('[data-var="TOTAL_GASTADO"]').textContent = config.total_gastado;
+            
+            // Nivel de coste
             if (config.coste_nivel) {
                 const circles = document.querySelectorAll('.cost-circle');
                 const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
@@ -216,9 +228,10 @@
             }
         }
         
+        // 🏙️ GENERAR CIUDADES
         function generateCities(config, count) {
             const container = document.querySelector('#citiesList');
-            container.innerHTML = '';
+            container.innerHTML = ''; // Limpieza total
             
             for (let i = 1; i <= count; i++) {
                 const cityKey = `ciudad${i}`;
@@ -242,17 +255,18 @@
                 <div style="width: 16px; height: 16px; background: var(--teal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600;">${number}</div>
                 <span class="editable" data-limit="25" data-var="CIUDAD_${number}">${text}</span>
                 <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar ciudad">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar ciudad">×</button>
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
                 </div>
             `;
             
             return div;
         }
         
+        // 📅 GENERAR DÍAS DE ITINERARIO
         function generateDays(config, count) {
             const container = document.querySelector('#itineraryList');
-            container.innerHTML = '';
+            container.innerHTML = ''; // Limpieza total
             
             for (let i = 1; i <= count; i++) {
                 const dayKey = `dia${i}`;
@@ -275,19 +289,20 @@
                 <div class="day-title">
                     🕐 <span class="editable" data-limit="20" data-var="DIA_${number}">${dayText}</span>
                 </div>
-                <div class="day-activity editable" data-limit="120" data-var="ACTIVIDAD_${number}">${activityText}<span class="char-counter">0/120</span></div>
+                <div class="day-activity editable" data-limit="120" data-var="ACTIVIDAD_${number}">${activityText}</div>
                 <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar día">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar día">×</button>
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
                 </div>
             `;
             
             return div;
         }
         
+        // 📍 GENERAR LUGARES
         function generatePlaces(config, count) {
             const container = document.querySelector('#placesList');
-            container.innerHTML = '';
+            container.innerHTML = ''; // Limpieza total
             
             for (let i = 1; i <= count; i++) {
                 const lugarKey = `lugar${i}`;
@@ -327,24 +342,25 @@
                     </div>
                 </div>
                 <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar lugar">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar lugar">×</button>
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
                 </div>
             `;
             
             return div;
         }
         
+        // 💡 GENERAR CONSEJOS (CORREGIDO)
         function generateTips(config, count) {
             const container = document.querySelector('#tipsList');
-            container.innerHTML = '';
+            container.innerHTML = ''; // Limpieza total
             
             const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
             
             for (let i = 1; i <= count; i++) {
                 const tipKey = `tip${i}`;
                 if (config[tipKey]) {
-                    const tipElement = createTipElement(i, config[tipKey], iconos[(i-1) % iconos.length] || '💡');
+                    const tipElement = createTipElement(i, config[tipKey], iconos[i-1] || '💡');
                     container.appendChild(tipElement);
                 }
             }
@@ -359,46 +375,17 @@
             
             div.innerHTML = `
                 <div class="tip-icon">${icon}</div>
-                <span class="editable" data-limit="80" data-var="TIP_${number}">${text}<span class="char-counter">0/80</span></span>
+                <span class="editable" data-limit="80" data-var="TIP_${number}">${text}</span>
                 <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar consejo">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar consejo">×</button>
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
                 </div>
             `;
             
             return div;
         }
         
-        function generatePhotoGrid(count) {
-            const container = document.querySelector('#photoGrid');
-            container.innerHTML = '';
-            
-            for (let i = 1; i <= count; i++) {
-                const photoFrame = document.createElement('div');
-                photoFrame.className = 'photo-frame mini component';
-                photoFrame.setAttribute('data-component', 'PHOTO_FRAME');
-                photoFrame.setAttribute('data-frame', `IMG_${i}`);
-                
-                photoFrame.innerHTML = `
-                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
-                    <div class="photo-placeholder">
-                        📷 IMG_${i}<br>
-                        <small>Drag & Drop</small>
-                    </div>
-                    <div class="photo-controls">
-                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                    </div>
-                    <div class="component-controls">
-                        <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar foto">⧉</button>
-                        <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar foto">×</button>
-                    </div>
-                `;
-                
-                container.appendChild(photoFrame);
-            }
-        }
-        
+        // 📸 CARGAR IMÁGENES
         function loadImages(config, count) {
             if (config.img_hero) {
                 loadImageToFrame(document.querySelector('[data-frame="IMG_HERO"]'), null, config.img_hero);
@@ -415,6 +402,7 @@
             }
         }
         
+        // 🎨 CARGAR LOGO
         function loadLogo(config) {
             if (config.logo) {
                 const logoSlot = document.querySelector('.logo-slot');
@@ -427,56 +415,8 @@
                 logoSlot.classList.add('has-logo');
             }
         }
-        
-        // ===== VALIDACIÓN Y PROGRESO =====
-        function validateConfig() {
-            const requiredFields = ['pais', 'nombre_pais', 'fechas', 'duracion', 'moneda', 'idioma'];
-            const missing = [];
-            
-            requiredFields.forEach(field => {
-                if (!TEMPLATE_CONFIG[field] || TEMPLATE_CONFIG[field] === '') {
-                    missing.push(field);
-                }
-            });
-            
-            if (missing.length > 0) {
-                showValidationWarning(missing);
-            }
-        }
-        
-        function showValidationWarning(missingFields) {
-            const warningEl = document.getElementById('validationWarning');
-            if (warningEl) {
-                warningEl.innerHTML = `⚠️ Campos incompletos: ${missingFields.join(', ')}`;
-                warningEl.style.display = 'block';
-            }
-        }
-        
-        function updateCompletionProgress() {
-            const totalFields = Object.keys(TEMPLATE_CONFIG).length;
-            const filledFields = Object.values(TEMPLATE_CONFIG).filter(val => val !== '' && val !== null && val !== undefined).length;
-            
-            const percentage = Math.round((filledFields / totalFields) * 100);
-            
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            
-            if (progressBar && progressText) {
-                progressBar.style.width = percentage + '%';
-                progressText.textContent = `Completitud: ${percentage}%`;
-                
-                // Cambiar color según porcentaje
-                if (percentage >= 80) {
-                    progressBar.style.background = '#4CAF50'; // Verde
-                } else if (percentage >= 50) {
-                    progressBar.style.background = '#FF9800'; // Amarillo
-                } else {
-                    progressBar.style.background = '#FF6B61'; // Rojo
-                }
-            }
-        }
-        
-        // ===== FUNCIONES DE MAPA INTEGRADAS =====
+
+// ===== FUNCIONES DE MAPA =====
         function initializeMap(config) {
             const mapType = config.mapa_tipo || 'static';
             
@@ -499,8 +439,6 @@
                 uploadBtn.style.display = 'inline-flex';
                 uploadBtn.onclick = uploadMapImage;
             }
-            
-            showMapMessage('Haz clic en "📤 Subir Mapa" para cargar una imagen del país', 'info');
         }
         
         function uploadMapImage() {
@@ -514,11 +452,11 @@
                     reader.onload = function(event) {
                         const mapContainer = document.querySelector('.map-container');
                         
-                        // Limpiar contenido anterior (excepto pins)
+                        // Limpiar contenido anterior
                         const existingPins = Array.from(mapContainer.querySelectorAll('.map-pin'));
                         mapContainer.innerHTML = '';
                         
-                        // Crear imagen de fondo
+                        // Crear imagen de fondo que se ajusta al contenedor
                         const img = document.createElement('img');
                         img.src = event.target.result;
                         img.style.cssText = `
@@ -529,17 +467,25 @@
                         `;
                         img.alt = 'Mapa personalizado';
                         
+                        // Ajustar altura del contenedor a la imagen
+                        img.onload = function() {
+                            const aspectRatio = this.naturalHeight / this.naturalWidth;
+                            const containerWidth = mapContainer.offsetWidth;
+                            const newHeight = containerWidth * aspectRatio;
+                            mapContainer.style.height = Math.min(newHeight, 200) + 'px';
+                        };
+                        
                         mapContainer.appendChild(img);
                         mapContainer.classList.add('has-custom-map');
                         
-                        // Restaurar pins existentes
-                        existingPins.forEach(pin => {
-                            mapContainer.appendChild(pin);
-                        });
+                        // Restaurar pins sobre la nueva imagen
+                        setTimeout(() => {
+                            existingPins.forEach(pin => {
+                                mapContainer.appendChild(pin);
+                            });
+                        }, 100);
                         
-                        showMapMessage('Mapa cargado correctamente. Arrastra los pins a las ubicaciones correctas.', 'success');
-                        
-                        // Actualizar variable en config para persistencia
+                        // Guardar en config
                         TEMPLATE_CONFIG.mapa_url = event.target.result;
                     };
                     reader.readAsDataURL(file);
@@ -548,44 +494,22 @@
             input.click();
         }
         
-        function generateCountryMap(pais) {
-            showMapMessage(`Generando mapa de ${pais}... (En implementación real usaría OpenStreetMap API)`, 'info');
-            
-            setTimeout(() => {
-                const mapContainer = document.querySelector('.map-container');
-                const existingPins = Array.from(mapContainer.querySelectorAll('.map-pin'));
-                
-                mapContainer.innerHTML = `
-                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #e8f5e8, #d4e8d4); position: relative; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
-                        <div style="text-align: center; color: #666;">
-                            <h4>🗾 ${pais}</h4>
-                            <p style="font-size: 11px; margin-top: 8px;">Mapa auto-generado</p>
-                            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.7); border-radius: 4px; font-size: 9px;">
-                                Implementación: OpenStreetMap API
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                existingPins.forEach(pin => {
-                    mapContainer.appendChild(pin);
-                });
-                
-                showMapMessage('Mapa generado automáticamente', 'success');
-            }, 1000);
-        }
-        
-        function setupStaticMap() {
-            showMapMessage('Usando mapa decorativo por defecto', 'info');
-        }
-        
         function regenerateMapPins(count, config) {
             const mapContainer = document.querySelector('.map-container');
             
             // Limpiar pins existentes
             mapContainer.querySelectorAll('.map-pin').forEach(pin => pin.remove());
             
-            // Crear nuevos pins con posicionamiento inteligente
+            // Posiciones predeterminadas distribuidas
+            const positions = [
+                {top: '25%', left: '70%'},
+                {top: '40%', left: '65%'},
+                {top: '45%', left: '60%'},
+                {top: '30%', left: '55%'},
+                {top: '50%', left: '75%'},
+            ];
+            
+            // Crear nuevos pins
             for (let i = 1; i <= count; i++) {
                 const pin = document.createElement('div');
                 pin.className = 'map-pin component';
@@ -593,29 +517,10 @@
                 pin.setAttribute('data-pin', i.toString());
                 pin.textContent = i.toString();
                 
-                // Usar coordenadas si están disponibles o posición predeterminada
-                const coordsKey = `ciudad${i}_coords`;
-                let position;
-                
-                if (config[coordsKey]) {
-                    // Posiciones predefinidas para Japón
-                    const positions = [
-                        {top: '25%', left: '70%'}, // Ciudad 1
-                        {top: '40%', left: '65%'}, // Ciudad 2
-                        {top: '45%', left: '60%'}, // Ciudad 3
-                        {top: '30%', left: '55%'}, // Ciudad 4
-                        {top: '50%', left: '75%'}, // Ciudad 5
-                        {top: '35%', left: '68%'}, // Ciudad 6
-                        {top: '42%', left: '72%'}, // Ciudad 7
-                    ];
-                    position = positions[i-1] || {top: '50%', left: '50%'};
-                } else {
-                    // Posición aleatoria como fallback
-                    position = {
-                        top: (Math.random() * 60 + 20) + '%',
-                        left: (Math.random() * 60 + 20) + '%'
-                    };
-                }
+                const position = positions[i-1] || {
+                    top: (Math.random() * 60 + 20) + '%',
+                    left: (Math.random() * 60 + 20) + '%'
+                };
                 
                 pin.style.top = position.top;
                 pin.style.left = position.left;
@@ -626,25 +531,15 @@
         }
         
         function autoPlacePins() {
-            const config = TEMPLATE_CONFIG;
             const pins = document.querySelectorAll('.map-pin');
+            if (pins.length === 0) return;
             
-            if (pins.length === 0) {
-                showMapMessage('Primero carga ciudades para auto-ubicar', 'error');
-                return;
-            }
-            
-            showMapMessage('Auto-ubicando ciudades...', 'info');
-            
-            // Posiciones predeterminadas mejoradas
             const positions = [
-                {top: '25%', left: '70%'}, // Tokio
-                {top: '40%', left: '65%'}, // Kioto
-                {top: '45%', left: '60%'}, // Osaka
-                {top: '30%', left: '55%'}, // Hiroshima
-                {top: '50%', left: '75%'}, // Nara
-                {top: '35%', left: '68%'}, // Ciudad 6
-                {top: '42%', left: '72%'}, // Ciudad 7
+                {top: '25%', left: '70%'},
+                {top: '40%', left: '65%'},
+                {top: '45%', left: '60%'},
+                {top: '30%', left: '55%'},
+                {top: '50%', left: '75%'},
             ];
             
             pins.forEach((pin, index) => {
@@ -653,15 +548,10 @@
                         top: (Math.random() * 60 + 20) + '%',
                         left: (Math.random() * 60 + 20) + '%'
                     };
-                    
                     pin.style.top = pos.top;
                     pin.style.left = pos.left;
-                    
-                    // Animación de confirmación
                     pin.style.transform = 'scale(1.3)';
-                    setTimeout(() => {
-                        pin.style.transform = 'scale(1)';
-                    }, 300);
+                    setTimeout(() => pin.style.transform = 'scale(1)', 300);
                 }, index * 200);
             });
         }
@@ -670,47 +560,317 @@
             const pins = document.querySelectorAll('.map-pin');
             pins.forEach(pin => pin.remove());
             
-            showMapMessage('Pins eliminados', 'success');
+            setTimeout(() => {
+                regenerateMapPins(counters.cities, TEMPLATE_CONFIG);
+            }, 300);
+        }
+        
+        function setupMapPinSingle(pin) {
+            let isDragging = false;
+            let startX, startY, startLeft, startTop;
+
+            pin.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                
+                const rect = this.getBoundingClientRect();
+                const containerRect = this.parentElement.getBoundingClientRect();
+                startLeft = ((rect.left - containerRect.left) / containerRect.width) * 100;
+                startTop = ((rect.top - containerRect.top) / containerRect.height) * 100;
+                
+                this.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                const containerRect = pin.parentElement.getBoundingClientRect();
+                
+                const newLeft = startLeft + (deltaX / containerRect.width) * 100;
+                const newTop = startTop + (deltaY / containerRect.height) * 100;
+                
+                pin.style.left = Math.max(2, Math.min(98, newLeft)) + '%';
+                pin.style.top = Math.max(2, Math.min(98, newTop)) + '%';
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    pin.style.cursor = 'move';
+                }
+            });
+        }
+        
+        function setupStaticMap() {
+            // Mantener SVG por defecto
+        }
+        
+        // ===== FUNCIONES DE EDICIÓN =====
+        function setupEditableElement(element) {
+            const limit = parseInt(element.dataset.limit) || 100;
             
-            // Regenerar pins básicos si hay ciudades
-            const citiesCount = counters.cities;
-            if (citiesCount > 0) {
-                setTimeout(() => {
-                    regenerateMapPins(citiesCount, TEMPLATE_CONFIG);
-                }, 500);
+            element.addEventListener('click', function() {
+                saveState();
+                this.contentEditable = true;
+                this.focus();
+                this.style.background = 'rgba(255, 107, 97, 0.3)';
+            });
+
+            element.addEventListener('input', function() {
+                enforceLimit(this, limit);
+                debounce(() => {
+                    expandPageToFit();
+                }, 500)();
+            });
+
+            element.addEventListener('blur', function() {
+                this.contentEditable = false;
+                this.style.background = 'rgba(255, 107, 97, 0.1)';
+            });
+
+            element.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.blur();
+                }
+            });
+        }
+
+        function enforceLimit(element, limit) {
+            let text = element.textContent.trim();
+            
+            if (text.length > limit) {
+                element.textContent = text.substring(0, limit);
+                // Mover cursor al final
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.selectNodeContents(element);
+                range.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(range);
             }
         }
         
-        function showMapMessage(message, type = 'info') {
-            let messageEl = document.getElementById('mapMessage');
-            if (!messageEl) {
-                messageEl = document.createElement('div');
-                messageEl.id = 'mapMessage';
-                messageEl.style.cssText = `
-                    margin: 8px 0;
-                    padding: 8px 12px;
-                    border-radius: 4px;
-                    font-size: 11px;
-                    text-align: center;
-                `;
-                document.querySelector('.map-section').insertBefore(messageEl, document.querySelector('.map-container'));
+        // ===== FUNCIONES DE GUARDADO =====
+        function autosaveJSON() {
+            try {
+                const templateData = serializeTemplate();
+                localStorage.setItem('travel_guide_session', JSON.stringify(templateData));
+                
+                showToast('💾 Sesión guardada localmente');
+                
+                const statusDot = document.getElementById('saveStatus');
+                const statusText = document.getElementById('saveText');
+                if (statusDot && statusText) {
+                    statusDot.className = 'status-dot';
+                    statusText.textContent = 'Guardado';
+                }
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                showToast('❌ Error al guardar', 'error');
             }
-            
-            const colors = {
-                info: 'background: #e6f3ff; color: #0066cc; border-left: 3px solid #0066cc;',
-                success: 'background: #e6f7e6; color: #28a745; border-left: 3px solid #28a745;',
-                error: 'background: #ffe6e6; color: #d63384; border-left: 3px solid #d63384;'
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('travel_guide_session');
+                if (saved) {
+                    // Preguntar si restaurar sesión
+                    if (confirm('¿Restaurar sesión anterior? (Esto sobrescribirá las variables del código)')) {
+                        const templateData = JSON.parse(saved);
+                        restoreTemplate(templateData);
+                        showToast('📂 Sesión restaurada');
+                    } else {
+                        // Limpiar localStorage y usar variables
+                        localStorage.removeItem('travel_guide_session');
+                        showToast('✨ Usando variables de TEMPLATE_CONFIG');
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar:', error);
+            }
+        }
+
+        function serializeTemplate() {
+            const data = {
+                version: '5.1',
+                timestamp: new Date().toISOString(),
+                counters: { ...counters },
+                autoExtendEnabled: autoExtendEnabled,
+                editableContent: {},
+                images: {},
+                components: {},
+                mapData: {
+                    type: TEMPLATE_CONFIG.mapa_tipo,
+                    url: TEMPLATE_CONFIG.mapa_url
+                }
             };
             
-            messageEl.style.cssText += colors[type] || colors.info;
-            messageEl.textContent = message;
-            messageEl.style.display = 'block';
+            // Guardar contenido editable
+            document.querySelectorAll('.editable').forEach(el => {
+                const varName = el.dataset.var;
+                if (varName) {
+                    data.editableContent[varName] = el.textContent.trim();
+                }
+            });
             
-            if (type === 'success' || type === 'info') {
-                setTimeout(() => {
-                    messageEl.style.display = 'none';
-                }, 4000);
+            // Guardar imágenes
+            document.querySelectorAll('.photo-frame.has-image').forEach(frame => {
+                const frameId = frame.dataset.frame;
+                if (frameId) {
+                    data.images[frameId] = {
+                        backgroundImage: frame.style.backgroundImage,
+                        title: frame.querySelector('.photo-title')?.textContent || ''
+                    };
+                }
+            });
+            
+            // Guardar logo
+            const logoImg = document.querySelector('.logo-slot img');
+            if (logoImg && logoImg.src) {
+                data.logo = logoImg.src;
             }
+            
+            // Guardar nivel de coste
+            const filledCircles = document.querySelectorAll('.cost-circle:not(.empty)');
+            data.components.costRating = filledCircles.length;
+            
+            // Guardar posiciones de pins
+            const mapPins = document.querySelectorAll('.map-pin');
+            data.components.mapPins = Array.from(mapPins).map(pin => ({
+                number: pin.textContent,
+                top: pin.style.top,
+                left: pin.style.left
+            }));
+            
+            return data;
+        }
+
+        function restoreTemplate(data) {
+            if (!data || !data.version) {
+                console.warn('Datos incompatibles');
+                return;
+            }
+            
+            counters = { ...data.counters };
+            
+            // Restaurar contenido editable
+            Object.entries(data.editableContent || {}).forEach(([varName, content]) => {
+                const element = document.querySelector(`[data-var="${varName}"]`);
+                if (element) {
+                    element.textContent = content;
+                }
+            });
+            
+            // Restaurar imágenes
+            Object.entries(data.images || {}).forEach(([frameId, imageData]) => {
+                const frame = document.querySelector(`[data-frame="${frameId}"]`);
+                if (frame) {
+                    frame.style.backgroundImage = imageData.backgroundImage;
+                    frame.classList.add('has-image');
+                    const placeholder = frame.querySelector('.photo-placeholder');
+                    if (placeholder) placeholder.style.display = 'none';
+                }
+            });
+            
+            // Restaurar logo
+            if (data.logo) {
+                const logoSlot = document.querySelector('.logo-slot');
+                const img = logoSlot.querySelector('img');
+                const placeholder = logoSlot.querySelector('.logo-placeholder');
+                img.src = data.logo;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+                logoSlot.classList.add('has-logo');
+            }
+            
+            // Restaurar nivel de coste
+            if (data.components?.costRating) {
+                const circles = document.querySelectorAll('.cost-circle');
+                circles.forEach((circle, index) => {
+                    if (index < data.components.costRating) {
+                        circle.classList.remove('empty');
+                    } else {
+                        circle.classList.add('empty');
+                    }
+                });
+            }
+            
+            // Restaurar mapa
+            if (data.mapData?.url) {
+                const mapContainer = document.querySelector('.map-container');
+                const img = document.createElement('img');
+                img.src = data.mapData.url;
+                img.style.cssText = 'width: 100%; height: 100%; object-fit: contain;';
+                mapContainer.innerHTML = '';
+                mapContainer.appendChild(img);
+                mapContainer.classList.add('has-custom-map');
+            }
+            
+            // Restaurar pins
+            if (data.components?.mapPins) {
+                setTimeout(() => {
+                    data.components.mapPins.forEach(pinData => {
+                        const pin = document.querySelector(`[data-pin="${pinData.number}"]`);
+                        if (pin) {
+                            pin.style.top = pinData.top;
+                            pin.style.left = pinData.left;
+                        }
+                    });
+                }, 100);
+            }
+            
+            updateAllCounters();
+            document.querySelectorAll('.editable').forEach(setupEditableElement);
+        }
+        
+        // ===== FUNCIONES AUXILIARES =====
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'error' ? 'rgba(255, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0.8)';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${bgColor};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10001;
+                animation: fadeIn 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        function expandPageToFit() {
+            const page = document.querySelector('.page');
+            page.style.height = 'auto';
+            page.style.minHeight = '297mm';
         }
         
         function reinitializeJS() {
@@ -722,12 +882,660 @@
             
             setTimeout(() => {
                 expandPageToFit();
-                checkOverflow();
             }, 100);
         }
+
+
+// ===== FUNCIONES DE COMPONENTES =====
+        function duplicateComponent(button) {
+            saveState();
+            
+            const component = button.closest('.component');
+            const componentType = component.dataset.component;
+            
+            const sectionLimits = {
+                'ITINERARY_CARD': 'days',
+                'PLACE_ITEM': 'places',
+                'TIP_ITEM': 'tips',
+                'CITY_ITEM': 'cities',
+                'PHOTO_FRAME': 'photos'
+            };
+            
+            const limitKey = sectionLimits[componentType];
+            if (limitKey && counters[limitKey] >= limits[limitKey]) {
+                alert(`Máximo ${limits[limitKey]} elementos permitidos`);
+                return;
+            }
+            
+            const clone = component.cloneNode(true);
+            clearIDs(clone);
+            updateClonedComponent(clone, componentType);
+            component.parentElement.insertBefore(clone, component.nextSibling);
+            
+            if (limitKey) {
+                counters[limitKey]++;
+                updateCounterDisplay(limitKey);
+            }
+            
+            clone.querySelectorAll('.editable').forEach(setupEditableElement);
+            clone.classList.add('fade-in');
+            
+            setTimeout(() => expandPageToFit(), 100);
+        }
+
+        function deleteComponent(button) {
+            saveState();
+            
+            const component = button.closest('.component');
+            const componentType = component.dataset.component;
+            
+            const siblings = component.parentElement.querySelectorAll(`[data-component="${componentType}"]`);
+            if (siblings.length <= 1) {
+                alert('Debe mantener al menos un elemento');
+                return;
+            }
+            
+            component.style.transition = 'all 0.3s ease';
+            component.style.opacity = '0';
+            component.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                component.remove();
+                
+                const sectionLimits = {
+                    'ITINERARY_CARD': 'days',
+                    'PLACE_ITEM': 'places',
+                    'TIP_ITEM': 'tips',
+                    'CITY_ITEM': 'cities',
+                    'PHOTO_FRAME': 'photos'
+                };
+                
+                const limitKey = sectionLimits[componentType];
+                if (limitKey) {
+                    counters[limitKey]--;
+                    updateCounterDisplay(limitKey);
+                }
+                
+                reindexCounters();
+                expandPageToFit();
+            }, 300);
+        }
+
+        function updateClonedComponent(clone, componentType) {
+            if (componentType === 'CITY_ITEM') {
+                const number = clone.querySelector('div[style*="background: var(--teal-primary)"]');
+                if (number) number.textContent = counters.cities + 1;
+            }
+            
+            if (componentType === 'ITINERARY_CARD') {
+                const dayTitle = clone.querySelector('.day-title .editable');
+                if (dayTitle) dayTitle.textContent = `Día ${counters.days + 1}: Ciudad`;
+            }
+            
+            clone.querySelectorAll('.editable').forEach(el => {
+                const placeholder = el.dataset.var || 'Nuevo elemento';
+                el.textContent = `{{${placeholder}}}`;
+            });
+        }
+
+        function clearIDs(clone) {
+            clone.querySelectorAll('[id]').forEach(el => {
+                el.removeAttribute('id');
+            });
+            
+            if (clone.dataset.component) {
+                clone.dataset.cloned = 'true';
+            }
+        }
+
+        function reindexCounters() {
+            const dayCards = document.querySelectorAll('[data-component="ITINERARY_CARD"]');
+            dayCards.forEach((card, index) => {
+                const dayTitle = card.querySelector('.day-title .editable');
+                if (dayTitle) {
+                    const currentText = dayTitle.textContent.replace(/Día \d+/, `Día ${index + 1}`);
+                    dayTitle.textContent = currentText;
+                }
+            });
+            
+            const cityItems = document.querySelectorAll('[data-component="CITY_ITEM"]');
+            cityItems.forEach((item, index) => {
+                const numberEl = item.querySelector('div[style*="background: var(--teal-primary)"]');
+                if (numberEl) numberEl.textContent = index + 1;
+            });
+            
+            const mapPins = document.querySelectorAll('[data-component="MAP_PIN"]');
+            mapPins.forEach((pin, index) => {
+                pin.textContent = index + 1;
+                pin.dataset.pin = index + 1;
+            });
+        }
+
+        function updateCounterDisplay(type) {
+            const counterMappings = {
+                'days': 'dayCounter',
+                'places': 'placeCounter',
+                'tips': 'tipCounter',
+                'cities': 'cityCounter',
+                'photos': 'photoCounter'
+            };
+            
+            const counterId = counterMappings[type];
+            const counterEl = document.getElementById(counterId);
+            
+            if (counterEl) {
+                const maxLimit = limits[type];
+                counterEl.textContent = `${counters[type]}/${maxLimit} ${getTypeLabel(type)}`;
+                
+                const addBtnId = `add${type.charAt(0).toUpperCase() + type.slice(1, -1)}Btn`;
+                const addBtn = document.getElementById(addBtnId);
+                if (addBtn) {
+                    addBtn.disabled = counters[type] >= maxLimit;
+                }
+            }
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                'days': 'días',
+                'places': 'lugares',
+                'tips': 'consejos',
+                'cities': 'ciudades',
+                'photos': 'fotos'
+            };
+            return labels[type] || type;
+        }
+
+        function updateAllCounters() {
+            Object.keys(counters).forEach(type => {
+                if (type !== 'pages') {
+                    updateCounterDisplay(type);
+                }
+            });
+        }
+
+        // ===== FUNCIONES DE AGREGAR ELEMENTOS =====
+        function addItineraryDay() {
+            if (counters.days >= limits.days) {
+                alert(`Máximo ${limits.days} días permitidos`);
+                return;
+            }
+            
+            saveState();
+            const container = document.querySelector('#itineraryList');
+            const dayElement = createDayElement(counters.days + 1, `Día ${counters.days + 1}: Ciudad`, '');
+            container.appendChild(dayElement);
+            
+            counters.days++;
+            updateCounterDisplay('days');
+            dayElement.querySelectorAll('.editable').forEach(setupEditableElement);
+            setTimeout(() => expandPageToFit(), 100);
+        }
+
+        function addPlace() {
+            if (counters.places >= limits.places) {
+                alert(`Máximo ${limits.places} lugares permitidos`);
+                return;
+            }
+            
+            saveState();
+            const container = document.querySelector('#placesList');
+            const config = {
+                [`lugar${counters.places + 1}`]: `Lugar ${counters.places + 1}`,
+                [`ciudad_lugar${counters.places + 1}`]: 'Ciudad',
+                [`desc_lugar${counters.places + 1}`]: 'Descripción',
+                [`tipo_lugar${counters.places + 1}`]: 'must'
+            };
+            const placeElement = createPlaceElement(counters.places + 1, config);
+            container.appendChild(placeElement);
+            
+            counters.places++;
+            updateCounterDisplay('places');
+            placeElement.querySelectorAll('.editable').forEach(setupEditableElement);
+            setTimeout(() => expandPageToFit(), 100);
+        }
+
+        function addTip() {
+            if (counters.tips >= limits.tips) {
+                alert(`Máximo ${limits.tips} consejos permitidos`);
+                return;
+            }
+            
+            saveState();
+            const container = document.querySelector('#tipsList');
+            const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
+            const tipElement = createTipElement(counters.tips + 1, `Consejo ${counters.tips + 1}`, iconos[counters.tips] || '💡');
+            container.appendChild(tipElement);
+            
+            counters.tips++;
+            updateCounterDisplay('tips');
+            tipElement.querySelectorAll('.editable').forEach(setupEditableElement);
+            setTimeout(() => expandPageToFit(), 100);
+        }
+
+        function addCity() {
+            if (counters.cities >= limits.cities) {
+                alert(`Máximo ${limits.cities} ciudades permitidas`);
+                return;
+            }
+            
+            saveState();
+            const container = document.querySelector('#citiesList');
+            const cityElement = createCityElement(counters.cities + 1, `Ciudad ${counters.cities + 1} — descripción`);
+            container.appendChild(cityElement);
+            
+            counters.cities++;
+            updateCounterDisplay('cities');
+            addMapPin(counters.cities);
+            cityElement.querySelectorAll('.editable').forEach(setupEditableElement);
+            setTimeout(() => expandPageToFit(), 100);
+        }
+
+        function addMapPin(number) {
+            const mapContainer = document.querySelector('.map-container');
+            const pin = document.createElement('div');
+            pin.className = 'map-pin component';
+            pin.dataset.component = 'MAP_PIN';
+            pin.dataset.pin = number;
+            pin.textContent = number;
+            
+            pin.style.top = (Math.random() * 60 + 20) + '%';
+            pin.style.left = (Math.random() * 60 + 20) + '%';
+            
+            mapContainer.appendChild(pin);
+            setupMapPinSingle(pin);
+        }
+
+        // ===== FUNCIONES DE FOTOS =====
+        function addPhoto() {
+            if (counters.photos >= limits.photos) {
+                alert(`Máximo ${limits.photos} fotos permitidas`);
+                return;
+            }
+            
+            saveState();
+            const container = document.querySelector('#photoGrid');
+            const photoFrame = document.createElement('div');
+            photoFrame.className = 'photo-frame mini component';
+            photoFrame.setAttribute('data-component', 'PHOTO_FRAME');
+            photoFrame.setAttribute('data-frame', `IMG_${counters.photos}`);
+            
+            photoFrame.innerHTML = `
+                <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                <div class="photo-placeholder">
+                    📷 IMG_${counters.photos}<br>
+                    <small>Click para subir</small>
+                </div>
+                <div class="photo-controls">
+                    <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
+                    <button class="photo-btn" onclick="removePhoto(this)">×</button>
+                </div>
+                <div class="component-controls">
+                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
+                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
+                </div>
+            `;
+            
+            container.appendChild(photoFrame);
+            counters.photos++;
+            updateCounterDisplay('photos');
+            setupPhotoDragDropSingle(photoFrame);
+            setTimeout(() => expandPageToFit(), 100);
+        }
+
+        function uploadMultipleImages() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.multiple = true;
+            input.onchange = function(e) {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) return;
+                
+                const emptyFrames = Array.from(document.querySelectorAll('.photo-frame:not(.has-image)'));
+                let loaded = 0;
+                
+                files.forEach((file, index) => {
+                    if (index < emptyFrames.length) {
+                        loadImageToFrame(emptyFrames[index], file);
+                        loaded++;
+                    } else if (counters.photos < limits.photos) {
+                        addPhoto();
+                        setTimeout(() => {
+                            const newFrame = document.querySelector('.photo-frame:not(.has-image)');
+                            if (newFrame) {
+                                loadImageToFrame(newFrame, file);
+                                loaded++;
+                            }
+                        }, 100);
+                    }
+                });
+                
+                setTimeout(() => {
+                    showToast(`📸 ${loaded} imagen${loaded > 1 ? 'es' : ''} cargada${loaded > 1 ? 's' : ''}`);
+                }, 500);
+            };
+            input.click();
+        }
+
+        function setupPhotoDragDrop() {
+            document.querySelectorAll('.photo-frame').forEach(setupPhotoDragDropSingle);
+        }
+
+        function setupPhotoDragDropSingle(frame) {
+            frame.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--teal-primary)';
+            });
+
+            frame.addEventListener('dragleave', function(e) {
+                this.style.borderColor = '#ccc';
+            });
+
+            frame.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ccc';
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('image/')) {
+                    loadImageToFrame(this, files[0]);
+                }
+            });
+
+            frame.addEventListener('click', function() {
+                if (!this.classList.contains('has-image')) {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = (e) => {
+                        if (e.target.files[0]) {
+                            loadImageToFrame(this, e.target.files[0]);
+                        }
+                    };
+                    input.click();
+                }
+            });
+        }
+
+        function loadImageToFrame(frame, file, url = null) {
+            if (url) {
+                frame.style.backgroundImage = `url(${url})`;
+                frame.style.backgroundSize = 'cover';
+                frame.style.backgroundPosition = 'center';
+                frame.classList.add('has-image');
+                const placeholder = frame.querySelector('.photo-placeholder');
+                if (placeholder) placeholder.style.display = 'none';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                frame.style.backgroundImage = `url(${e.target.result})`;
+                frame.style.backgroundSize = 'cover';
+                frame.style.backgroundPosition = 'center';
+                frame.classList.add('has-image');
+                
+                const placeholder = frame.querySelector('.photo-placeholder');
+                if (placeholder) placeholder.style.display = 'none';
+                
+                setTimeout(() => expandPageToFit(), 100);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function changePhoto(button) {
+            const frame = button.closest('.photo-frame');
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                if (e.target.files[0]) {
+                    loadImageToFrame(frame, e.target.files[0]);
+                }
+            };
+            input.click();
+        }
+
+        function removePhoto(button) {
+            const frame = button.closest('.photo-frame');
+            frame.style.backgroundImage = '';
+            frame.classList.remove('has-image');
+            
+            const placeholder = frame.querySelector('.photo-placeholder');
+            if (placeholder) placeholder.style.display = 'block';
+        }
+
+        function uploadLogo(logoSlot) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = logoSlot.querySelector('img');
+                        const placeholder = logoSlot.querySelector('.logo-placeholder');
+                        
+                        img.src = event.target.result;
+                        img.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        logoSlot.classList.add('has-logo');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        // ===== FUNCIONES DE UTILIDAD =====
+        function setupCostRating() {
+            document.querySelectorAll('.cost-circle').forEach((circle, index) => {
+                circle.addEventListener('click', function() {
+                    saveState();
+                    const circles = this.parentElement.querySelectorAll('.cost-circle');
+                    const value = index + 1;
+                    
+                    circles.forEach((c, i) => {
+                        if (i < value) {
+                            c.classList.remove('empty');
+                        } else {
+                            c.classList.add('empty');
+                        }
+                    });
+                    
+                    const costText = this.parentElement.parentElement.querySelector('.cost-text');
+                    const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
+                    costText.textContent = `${value}/5 — ${labels[value-1]}`;
+                });
+            });
+        }
+
+        function cyclePlaceBadge(badge) {
+            saveState();
+            const types = ['must', 'skip', 'eco', 'family'];
+            const labels = ['MUST', 'SKIP', 'ECO', 'FAMILY'];
+            const currentIndex = types.findIndex(type => badge.classList.contains(type));
+            const nextIndex = (currentIndex + 1) % types.length;
+            
+            badge.className = `place-badge ${types[nextIndex]}`;
+            badge.textContent = labels[nextIndex];
+        }
+
+        // ===== SISTEMA DE DESHACER =====
+        let undoStack = [];
+        const MAX_UNDO = 10;
+
+        function saveState() {
+            const state = serializeTemplate();
+            undoStack.push(JSON.stringify(state));
+            
+            if (undoStack.length > MAX_UNDO) {
+                undoStack.shift();
+            }
+            
+            const undoBtn = document.getElementById('undoBtn');
+            if (undoBtn) undoBtn.disabled = false;
+        }
+
+        function undo() {
+            if (undoStack.length === 0) return;
+            
+            const previousState = undoStack.pop();
+            if (previousState) {
+                restoreTemplate(JSON.parse(previousState));
+                showToast('↶ Cambios deshechos');
+                
+                const undoBtn = document.getElementById('undoBtn');
+                if (undoBtn && undoStack.length === 0) {
+                    undoBtn.disabled = true;
+                }
+            }
+        }
+
+        // ===== EXPORTACIÓN PDF =====
+        function exportTemplate(format) {
+            // Ocultar todos los controles y elementos de edición
+            document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .editable').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Limpiar bordes de editables
+            document.querySelectorAll('.editable').forEach(el => {
+                el.style.border = 'none';
+                el.style.background = 'transparent';
+            });
+            
+            window.print();
+            
+            // Restaurar después de imprimir
+            setTimeout(() => {
+                document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls').forEach(el => {
+                    el.style.display = '';
+                });
+                document.querySelectorAll('.editable').forEach(el => {
+                    el.style.display = '';
+                    el.style.border = '';
+                    el.style.background = '';
+                });
+            }, 1000);
+        }
+
+        function togglePreview() {
+            const isPreview = document.body.classList.toggle('preview-mode');
+            
+            document.querySelectorAll('.component-controls, .add-btn, .map-controls, .control-panel').forEach(el => {
+                el.style.display = isPreview ? 'none' : '';
+            });
+            
+            document.querySelectorAll('.editable').forEach(el => {
+                if (isPreview) {
+                    el.style.border = 'none';
+                    el.style.background = 'transparent';
+                } else {
+                    el.style.border = '';
+                    el.style.background = '';
+                }
+            });
+            
+            const btn = document.querySelector('.preview-btn');
+            if (btn) {
+                btn.textContent = isPreview ? '✏️ Editar' : '👁️ Vista previa';
+            }
+        }
+
+        function toggleHelp() {
+            alert(`🎯 GUÍA V5.1 - Sistema Híbrido
+
+📝 WORKFLOW RECOMENDADO:
+1. Copia index.html para nuevo país
+2. Modifica TEMPLATE_CONFIG con datos base
+3. Abre en navegador
+4. Haz ajustes finos editando en página
+5. Exporta a PDF
+
+🔧 BOTONES PRINCIPALES:
+- 🔄 Recargar Config: Resetea a variables (ignora ediciones)
+- 💾 Guardar Sesión: Guarda ediciones localmente
+- ↶ Deshacer: Deshace última acción
+- 👁️ Vista Previa: Ver sin controles
+- 📄 PDF A4: Exportar a PDF
+
+🗺️ MAPAS:
+- Sube imagen del país
+- Arrastra pins a ubicaciones correctas
+- Se ajusta automáticamente al tamaño
+
+📸 FOTOS:
+- 📷 Subir Imágenes: Cargar múltiples a la vez
+- Drag & drop también funciona
+- Primera imagen: 2.5:1 (ancha)
+
+⚡ ATAJOS:
+- Ctrl+S → Guardar sesión
+- Ctrl+Z → Deshacer
+- Escape → Salir de preview
+
+💡 IMPORTANTE:
+- Botón "Guardar Sesión" = Solo para esa sesión
+- Para nuevo país: Copiar archivo original
+- Variables = Siempre punto de inicio`);
+        }
+
+        // ===== VARIABLES GLOBALES =====
+        let counters = {
+            photos: 0,
+            cities: 0,
+            days: 0,
+            places: 0,
+            tips: 0,
+            pages: 1
+        };
+
+        const limits = {
+            photos: 7,
+            cities: 12,
+            days: 10,
+            places: 12,
+            tips: 12
+        };
+
+        let autoExtendEnabled = true;
+
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFromConfig();
+            loadFromLocalStorage();
+            setupEventListeners();
+            setupKeyboardShortcuts();
+            console.log('✅ V5.1 cargado - Sistema híbrido activo');
+        });
+
+        function setupEventListeners() {
+            window.addEventListener('resize', debounce(() => {
+                expandPageToFit();
+            }, 300));
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    autosaveJSON();
+                }
+                if (e.ctrlKey && e.key === 'z') {
+                    e.preventDefault();
+                    undo();
+                }
+                if (e.key === 'Escape') {
+                    const isPreview = document.body.classList.contains('preview-mode');
+                    if (isPreview) togglePreview();
+                }
+            });
+        }
     </script>
-    
-    <style>
+
+
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -743,7 +1551,6 @@
             --text-dark: #2F3A3A;
             --text-light: #666;
             --safe-margin: 20mm;
-            --bleed: 3mm;
             --gap: 16px;
         }
 
@@ -781,6 +1588,7 @@
             gap: var(--gap);
         }
 
+        /* HEADER */
         .master-header {
             height: 80px;
             background: linear-gradient(135deg, var(--teal-primary), var(--teal-light));
@@ -793,39 +1601,46 @@
             flex-shrink: 0;
         }
 
+        /* LOGO MÁS GRANDE Y VISIBLE */
         .logo-slot {
-            width: 56px;
-            height: 36px;
+            width: 80px;  /* Era 56px */
+            height: 52px;  /* Era 36px */
             margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
-            background: transparent;
-            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.95);
+            border: 2px dashed rgba(15, 122, 120, 0.3);
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 8px;
-            color: rgba(255,255,255,0.7);
-            text-align: center;
-            line-height: 1.1;
-            overflow: hidden;
+            padding: 4px;
         }
 
         .logo-slot:hover {
-            border-color: rgba(255,255,255,0.6);
-            background: rgba(255,255,255,0.1);
+            border-color: var(--teal-primary);
+            background: var(--white);
+            transform: scale(1.05);
         }
 
         .logo-slot.has-logo {
             border-style: solid;
             border-color: var(--white);
+            background: var(--white);
         }
 
         .logo-slot img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
+        }
+
+        .logo-placeholder {
+            font-size: 9px;
+            color: var(--teal-primary);
+            text-align: center;
+            line-height: 1.2;
+            font-weight: 600;
         }
 
         .flag-container {
@@ -863,6 +1678,7 @@
             font-weight: 500;
         }
 
+        /* FOOTER */
         .master-footer {
             margin-top: auto;
             padding-top: 12px;
@@ -873,6 +1689,7 @@
             flex-shrink: 0;
         }
 
+        /* LAYOUT 2 COLUMNAS */
         .content-area {
             flex: 1;
             display: grid;
@@ -900,6 +1717,7 @@
             break-inside: avoid;
         }
 
+        /* COMPONENTES */
         .component {
             position: relative;
             transition: all 0.2s ease;
@@ -953,6 +1771,7 @@
             color: var(--white);
         }
 
+        /* SECCIONES */
         .section-header {
             display: flex;
             align-items: center;
@@ -1006,6 +1825,7 @@
             cursor: not-allowed;
         }
 
+        /* TARJETA RESUMEN */
         .summary-card {
             background: var(--white);
             border-radius: 12px;
@@ -1032,6 +1852,39 @@
             color: var(--teal-primary);
         }
 
+        /* PRESUPUESTO */
+        .budget-section {
+            background: #f8fffe;
+            border-left: 3px solid var(--teal-primary);
+            padding: 12px;
+            margin-top: 12px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .budget-title {
+            font-weight: 600;
+            color: var(--teal-primary);
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .budget-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .budget-label {
+            color: var(--text-light);
+        }
+
+        .budget-value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* NIVEL DE COSTE */
         .cost-rating {
             display: flex;
             align-items: center;
@@ -1066,6 +1919,7 @@
             color: var(--text-light);
         }
 
+        /* FOTOS */
         .photo-section {
             background: var(--white);
             border-radius: 12px;
@@ -1097,7 +1951,7 @@
 
         .photo-frame.hero {
             grid-column: span 2;
-            aspect-ratio: 3/1;
+            aspect-ratio: 2.5/1;  /* CAMBIADO de 3/1 a 2.5/1 */
             min-height: 80px;
         }
 
@@ -1146,6 +2000,7 @@
             cursor: pointer;
         }
 
+        /* MAPA - AJUSTE AUTOMÁTICO */
         .map-section {
             background: var(--white);
             border-radius: 12px;
@@ -1179,18 +2034,19 @@
 
         .map-container {
             width: 100%;
-            height: 140px;
+            height: 140px;  /* Altura inicial */
             background: linear-gradient(135deg, #f0f9f9, #e6f7f7);
             border-radius: 8px;
             position: relative;
             overflow: hidden;
             margin-bottom: 12px;
-            transition: all 0.3s ease;
+            transition: height 0.3s ease;
         }
 
         .map-container.has-custom-map {
             border: 2px solid var(--teal-primary);
             background: #f8f9fa;
+            height: auto;  /* Se ajusta al contenido */
         }
 
         .map-route {
@@ -1224,6 +2080,7 @@
             transform: scale(1.1);
         }
 
+        /* ITINERARIO */
         .itinerary-section {
             background: var(--white);
             border-radius: 12px;
@@ -1257,6 +2114,7 @@
             line-height: 1.3;
         }
 
+        /* TOP LUGARES */
         .top-places {
             background: var(--white);
             border-radius: 12px;
@@ -1300,6 +2158,7 @@
             color: var(--teal-primary);
         }
 
+        /* CONSEJOS */
         .quick-tips {
             background: var(--white);
             border-radius: 12px;
@@ -1338,6 +2197,7 @@
             flex-shrink: 0;
         }
 
+        /* EDITABLE - SIN CONTADORES VISIBLES */
         .editable {
             background: rgba(255, 107, 97, 0.1);
             padding: 2px 4px;
@@ -1358,17 +2218,7 @@
             outline: none;
         }
 
-        .char-counter {
-            font-size: 8px;
-            color: var(--text-light);
-            margin-left: 4px;
-        }
-
-        .char-counter.warning {
-            color: var(--coral);
-            font-weight: 600;
-        }
-
+        /* PANEL DE CONTROL */
         .control-panel {
             position: fixed;
             top: 20px;
@@ -1381,7 +2231,6 @@
             padding: 12px;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            max-width: 200px;
         }
 
         .control-btn-main {
@@ -1399,47 +2248,41 @@
             transform: translateY(-1px);
         }
 
-        /* Tooltips */
-        .control-btn-main::after {
+        .control-btn-main:hover::after {
             content: attr(data-tooltip);
             position: absolute;
-            right: 100%;
+            right: 110%;
             top: 50%;
             transform: translateY(-50%);
-            margin-right: 8px;
-            padding: 4px 8px;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9);
             color: white;
-            font-size: 10px;
+            padding: 6px 10px;
             border-radius: 4px;
+            font-size: 11px;
             white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
+            z-index: 1001;
         }
 
-        .control-btn-main:hover::after {
-            opacity: 1;
-        }
-
+        .reload-config-btn { background: #9C27B0; color: var(--white); }
+        .upload-images-btn { background: #2196F3; color: var(--white); }
         .help-btn { background: var(--teal-primary); color: var(--white); }
+        .save-btn { background: #4CAF50; color: var(--white); }
+        .undo-btn { background: #666; color: var(--white); }
         .export-btn { background: var(--coral); color: var(--white); }
         .preview-btn { background: var(--teal-light); color: var(--white); }
-        .undo-btn { background: #666; color: var(--white); }
-        .save-btn { background: #4CAF50; color: var(--white); }
-        .autoextend-btn { background: var(--teal-light); color: var(--white); }
-        .autoextend-btn.active { background: var(--teal-primary); }
-        .compact-btn { background: #FF9800; color: var(--white); }
-        .reload-config-btn { background: #9C27B0; color: var(--white); }
-        .upload-multiple-btn { background: #2196F3; color: var(--white); }
+
+        .undo-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
 
         .status-bar {
             display: flex;
-            flex-direction: column;
-            gap: 4px;
+            align-items: center;
+            gap: 8px;
             font-size: 10px;
             color: var(--text-light);
-            padding: 8px 0;
+            padding: 4px 0;
             border-top: 1px solid #eee;
             margin-top: 8px;
         }
@@ -1457,43 +2300,13 @@
             background: #4CAF50;
         }
 
-        .status-dot.warning { background: #FF9800; }
-        .status-dot.error { background: var(--coral); }
-
-        .progress-container {
-            margin-top: 8px;
+        /* MODO VISTA PREVIA */
+        .preview-mode .editable {
+            border: none !important;
+            background: transparent !important;
         }
 
-        .progress-bar-bg {
-            width: 100%;
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: #4CAF50;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            font-size: 9px;
-            margin-top: 4px;
-            text-align: center;
-        }
-
-        .validation-warning {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 8px;
-            margin: 8px 0;
-            font-size: 10px;
-            border-radius: 4px;
-            display: none;
-        }
-
+        /* RESPONSIVE */
         @media screen and (max-width: 1200px) {
             .page {
                 transform: scale(0.8);
@@ -1505,14 +2318,17 @@
             .page {
                 transform: scale(0.6);
             }
-            
             .content-area {
                 grid-template-columns: 1fr;
             }
         }
 
+        /* IMPRESIÓN - LIMPIO */
         @media print {
-            body { margin: 0; background: var(--white); }
+            body { 
+                margin: 0; 
+                background: var(--white); 
+            }
             .page { 
                 box-shadow: none; 
                 margin: 0;
@@ -1520,18 +2336,20 @@
                 min-height: 297mm;
                 page-break-inside: avoid;
             }
-            .control-panel, .validation-warning, #mapMessage {
-                display: none !important;
-            }
-            .component-controls, .photo-controls, .map-controls {
+            .control-panel,
+            .component-controls,
+            .add-btn,
+            .map-controls,
+            .photo-controls {
                 display: none !important;
             }
             .editable {
-                background: transparent !important;
                 border: none !important;
+                background: transparent !important;
             }
         }
 
+        /* ANIMACIONES */
         .fade-in {
             animation: fadeIn 0.3s ease-in;
         }
@@ -1540,123 +2358,24 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .config-indicator {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: linear-gradient(135deg, #9C27B0, #673AB7);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 600;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
-        }
-
-        /* Tutorial Modal */
-        .tutorial-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .tutorial-modal {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        .tutorial-step {
-            margin: 20px 0;
-        }
-
-        .tutorial-step h3 {
-            color: var(--teal-primary);
-            margin-bottom: 10px;
-        }
-
-        .tutorial-btn {
-            background: var(--teal-primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin: 10px 5px;
-        }
     </style>
 </head>
 <body>
-    <!-- Indicador de sistema de configuración -->
-    <div class="config-indicator">
-        🎯 V5.1 - MEJORADO
-    </div>
-
     <!-- Panel de control -->
     <div class="control-panel">
-        <button class="control-btn-main reload-config-btn" onclick="initializeFromConfig()" data-tooltip="Cargar desde TEMPLATE_CONFIG">🔄 Recargar Config</button>
-        <button class="control-btn-main upload-multiple-btn" onclick="uploadMultipleImages()" data-tooltip="Cargar varias imágenes a la vez">📸 Cargar Fotos</button>
-        <button class="control-btn-main help-btn" onclick="toggleHelp()" data-tooltip="Ver guía de uso">❓ Ayuda</button>
-        <button class="control-btn-main save-btn" onclick="autosaveJSON()" data-tooltip="Guardar progreso manualmente">💾 Guardar</button>
-        <button class="control-btn-main undo-btn" onclick="undo()" id="undoBtn" disabled data-tooltip="Deshacer última acción">↶ Deshacer</button>
-        <button class="control-btn-main autoextend-btn active" onclick="toggleAutoExtend()" id="autoExtendBtn" data-tooltip="Auto-ajustar altura de página">📏 Auto ON</button>
-        <button class="control-btn-main export-btn" onclick="exportTemplate('A4')" data-tooltip="Exportar a PDF para imprimir">📄 PDF A4</button>
-        <button class="control-btn-main preview-btn" onclick="togglePreview()" data-tooltip="Ver sin controles de edición">👁️ Preview</button>
-        
-        <div class="validation-warning" id="validationWarning"></div>
-        
-        <div class="progress-container">
-            <div class="progress-bar-bg">
-                <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
-            </div>
-            <div class="progress-text" id="progressText">Completitud: 0%</div>
-        </div>
+        <button class="control-btn-main reload-config-btn" onclick="initializeFromConfig()" data-tooltip="Resetear a variables (ignora ediciones)">🔄 Recargar Config</button>
+        <button class="control-btn-main upload-images-btn" onclick="uploadMultipleImages()" data-tooltip="Cargar múltiples fotos a la vez">📷 Subir Imágenes</button>
+        <button class="control-btn-main help-btn" onclick="toggleHelp()" data-tooltip="Mostrar guía de uso">❓ Ayuda</button>
+        <button class="control-btn-main save-btn" onclick="autosaveJSON()" data-tooltip="Guardar sesión localmente (Ctrl+S)">💾 Guardar Sesión</button>
+        <button class="control-btn-main undo-btn" onclick="undo()" id="undoBtn" disabled data-tooltip="Deshacer última acción (Ctrl+Z)">↶ Deshacer</button>
+        <button class="control-btn-main export-btn" onclick="exportTemplate('A4')" data-tooltip="Exportar a PDF tamaño A4">📄 PDF A4</button>
+        <button class="control-btn-main preview-btn" onclick="togglePreview()" data-tooltip="Vista previa sin controles (Escape)">👁️ Vista previa</button>
         
         <div class="status-bar">
             <div class="status-indicator">
                 <div class="status-dot" id="saveStatus"></div>
-                <span id="saveText">Listo</span>
+                <span id="saveText">V5.1</span>
             </div>
-            <div class="status-indicator">
-                <span id="pageCount">Página 1 de 1</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tutorial de primer uso -->
-    <div class="tutorial-overlay" id="tutorialOverlay">
-        <div class="tutorial-modal">
-            <h2>¡Bienvenido! 🎉</h2>
-            <p style="margin: 15px 0;">Te guiaré en 3 pasos simples para crear tu guía:</p>
-            
-            <div class="tutorial-step">
-                <h3>🎯 Paso 1: Configura tu país</h3>
-                <p>Modifica <code>TEMPLATE_CONFIG</code> al inicio del código HTML con los datos de tu destino</p>
-            </div>
-            
-            <div class="tutorial-step">
-                <h3>🗺️ Paso 2: Sube tu mapa</h3>
-                <p>Haz clic en "📤 Subir Mapa" y selecciona la imagen del país</p>
-            </div>
-            
-            <div class="tutorial-step">
-                <h3>📄 Paso 3: Exporta a PDF</h3>
-                <p>Cuando termines, haz clic en "📄 PDF A4" para descargar</p>
-            </div>
-            
-            <button class="tutorial-btn" onclick="closeTutorial()">¡Entendido, empecemos!</button>
-            <button class="tutorial-btn" onclick="closeTutorial(true)" style="background: #666;">No mostrar de nuevo</button>
         </div>
     </div>
 
@@ -1668,30 +2387,31 @@
                 <div class="master-header">
                     <div class="logo-slot" onclick="uploadLogo(this)">
                         <img src="" alt="Logo" style="display: none;" />
-                        <div class="logo-placeholder">LOGO<br><small>Click</small></div>
+                        <div class="logo-placeholder">LOGO<br><small>Click aquí</small></div>
                     </div>
                     <div class="flag-container">🏳️</div>
-                    <div class="country-title editable" data-limit="30" data-var="PAIS">{{PAÍS}}<span class="char-counter">0/30</span></div>
-                    <div class="page-indicator">Página <span class="page-number">1</span> de <span class="total-pages">1</span></div>
+                    <div class="country-title editable" data-limit="30" data-var="PAIS">{{PAÍS}}</div>
+                    <div class="page-indicator">Página 1 de 1</div>
                 </div>
 
-                <!-- Área de contenido principal (2 COLUMNAS) -->
+                <!-- Área de contenido (2 COLUMNAS) -->
                 <div class="content-area">
-                    <!-- Columna izquierda -->
+                    <!-- COLUMNA IZQUIERDA -->
                     <div class="left-column">
                         <!-- Tarjeta resumen -->
                         <div class="summary-card component flow-item">
-                            <div class="summary-title editable" data-limit="25" data-var="NOMBRE_PAIS">{{NOMBRE DEL PAÍS}}<span class="char-counter">0/25</span></div>
+                            <div class="summary-title editable" data-limit="25" data-var="NOMBRE_PAIS">{{NOMBRE DEL PAÍS}}</div>
+                            
                             <div class="summary-item">
                                 <span class="summary-label">Fechas:</span> 
-                                <span class="editable" data-limit="20" data-var="FECHAS">{{Fechas de visita}}<span class="char-counter">0/20</span></span>
+                                <span class="editable" data-limit="20" data-var="FECHAS">{{Fechas}}</span>
                             </div>
                             <div class="summary-item">
                                 <span class="summary-label">Duración:</span> 
-                                <span class="editable" data-limit="15" data-var="DURACION">{{Duración (días)}}<span class="char-counter">0/15</span></span>
+                                <span class="editable" data-limit="15" data-var="DURACION">{{Duración}}</span>
                             </div>
                             
-                            <!-- Componente de calificación de coste -->
+                            <!-- Nivel de coste -->
                             <div class="cost-rating component" data-component="COST_RATING">
                                 <span class="summary-label">Coste:</span>
                                 <div class="cost-circles">
@@ -1704,18 +2424,36 @@
                                 <span class="cost-text">3/5 — Moderado</span>
                             </div>
 
+                            <!-- Presupuesto -->
+                            <div class="budget-section">
+                                <div class="budget-title">💰 Presupuesto</div>
+                                <div class="budget-item">
+                                    <span class="budget-label">Por día:</span>
+                                    <span class="budget-value editable" data-limit="25" data-var="PRESUPUESTO_DIA">{{Presupuesto/día}}</span>
+                                </div>
+                                <div class="budget-item">
+                                    <span class="budget-label">Total gastado:</span>
+                                    <span class="budget-value editable" data-limit="25" data-var="TOTAL_GASTADO">{{Total}}</span>
+                                </div>
+                            </div>
+
+                            <!-- Información esencial -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">💰</div>
-                                    <span class="editable" data-limit="15" data-var="MONEDA">{{Moneda}}<span class="char-counter">0/15</span></span>
+                                    <span class="editable" data-limit="15" data-var="MONEDA">{{Moneda}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🔌</div>
-                                    <span class="editable" data-limit="15" data-var="ENCHUFE">{{Enchufe}}<span class="char-counter">0/15</span></span>
+                                    <span class="editable" data-limit="15" data-var="ENCHUFE">{{Enchufe}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🆘</div>
-                                    <span class="editable" data-limit="15" data-var="EMERGENCIA">{{Tel. emergencia}}<span class="char-counter">0/15</span></span>
+                                    <span class="editable" data-limit="15" data-var="EMERGENCIA">{{Emergencia}}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
+                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🗣️</div>
+                                    <span class="editable" data-limit="20" data-var="IDIOMA">{{Idioma}}</span>
                                 </div>
                             </div>
                         </div>
@@ -1726,70 +2464,53 @@
                                 <div class="section-title">Fotos del Viaje</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="photoCounter">0/7 fotos</span>
-                                    <button class="add-btn" onclick="addPhoto()" id="addPhotoBtn" title="Añadir nueva foto">+ Foto</button>
+                                    <button class="add-btn" onclick="addPhoto()" id="addPhotoBtn">+ Foto</button>
                                 </div>
                             </div>
                             
                             <div class="photo-frame hero component" data-component="PHOTO_FRAME" data-frame="IMG_HERO">
-                                <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">3:1 Hero</div>
+                                <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">2.5:1</div>
                                 <div class="photo-placeholder">
                                     📸 Imagen Principal<br>
-                                    <small>Arrastra imagen aquí (ratio 3:1)</small>
+                                    <small>Click o arrastra (2.5:1)</small>
                                 </div>
                                 <div class="photo-controls">
                                     <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                    <button class="photo-btn" onclick="removePhoto(this)">Eliminar</button>
+                                    <button class="photo-btn" onclick="removePhoto(this)">×</button>
                                 </div>
                             </div>
 
                             <div class="photo-grid" id="photoGrid">
-                                <!-- Las fotos se generarán dinámicamente -->
-                            </div>
-                        </div>
-
-                        <!-- Información rápida -->
-                        <div style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1);" class="flow-item">
-                            <div style="font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 14px; color: var(--teal-primary); margin-bottom: 12px;">Información Rápida</div>
-                            <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; margin-bottom: 8px;">
-                                <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🗣️</div>
-                                <span class="editable" data-limit="20" data-var="IDIOMA">{{Idioma principal}}<span class="char-counter">0/20</span></span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">ℹ️</div>
-                                <span class="editable" data-limit="50" data-var="INFO_ADICIONAL">{{Info adicional}}<span class="char-counter">0/50</span></span>
+                                <!-- Las fotos mini se generarán aquí -->
                             </div>
                         </div>
                     </div>
 
-                    <!-- Columna derecha -->
+                    <!-- COLUMNA DERECHA -->
                     <div class="right-column">
-                        <!-- SECCIÓN DEL MAPA MEJORADA -->
+                        <!-- Mapa -->
                         <div class="map-section flow-item">
                             <div class="section-header">
                                 <div class="section-title">Ruta del Viaje</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="cityCounter">0/12 ciudades</span>
-                                    <button class="add-btn" onclick="addCity()" id="addCityBtn" title="Añadir nueva ciudad">+ Ciudad</button>
+                                    <button class="add-btn" onclick="addCity()" id="addCityBtn">+ Ciudad</button>
                                 </div>
                             </div>
                             
-                            <!-- Controles de mapa integrados -->
                             <div class="map-controls">
                                 <button class="map-btn" id="uploadMapBtn" onclick="uploadMapImage()">📤 Subir Mapa</button>
-                                <button class="map-btn" onclick="autoPlacePins()" style="display: inline-flex;">🎯 Auto-ubicar</button>
-                                <button class="map-btn" onclick="resetMapPins()" style="display: inline-flex;">🔄 Reset Pins</button>
+                                <button class="map-btn" onclick="autoPlacePins()">🎯 Auto-ubicar</button>
+                                <button class="map-btn" onclick="resetMapPins()">🔄 Reset Pins</button>
                             </div>
                             
                             <div class="map-container">
                                 <svg class="map-route" viewBox="0 0 100 100">
                                     <path d="M 20 30 Q 40 20 60 40 T 80 70" stroke="var(--teal-primary)" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
                                 </svg>
-                                <div style="position: absolute; bottom: 8px; right: 8px; width: 40px; height: 40px; background: var(--teal-primary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px; text-align: center; line-height: 1.1;">QR<br>Map</div>
                             </div>
                             
-                            <div class="flow-container" id="citiesList">
-                                <!-- Las ciudades se generarán dinámicamente -->
-                            </div>
+                            <div class="flow-container" id="citiesList"></div>
                         </div>
 
                         <!-- Itinerario -->
@@ -1798,13 +2519,10 @@
                                 <div class="section-title">Itinerario</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="dayCounter">0/10 días</span>
-                                    <button class="add-btn" onclick="addItineraryDay()" id="addDayBtn" title="Añadir nuevo día">+ Día</button>
+                                    <button class="add-btn" onclick="addItineraryDay()" id="addDayBtn">+ Día</button>
                                 </div>
                             </div>
-                            
-                            <div class="flow-container" id="itineraryList">
-                                <!-- Los días se generarán dinámicamente -->
-                            </div>
+                            <div class="flow-container" id="itineraryList"></div>
                         </div>
 
                         <!-- Top lugares -->
@@ -1813,13 +2531,10 @@
                                 <div class="section-title">Top Lugares</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="placeCounter">0/12 lugares</span>
-                                    <button class="add-btn" onclick="addPlace()" id="addPlaceBtn" title="Añadir nuevo lugar">+ Lugar</button>
+                                    <button class="add-btn" onclick="addPlace()" id="addPlaceBtn">+ Lugar</button>
                                 </div>
                             </div>
-                            
-                            <div class="flow-container" id="placesList">
-                                <!-- Los lugares se generarán dinámicamente -->
-                            </div>
+                            <div class="flow-container" id="placesList"></div>
                         </div>
 
                         <!-- Consejos rápidos -->
@@ -1828,13 +2543,10 @@
                                 <div class="section-title">Consejos Rápidos</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="tipCounter">0/12 consejos</span>
-                                    <button class="add-btn" onclick="addTip()" id="addTipBtn" title="Añadir nuevo consejo">+ Consejo</button>
+                                    <button class="add-btn" onclick="addTip()" id="addTipBtn">+ Consejo</button>
                                 </div>
                             </div>
-                            
-                            <div class="tips-grid" id="tipsList">
-                                <!-- Los consejos se generarán dinámicamente -->
-                            </div>
+                            <div class="tips-grid" id="tipsList"></div>
                         </div>
                     </div>
                 </div>
@@ -1842,1233 +2554,13 @@
                 <!-- Footer -->
                 <div class="master-footer">
                     <div>
-                        <strong>Fecha de creación:</strong> <span class="editable" data-limit="15" data-var="FECHA_CREACION">{{Fecha de creación}}</span> | 
-                        <strong>Créditos fotos:</strong> <span class="editable" data-limit="50" data-var="CREDITOS">{{Autores}}</span>
+                        <strong>Creado:</strong> <span class="editable" data-limit="15" data-var="FECHA_CREACION">{{Fecha}}</span> | 
+                        <strong>Créditos:</strong> <span class="editable" data-limit="50" data-var="CREDITOS">{{Créditos}}</span>
                     </div>
-                    <div style="margin-top: 4px;">⚠️ Información aproximada — verificar requisitos oficiales antes del viaje</div>
+                    <div style="margin-top: 4px;">⚠️ Información aproximada — verificar requisitos oficiales</div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- JAVASCRIPT COMPLETO (Parte 2 - Funciones operativas) -->
-    <script>
-        // ===== VARIABLES GLOBALES =====
-        let counters = {
-            photos: 0,
-            cities: 0,
-            days: 0,
-            places: 0,
-            tips: 0,
-            pages: 1
-        };
-
-        const limits = {
-            photos: 7,
-            cities: 12,
-            days: 10,
-            places: 12,
-            tips: 12
-        };
-
-        let undoStack = [];
-        const MAX_UNDO = 10;
-        let autoExtendEnabled = true;
-
-        // ===== INICIALIZACIÓN AL CARGAR LA PÁGINA =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mostrar tutorial solo la primera vez
-            if (!localStorage.getItem('tutorial_completed')) {
-                document.getElementById('tutorialOverlay').style.display = 'flex';
-            }
-            
-            initializeFromConfig();
-            loadFromLocalStorage();
-            setupEventListeners();
-            setupKeyboardShortcuts();
-            console.log('🎯 Sistema V5.1 cargado correctamente');
-        });
-
-        // ===== TUTORIAL =====
-        function closeTutorial(dontShowAgain = false) {
-            document.getElementById('tutorialOverlay').style.display = 'none';
-            if (dontShowAgain) {
-                localStorage.setItem('tutorial_completed', 'true');
-            }
-        }
-
-        // ===== ATAJOS DE TECLADO =====
-        function setupKeyboardShortcuts() {
-            document.addEventListener('keydown', function(e) {
-                // Ctrl+S o Cmd+S para guardar
-                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                    e.preventDefault();
-                    autosaveJSON();
-                    showToast('Guardado manualmente');
-                }
-                
-                // Ctrl+Z o Cmd+Z para deshacer
-                if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-                    e.preventDefault();
-                    undo();
-                }
-                
-                // Escape para salir de vista previa
-                if (e.key === 'Escape') {
-                    const isPreview = document.body.classList.contains('preview-mode');
-                    if (isPreview) {
-                        togglePreview();
-                    }
-                }
-                
-                // Ctrl+P o Cmd+P para vista previa (override print dialog)
-                if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-                    e.preventDefault();
-                    togglePreview();
-                }
-            });
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: rgba(0,0,0,0.8);
-                color: white;
-                padding: 12px 20px;
-                border-radius: 6px;
-                z-index: 3000;
-                font-size: 12px;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 2000);
-        }
-
-        // ===== CARGA MÚLTIPLE DE IMÁGENES =====
-        function uploadMultipleImages() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.multiple = true;
-            input.onchange = function(e) {
-                const files = Array.from(e.target.files);
-                const availableFrames = document.querySelectorAll('.photo-frame:not(.has-image)');
-                
-                if (files.length > availableFrames.length) {
-                    alert(`Solo puedes cargar ${availableFrames.length} imágenes más`);
-                    return;
-                }
-                
-                files.forEach((file, index) => {
-                    if (availableFrames[index]) {
-                        loadImageToFrame(availableFrames[index], file);
-                    }
-                });
-                
-                showToast(`${files.length} imágenes cargadas`);
-            };
-            input.click();
-        }
-
-        // ===== FUNCIONES BÁSICAS =====
-        function mmToPx(mm) {
-            return mm * (96 / 25.4);
-        }
-
-        function elementFitsInPage(el) {
-            const page = document.querySelector('.page');
-            const pageContent = page.querySelector('.page-content');
-            
-            const used = Array.from(pageContent.children).reduce((h, child) => {
-                return h + child.offsetHeight + parseFloat(getComputedStyle(child).marginBottom || 0);
-            }, 0);
-            
-            const safePx = mmToPx(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-margin')));
-            const available = Math.max(pageContent.clientHeight, mmToPx(297) - safePx * 2);
-            
-            return used <= available;
-        }
-
-        function expandPageToFit() {
-            const page = document.querySelector('.page');
-            page.style.height = 'auto';
-            page.style.minHeight = '297mm';
-            counters.pages = 1;
-            updatePageCounters();
-        }
-
-        function clearIDs(clone) {
-            clone.querySelectorAll('[id]').forEach(el => {
-                el.removeAttribute('id');
-            });
-            
-            if (clone.dataset.component) {
-                clone.dataset.cloned = 'true';
-            }
-        }
-
-        function toggleAutoExtend() {
-            autoExtendEnabled = !autoExtendEnabled;
-            const btn = document.getElementById('autoExtendBtn');
-            
-            if (autoExtendEnabled) {
-                btn.textContent = '📏 Auto ON';
-                btn.classList.add('active');
-                setTimeout(() => {
-                    expandPageToFit();
-                    checkOverflow();
-                }, 100);
-            } else {
-                btn.textContent = '📏 Auto OFF';
-                btn.classList.remove('active');
-            }
-        }
-
-        function uploadLogo(logoSlot) {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        const img = logoSlot.querySelector('img');
-                        const placeholder = logoSlot.querySelector('.logo-placeholder');
-                        
-                        img.src = event.target.result;
-                        img.style.display = 'block';
-                        placeholder.style.display = 'none';
-                        logoSlot.classList.add('has-logo');
-                        
-                        // Guardar en config
-                        TEMPLATE_CONFIG.logo = event.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-            input.click();
-        }
-
-        function setupEventListeners() {
-            setInterval(autosaveJSON, 30000);
-            window.addEventListener('resize', debounce(() => {
-                expandPageToFit();
-                checkOverflow();
-            }, 300));
-        }
-
-        function setupEditableElement(element) {
-            const limit = parseInt(element.dataset.limit) || 100;
-            
-            element.addEventListener('click', function() {
-                saveState();
-                this.contentEditable = true;
-                this.focus();
-                this.style.background = 'rgba(255, 107, 97, 0.3)';
-                updateCharCounter(this);
-            });
-
-            element.addEventListener('input', function() {
-                updateCharCounter(this);
-                enforceLimit(this, limit);
-                debounce(() => {
-                    expandPageToFit();
-                    checkOverflow();
-                    updateCompletionProgress();
-                }, 500)();
-            });
-
-            element.addEventListener('blur', function() {
-                this.contentEditable = false;
-                this.style.background = 'rgba(255, 107, 97, 0.1)';
-                autosaveJSON();
-            });
-
-            element.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    this.blur();
-                }
-            });
-
-            updateCharCounter(element);
-        }
-
-        function updateCharCounter(element) {
-            const counter = element.querySelector('.char-counter');
-            if (counter) {
-                const limit = parseInt(element.dataset.limit) || 100;
-                const current = element.textContent.replace(/\d+\/\d+/, '').trim().length;
-                counter.textContent = `${current}/${limit}`;
-                counter.className = current > limit ? 'char-counter warning' : 'char-counter';
-                
-                if (current > limit) {
-                    element.classList.add('overflow-warning');
-                } else {
-                    element.classList.remove('overflow-warning');
-                }
-            }
-        }
-
-        function enforceLimit(element, limit) {
-            const counter = element.querySelector('.char-counter');
-            let text = element.textContent;
-            
-            if (counter) {
-                text = text.replace(/\d+\/\d+/, '').trim();
-            }
-            
-            if (text.length > limit) {
-                const truncated = text.substring(0, limit);
-                if (counter) {
-                    element.innerHTML = truncated + counter.outerHTML;
-                } else {
-                    element.textContent = truncated;
-                }
-                showToast('Límite de caracteres alcanzado');
-            }
-        }
-
-        // ===== COMPONENTES =====
-        function duplicateComponent(button) {
-            saveState();
-            
-            const component = button.closest('.component');
-            const componentType = component.dataset.component;
-            
-            const sectionLimits = {
-                'ITINERARY_CARD': 'days',
-                'PLACE_ITEM': 'places',
-                'TIP_ITEM': 'tips',
-                'CITY_ITEM': 'cities',
-                'PHOTO_FRAME': 'photos'
-            };
-            
-            const limitKey = sectionLimits[componentType];
-            if (limitKey && counters[limitKey] >= limits[limitKey]) {
-                alert(`Máximo ${limits[limitKey]} elementos permitidos`);
-                return;
-            }
-            
-            const clone = component.cloneNode(true);
-            clearIDs(clone);
-            updateClonedComponent(clone, componentType);
-            component.parentElement.insertBefore(clone, component.nextSibling);
-            
-            if (limitKey) {
-                counters[limitKey]++;
-                updateCounterDisplay(limitKey);
-            }
-            
-            clone.querySelectorAll('.editable').forEach(setupEditableElement);
-            clone.classList.add('fade-in');
-            
-            setTimeout(() => {
-                expandPageToFit();
-                checkOverflow();
-            }, 100);
-        }
-
-        function deleteComponent(button) {
-            saveState();
-            
-            const component = button.closest('.component');
-            const componentType = component.dataset.component;
-            
-            const siblings = component.parentElement.querySelectorAll(`[data-component="${componentType}"]`);
-            if (siblings.length <= 1) {
-                alert('Debe mantener al menos un elemento');
-                return;
-            }
-            
-            component.style.transition = 'all 0.3s ease';
-            component.style.opacity = '0';
-            component.style.transform = 'translateX(-20px)';
-            
-            setTimeout(() => {
-                component.remove();
-                
-                const sectionLimits = {
-                    'ITINERARY_CARD': 'days',
-                    'PLACE_ITEM': 'places',
-                    'TIP_ITEM': 'tips',
-                    'CITY_ITEM': 'cities',
-                    'PHOTO_FRAME': 'photos'
-                };
-                
-                const limitKey = sectionLimits[componentType];
-                if (limitKey) {
-                    counters[limitKey]--;
-                    updateCounterDisplay(limitKey);
-                }
-                
-                reindexCounters();
-                expandPageToFit();
-                checkOverflow();
-            }, 300);
-        }
-
-        function updateClonedComponent(clone, componentType) {
-            if (componentType === 'CITY_ITEM') {
-                const number = clone.querySelector('div[style*="background: var(--teal-primary)"]');
-                if (number) {
-                    number.textContent = counters.cities + 1;
-                }
-            }
-            
-            if (componentType === 'ITINERARY_CARD') {
-                const dayTitle = clone.querySelector('.day-title .editable');
-                if (dayTitle) {
-                    dayTitle.innerHTML = `Día ${counters.days + 1}: Ciudad<span class="char-counter">0/20</span>`;
-                }
-            }
-            
-            clone.querySelectorAll('.editable').forEach(el => {
-                const placeholder = el.dataset.var || 'Nuevo elemento';
-                const counter = el.querySelector('.char-counter');
-                el.innerHTML = `{{${placeholder}}}` + (counter ? counter.outerHTML : '');
-            });
-        }
-
-        function updateCounterDisplay(type) {
-            const counterMappings = {
-                'days': 'dayCounter',
-                'places': 'placeCounter',
-                'tips': 'tipCounter',
-                'cities': 'cityCounter',
-                'photos': 'photoCounter'
-            };
-            
-            const counterId = counterMappings[type];
-            const counterEl = document.getElementById(counterId);
-            
-            if (counterEl) {
-                const maxLimit = limits[type];
-                counterEl.textContent = `${counters[type]}/${maxLimit} ${getTypeLabel(type)}`;
-                
-                const addBtnId = `add${type.charAt(0).toUpperCase() + type.slice(1, -1)}Btn`;
-                const addBtn = document.getElementById(addBtnId);
-                if (addBtn) {
-                    addBtn.disabled = counters[type] >= maxLimit;
-                }
-            }
-        }
-
-        function getTypeLabel(type) {
-            const labels = {
-                'days': 'días',
-                'places': 'lugares',
-                'tips': 'consejos',
-                'cities': 'ciudades',
-                'photos': 'fotos'
-            };
-            return labels[type] || type;
-        }
-
-        function updateAllCounters() {
-            Object.keys(counters).forEach(type => {
-                if (type !== 'pages') {
-                    updateCounterDisplay(type);
-                }
-            });
-            updatePageCounters();
-        }
-
-        function updatePageCounters() {
-            document.querySelectorAll('.total-pages').forEach(el => {
-                el.textContent = '1';
-            });
-            
-            document.querySelectorAll('.page-number').forEach(el => {
-                el.textContent = '1';
-            });
-            
-            const pageCountEl = document.getElementById('pageCount');
-            if (pageCountEl) {
-                pageCountEl.textContent = 'Página 1 de 1';
-            }
-            
-            counters.pages = 1;
-        }
-
-        // ===== AÑADIR ELEMENTOS =====
-        function addItineraryDay() {
-            if (counters.days >= limits.days) {
-                alert(`Máximo ${limits.days} días permitidos`);
-                return;
-            }
-            
-            saveState();
-            
-            const container = document.querySelector('#itineraryList');
-            const dayElement = createDayElement(counters.days + 1, `Día ${counters.days + 1}: Ciudad`, '');
-            container.appendChild(dayElement);
-            
-            counters.days++;
-            updateCounterDisplay('days');
-            
-            dayElement.querySelectorAll('.editable').forEach(setupEditableElement);
-            dayElement.classList.add('fade-in');
-            
-            setTimeout(() => {
-                expandPageToFit();
-                checkOverflow();
-            }, 100);
-        }
-
-        function addPlace() {
-            if (counters.places >= limits.places) {
-                alert(`Máximo ${limits.places} lugares permitidos`);
-                return;
-            }
-            
-            saveState();
-            
-            const container = document.querySelector('#placesList');
-            const config = {
-                [`lugar${counters.places + 1}`]: `Lugar ${counters.places + 1}`,
-                [`ciudad_lugar${counters.places + 1}`]: 'Ciudad',
-                [`desc_lugar${counters.places + 1}`]: 'Descripción',
-                [`tipo_lugar${counters.places + 1}`]: 'must'
-            };
-            const placeElement = createPlaceElement(counters.places + 1, config);
-            container.appendChild(placeElement);
-            
-            counters.places++;
-            updateCounterDisplay('places');
-            
-            placeElement.querySelectorAll('.editable').forEach(setupEditableElement);
-            placeElement.classList.add('fade-in');
-            
-            setTimeout(() => {
-                expandPageToFit();
-                checkOverflow();
-            }, 100);
-        }
-
-        function addTip() {
-            if (counters.tips >= limits.tips) {
-                alert(`Máximo ${limits.tips} consejos permitidos`);
-                return;
-            }
-            
-            saveState();
-            
-            const container = document.querySelector('#tipsList');
-            const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
-            const tipElement = createTipElement(counters.tips + 1, `Consejo ${counters.tips + 1}`, iconos[counters.tips % iconos.length] || '💡');
-            container.appendChild(tipElement);
-            
-            counters.tips++;
-            updateCounterDisplay('tips');
-            
-            tipElement.querySelectorAll('.editable').forEach(setupEditableElement);
-            tipElement.classList.add('fade-in');
-            
-            setTimeout(() => {
-                expandPageToFit();
-                checkOverflow();
-            }, 100);
-        }
-
-        function addCity() {
-            if (counters.cities >= limits.cities) {
-                alert(`Máximo ${limits.cities} ciudades permitidas`);
-                return;
-            }
-            
-            saveState();
-            
-            const container = document.querySelector('#citiesList');
-            const cityElement = createCityElement(counters.cities + 1, `Ciudad ${counters.cities + 1} — descripción`);
-            container.appendChild(cityElement);
-            
-            counters.cities++;
-            updateCounterDisplay('cities');
-            addMapPin(counters.cities);
-            
-            cityElement.querySelectorAll('.editable').forEach(setupEditableElement);
-            cityElement.classList.add('fade-in');
-            
-            setTimeout(() => {
-                expandPageToFit();
-                checkOverflow();
-            }, 100);
-        }
-
-        function addPhoto() {
-            if (counters.photos >= limits.photos) {
-                alert(`Máximo ${limits.photos} fotos permitidas`);
-                return;
-            }
-            
-            saveState();
-            
-            const container = document.querySelector('#photoGrid');
-            const photoFrame = document.createElement('div');
-            photoFrame.className = 'photo-frame mini component';
-            photoFrame.setAttribute('data-component', 'PHOTO_FRAME');
-            photoFrame.setAttribute('data-frame', `IMG_${counters.photos + 1}`);
-            
-            photoFrame.innerHTML = `
-                <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
-                <div class="photo-placeholder">
-                    📷 IMG_${counters.photos + 1}<br>
-                    <small>Drag & Drop</small>
-                </div>
-                <div class="photo-controls">
-                    <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                    <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                </div>
-                <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)" title="Duplicar foto">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)" title="Eliminar foto">×</button>
-                </div>
-            `;
-            
-            container.appendChild(photoFrame);
-            counters.photos++;
-            updateCounterDisplay('photos');
-            
-            setupPhotoDragDropSingle(photoFrame);
-            photoFrame.classList.add('fade-in');
-            
-            setTimeout(() => {
-                expandPageToFit();
-            }, 100);
-        }
-
-        function addMapPin(number) {
-            const mapContainer = document.querySelector('.map-container');
-            const pin = document.createElement('div');
-            pin.className = 'map-pin component';
-            pin.dataset.component = 'MAP_PIN';
-            pin.dataset.pin = number;
-            pin.textContent = number;
-            
-            const randomTop = Math.random() * 60 + 20;
-            const randomLeft = Math.random() * 60 + 20;
-            pin.style.top = randomTop + '%';
-            pin.style.left = randomLeft + '%';
-            
-            mapContainer.appendChild(pin);
-            setupMapPinSingle(pin);
-        }
-
-        // ===== FOTOS =====
-        function setupPhotoDragDrop() {
-            document.querySelectorAll('.photo-frame').forEach(setupPhotoDragDropSingle);
-        }
-
-        function setupPhotoDragDropSingle(frame) {
-            frame.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.style.borderColor = 'var(--teal-primary)';
-            });
-
-            frame.addEventListener('dragleave', function(e) {
-                this.style.borderColor = '#ccc';
-            });
-
-            frame.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.style.borderColor = '#ccc';
-                
-                const files = e.dataTransfer.files;
-                if (files.length > 0 && files[0].type.startsWith('image/')) {
-                    loadImageToFrame(this, files[0]);
-                }
-            });
-
-            frame.addEventListener('click', function() {
-                if (!this.classList.contains('has-image')) {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.onchange = (e) => {
-                        if (e.target.files[0]) {
-                            loadImageToFrame(this, e.target.files[0]);
-                        }
-                    };
-                    input.click();
-                }
-            });
-        }
-
-        function loadImageToFrame(frame, file, url = null) {
-            if (url) {
-                frame.style.backgroundImage = `url(${url})`;
-                frame.style.backgroundSize = 'cover';
-                frame.style.backgroundPosition = 'center';
-                frame.classList.add('has-image');
-                
-                const placeholder = frame.querySelector('.photo-placeholder');
-                if (placeholder) placeholder.style.display = 'none';
-                
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                frame.style.backgroundImage = `url(${e.target.result})`;
-                frame.style.backgroundSize = 'cover';
-                frame.style.backgroundPosition = 'center';
-                frame.classList.add('has-image');
-                
-                const placeholder = frame.querySelector('.photo-placeholder');
-                if (placeholder) placeholder.style.display = 'none';
-                
-                setTimeout(() => {
-                    expandPageToFit();
-                }, 100);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function changePhoto(button) {
-            const frame = button.closest('.photo-frame');
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    loadImageToFrame(frame, file);
-                }
-            };
-            input.click();
-        }
-
-        function removePhoto(button) {
-            const frame = button.closest('.photo-frame');
-            frame.style.backgroundImage = '';
-            frame.classList.remove('has-image');
-            
-            const placeholder = frame.querySelector('.photo-placeholder');
-            if (placeholder) placeholder.style.display = 'block';
-        }
-
-        // ===== MAPA =====
-        function setupMapPins() {
-            document.querySelectorAll('.map-pin').forEach(setupMapPinSingle);
-        }
-
-        function setupMapPinSingle(pin) {
-            let isDragging = false;
-            let startX, startY, startLeft, startTop;
-
-            pin.addEventListener('mousedown', function(e) {
-                isDragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                
-                const rect = this.getBoundingClientRect();
-                const containerRect = this.parentElement.getBoundingClientRect();
-                startLeft = ((rect.left - containerRect.left) / containerRect.width) * 100;
-                startTop = ((rect.top - containerRect.top) / containerRect.height) * 100;
-                
-                this.style.cursor = 'grabbing';
-                e.preventDefault();
-            });
-
-            document.addEventListener('mousemove', function(e) {
-                if (!isDragging) return;
-                
-                const deltaX = e.clientX - startX;
-                const deltaY = e.clientY - startY;
-                const containerRect = pin.parentElement.getBoundingClientRect();
-                
-                const newLeft = startLeft + (deltaX / containerRect.width) * 100;
-                const newTop = startTop + (deltaY / containerRect.height) * 100;
-                
-                const constrainedLeft = Math.max(2, Math.min(98, newLeft));
-                const constrainedTop = Math.max(2, Math.min(98, newTop));
-                
-                pin.style.left = constrainedLeft + '%';
-                pin.style.top = constrainedTop + '%';
-            });
-
-            document.addEventListener('mouseup', function() {
-                if (isDragging) {
-                    isDragging = false;
-                    pin.style.cursor = 'move';
-                }
-            });
-        }
-
-        function setupCostRating() {
-            document.querySelectorAll('.cost-circle').forEach((circle, index) => {
-                circle.addEventListener('click', function() {
-                    saveState();
-                    
-                    const circles = this.parentElement.querySelectorAll('.cost-circle');
-                    const value = index + 1;
-                    
-                    circles.forEach((c, i) => {
-                        if (i < value) {
-                            c.classList.remove('empty');
-                        } else {
-                            c.classList.add('empty');
-                        }
-                    });
-                    
-                    const costText = this.parentElement.parentElement.querySelector('.cost-text');
-                    const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
-                    costText.textContent = `${value}/5 — ${labels[value-1]}`;
-                    
-                    // Actualizar config
-                    TEMPLATE_CONFIG.coste_nivel = value;
-                });
-            });
-        }
-
-        function cyclePlaceBadge(badge) {
-            saveState();
-            
-            const types = ['must', 'skip', 'eco', 'family'];
-            const labels = ['MUST', 'SKIP', 'ECO', 'FAMILY'];
-            const currentIndex = types.findIndex(type => badge.classList.contains(type));
-            const nextIndex = (currentIndex + 1) % types.length;
-            
-            badge.className = `place-badge ${types[nextIndex]}`;
-            badge.textContent = labels[nextIndex];
-        }
-
-        function checkOverflow() {
-            const allElements = document.querySelectorAll('.flow-item, .component');
-            let hasOverflow = false;
-            
-            allElements.forEach(item => {
-                const rect = item.getBoundingClientRect();
-                const pageRect = document.querySelector('.page').getBoundingClientRect();
-                
-                if (rect.bottom > pageRect.bottom + 100) {
-                    item.classList.add('overflow-warning');
-                    hasOverflow = true;
-                } else {
-                    item.classList.remove('overflow-warning');
-                }
-            });
-        }
-
-        function reindexCounters() {
-            const dayCards = document.querySelectorAll('[data-component="ITINERARY_CARD"]');
-            dayCards.forEach((card, index) => {
-                const dayTitle = card.querySelector('.day-title .editable');
-                if (dayTitle) {
-                    const currentText = dayTitle.textContent.replace(/Día \d+/, `Día ${index + 1}`);
-                    dayTitle.textContent = currentText;
-                }
-            });
-            
-            const cityItems = document.querySelectorAll('[data-component="CITY_ITEM"]');
-            cityItems.forEach((item, index) => {
-                const numberEl = item.querySelector('div[style*="background: var(--teal-primary)"]');
-                if (numberEl) {
-                    numberEl.textContent = index + 1;
-                }
-            });
-            
-            const mapPins = document.querySelectorAll('[data-component="MAP_PIN"]');
-            mapPins.forEach((pin, index) => {
-                pin.textContent = index + 1;
-                pin.dataset.pin = index + 1;
-            });
-        }
-
-        // ===== DESHACER =====
-        function saveState() {
-            const state = serializeTemplate();
-            undoStack.push(JSON.stringify(state));
-            
-            if (undoStack.length > MAX_UNDO) {
-                undoStack.shift();
-            }
-            
-            const undoBtn = document.getElementById('undoBtn');
-            if (undoBtn) {
-                undoBtn.disabled = false;
-            }
-        }
-
-        function undo() {
-            if (undoStack.length === 0) return;
-            
-            const previousState = undoStack.pop();
-            if (previousState) {
-                restoreTemplate(JSON.parse(previousState));
-                
-                const undoBtn = document.getElementById('undoBtn');
-                if (undoBtn && undoStack.length === 0) {
-                    undoBtn.disabled = true;
-                }
-                
-                showToast('Cambio deshecho');
-            }
-        }
-
-        // ===== GUARDAR/CARGAR =====
-        function autosaveJSON() {
-            try {
-                const templateData = serializeTemplate();
-                localStorage.setItem('canva_travel_template_v51', JSON.stringify(templateData));
-                
-                const statusDot = document.getElementById('saveStatus');
-                const statusText = document.getElementById('saveText');
-                if (statusDot && statusText) {
-                    statusDot.className = 'status-dot';
-                    statusText.textContent = '✅ Guardado';
-                }
-                
-                setTimeout(() => {
-                    if (statusText) statusText.textContent = 'Listo';
-                }, 2000);
-            } catch (error) {
-                const statusDot = document.getElementById('saveStatus');
-                const statusText = document.getElementById('saveText');
-                if (statusDot && statusText) {
-                    statusDot.className = 'status-dot error';
-                    statusText.textContent = 'Error';
-                }
-            }
-        }
-
-        function loadFromLocalStorage() {
-            try {
-                const saved = localStorage.getItem('canva_travel_template_v51');
-                if (saved) {
-                    const templateData = JSON.parse(saved);
-                    restoreTemplate(templateData);
-                }
-            } catch (error) {
-                console.error('Error al cargar:', error);
-            }
-        }
-
-        function serializeTemplate() {
-            const data = {
-                version: '5.1',
-                timestamp: new Date().toISOString(),
-                counters: { ...counters },
-                autoExtendEnabled: autoExtendEnabled,
-                editableContent: {},
-                images: {},
-                components: {},
-                mapData: {
-                    type: TEMPLATE_CONFIG.mapa_tipo,
-                    url: TEMPLATE_CONFIG.mapa_url
-                }
-            };
-            
-            document.querySelectorAll('.editable').forEach(el => {
-                const varName = el.dataset.var || `editable_${Date.now()}_${Math.random()}`;
-                data.editableContent[varName] = el.textContent.replace(/\d+\/\d+/, '').trim();
-            });
-            
-            document.querySelectorAll('.photo-frame.has-image').forEach(frame => {
-                const frameId = frame.dataset.frame || `img_${Date.now()}`;
-                data.images[frameId] = {
-                    backgroundImage: frame.style.backgroundImage
-                };
-            });
-            
-            const logoImg = document.querySelector('.logo-slot img');
-            if (logoImg && logoImg.src) {
-                data.logo = logoImg.src;
-            }
-            
-            document.querySelectorAll('.cost-circle:not(.empty)').forEach((circle, index) => {
-                data.components.costRating = index + 1;
-            });
-            
-            const mapPins = document.querySelectorAll('.map-pin');
-            data.components.mapPins = Array.from(mapPins).map(pin => ({
-                number: pin.textContent,
-                top: pin.style.top,
-                left: pin.style.left
-            }));
-            
-            return data;
-        }
-
-        function restoreTemplate(data) {
-            if (!data || !data.version) {
-                console.warn('Versión de template incompatible');
-                return;
-            }
-            
-            counters = { ...data.counters };
-            
-            if (data.autoExtendEnabled !== undefined) {
-                autoExtendEnabled = data.autoExtendEnabled;
-                const btn = document.getElementById('autoExtendBtn');
-                if (btn) {
-                    btn.textContent = autoExtendEnabled ? '📏 Auto ON' : '📏 Auto OFF';
-                    btn.classList.toggle('active', autoExtendEnabled);
-                }
-            }
-            
-            Object.entries(data.editableContent).forEach(([varName, content]) => {
-                const element = document.querySelector(`[data-var="${varName}"]`);
-                if (element) {
-                    const counter = element.querySelector('.char-counter');
-                    element.innerHTML = content + (counter ? counter.outerHTML : '');
-                }
-            });
-            
-            Object.entries(data.images).forEach(([frameId, imageData]) => {
-                const frame = document.querySelector(`[data-frame="${frameId}"]`);
-                if (frame) {
-                    frame.style.backgroundImage = imageData.backgroundImage;
-                    frame.classList.add('has-image');
-                    
-                    const placeholder = frame.querySelector('.photo-placeholder');
-                    if (placeholder) placeholder.style.display = 'none';
-                }
-            });
-            
-            if (data.logo) {
-                const logoSlot = document.querySelector('.logo-slot');
-                const img = logoSlot.querySelector('img');
-                const placeholder = logoSlot.querySelector('.logo-placeholder');
-                
-                img.src = data.logo;
-                img.style.display = 'block';
-                placeholder.style.display = 'none';
-                logoSlot.classList.add('has-logo');
-            }
-            
-            if (data.components.costRating) {
-                const circles = document.querySelectorAll('.cost-circle');
-                circles.forEach((circle, index) => {
-                    if (index < data.components.costRating) {
-                        circle.classList.remove('empty');
-                    } else {
-                        circle.classList.add('empty');
-                    }
-                });
-            }
-            
-            if (data.mapData && data.mapData.url) {
-                TEMPLATE_CONFIG.mapa_url = data.mapData.url;
-                const mapContainer = document.querySelector('.map-container');
-                const existingPins = Array.from(mapContainer.querySelectorAll('.map-pin'));
-                
-                const img = document.createElement('img');
-                img.src = data.mapData.url;
-                img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; object-position: center;';
-                mapContainer.innerHTML = '';
-                mapContainer.appendChild(img);
-                mapContainer.classList.add('has-custom-map');
-                
-                existingPins.forEach(pin => {
-                    mapContainer.appendChild(pin);
-                });
-            }
-            
-            if (data.components.mapPins) {
-                setTimeout(() => {
-                    data.components.mapPins.forEach(pinData => {
-                        const pin = document.querySelector(`[data-pin="${pinData.number}"]`);
-                        if (pin) {
-                            pin.style.top = pinData.top;
-                            pin.style.left = pinData.left;
-                        }
-                    });
-                }, 100);
-            }
-            
-            updateAllCounters();
-            updateCompletionProgress();
-            document.querySelectorAll('.editable').forEach(setupEditableElement);
-            setTimeout(() => {
-                expandPageToFit();
-            }, 100);
-        }
-
-        // ===== EXPORTAR =====
-        function exportTemplate(format) {
-            switch (format) {
-                case 'A4':
-                    exportA4PDF();
-                    break;
-                default:
-                    console.log('Formato no soportado:', format);
-            }
-        }
-
-        function exportA4PDF() {
-            document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .validation-warning, #mapMessage').forEach(el => {
-                el.style.display = 'none';
-            });
-            
-            document.querySelectorAll('.editable').forEach(el => {
-                el.style.background = 'transparent';
-                el.style.border = 'none';
-            });
-            
-            setTimeout(() => {
-                window.print();
-                
-                setTimeout(() => {
-                    document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls').forEach(el => {
-                        el.style.display = '';
-                    });
-                    
-                    document.querySelectorAll('.editable').forEach(el => {
-                        el.style.background = '';
-                        el.style.border = '';
-                    });
-                }, 1000);
-            }, 500);
-        }
-
-        function toggleHelp() {
-            alert(`🎯 GUÍA DE USO - V5.1
-
-✅ CORRECCIONES IMPLEMENTADAS:
-• Campo embajada eliminado
-• Consejos rápidos funcionando correctamente
-• Limpieza automática al recargar (evita duplicados)
-• Sección de información rápida totalmente editable
-• Carga múltiple de imágenes con botón "📸 Cargar Fotos"
-
-🔧 SISTEMA DE CONFIGURACIÓN:
-• Modifica TEMPLATE_CONFIG al inicio del código
-• Agrega ciudades: ciudad1, ciudad2, ciudad3... hasta ciudad12
-• Agrega días: dia1, actividad1, dia2, actividad2... hasta dia10
-• Agrega lugares: lugar1, ciudad_lugar1, desc_lugar1, tipo_lugar1...
-• Agrega consejos: tip1, tip2, tip3... hasta tip12
-• Click "🔄 Recargar Config" para aplicar cambios
-
-⌨️ ATAJOS DE TECLADO:
-• Ctrl+S (Cmd+S): Guardar manualmente
-• Ctrl+Z (Cmd+Z): Deshacer última acción
-• Ctrl+P (Cmd+P): Activar vista previa
-• Escape: Salir de vista previa
-
-🗺️ SISTEMA DE MAPAS:
-• "📤 Subir Mapa": Carga imagen personalizada del país
-• "🎯 Auto-ubicar": Posiciona pins inteligentemente
-• "🔄 Reset Pins": Elimina y regenera pins
-• Arrastra pins manualmente para ajustar
-
-📸 CARGAR IMÁGENES:
-• "📸 Cargar Fotos": Sube múltiples imágenes a la vez
-• Drag & drop individual en cada marco
-• Click en marco vacío para seleccionar imagen
-
-📊 BARRA DE PROGRESO:
-• Verde (>80%): Guía casi completa
-• Amarillo (50-80%): Faltan algunos datos
-• Rojo (<50%): Muchos campos vacíos
-
-💡 FLUJO RECOMENDADO:
-1. Modifica TEMPLATE_CONFIG con datos del país
-2. Click "🔄 Recargar Config"
-3. Sube mapa con "📤 Subir Mapa"
-4. Carga fotos con "📸 Cargar Fotos"
-5. Ajusta textos haciendo click sobre ellos
-6. Arrastra pins del mapa a posiciones correctas
-7. Revisa con "👁️ Preview"
-8. Exporta con "📄 PDF A4"
-
-✨ MEJORAS V5.1:
-• Tooltips en todos los botones (pasa el mouse)
-• Validación de campos vacíos
-• Barra de progreso de completitud
-• Atajos de teclado
-• Tutorial de primer uso
-• Carga múltiple de imágenes
-• Bugs corregidos
-
-🚀 ¡Tu guía está lista para compartir!`);
-        }
-
-        function togglePreview() {
-            const isPreview = document.body.classList.toggle('preview-mode');
-            
-            document.querySelectorAll('.component-controls, .add-btn, .map-controls, .validation-warning, #mapMessage').forEach(el => {
-                el.style.display = isPreview ? 'none' : '';
-            });
-            
-            document.querySelectorAll('.editable').forEach(el => {
-                if (isPreview) {
-                    el.style.background = 'transparent';
-                    el.style.border = 'none';
-                    el.contentEditable = false;
-                } else {
-                    el.style.background = '';
-                    el.style.border = '';
-                }
-            });
-            
-            const btn = document.querySelector('.preview-btn');
-            if (btn) {
-                btn.textContent = isPreview ? '✏️ Editar' : '👁️ Preview';
-            }
-            
-            const controlPanel = document.querySelector('.control-panel');
-            if (controlPanel) {
-                controlPanel.style.opacity = isPreview ? '0.5' : '1';
-            }
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // Mensaje de bienvenida en consola
-        console.log(`
-🎯 SISTEMA V5.1 - MEJORADO Y CORREGIDO
-====================================
-
-✅ PROBLEMAS CORREGIDOS:
-• ✓ Campo embajada eliminado
-• ✓ Consejos rápidos funcionan correctamente
-• ✓ Limpieza automática (no más duplicados)
-• ✓ Información rápida editable
-• ✓ Carga múltiple de imágenes
-
-🆕 NUEVAS CARACTERÍSTICAS:
-• ⌨️ Atajos de teclado (Ctrl+S, Ctrl+Z, Esc)
-• 📊 Barra de progreso de completitud
-• 💡 Tooltips en todos los botones
-• ⚠️ Validación de campos vacíos
-• 🎓 Tutorial de primer uso
-• 📸 Carga batch de imágenes
-
-📊 CONFIGURACIÓN ACTUAL:
-• País: ${TEMPLATE_CONFIG.pais}
-• Ciudades: ${detectConfigCounts(TEMPLATE_CONFIG).ciudades}
-• Días: ${detectConfigCounts(TEMPLATE_CONFIG).dias}
-• Lugares: ${detectConfigCounts(TEMPLATE_CONFIG).lugares}
-• Consejos: ${detectConfigCounts(TEMPLATE_CONFIG).tips}
-
-🔧 PERSONALIZACIÓN:
-• Edita TEMPLATE_CONFIG al inicio
-• Click "🔄 Recargar Config" para aplicar
-• Usa "📤 Subir Mapa" para imagen personalizada
-• Usa "📸 Cargar Fotos" para múltiples imágenes
-
-¡Sistema listo para GitHub Pages! 🚀
-        `);
-    </script>
 </body>
 </html>
-
