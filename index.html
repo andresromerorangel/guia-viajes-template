@@ -13,13 +13,15 @@
             // === INFORMACIÓN BÁSICA ===
             pais: "Japón",
             nombre_pais: "Japón - Tierra del Sol Naciente",
+            bandera_emoji: "🇯🇵", // Emoji de la bandera del país
             fechas: "Marzo - Mayo 2024",
             duracion: "14 días",
             coste_nivel: 3, // 1-5
             moneda: "Yen (JPY)",
-            enchufe: "Tipo A/B",
-            emergencia: "110/119",
+            costo_hospedaje: "$50-80/noche", // Costo promedio de hospedaje
+            costo_comida: "$15-30/día", // Costo promedio de comida
             idioma: "Japonés",
+            religiones: "Sintoísmo, Budismo", // Religiones principales
             fecha_creacion: "Enero 2024",
             creditos: "Fotos: @viajero_digital, Unsplash",
             
@@ -203,11 +205,18 @@
             document.querySelector('[data-var="FECHAS"]').textContent = config.fechas;
             document.querySelector('[data-var="DURACION"]').textContent = config.duracion;
             document.querySelector('[data-var="MONEDA"]').textContent = config.moneda;
-            document.querySelector('[data-var="ENCHUFE"]').textContent = config.enchufe;
-            document.querySelector('[data-var="EMERGENCIA"]').textContent = config.emergencia;
+            document.querySelector('[data-var="COSTO_HOSPEDAJE"]').textContent = config.costo_hospedaje;
+            document.querySelector('[data-var="COSTO_COMIDA"]').textContent = config.costo_comida;
             document.querySelector('[data-var="IDIOMA"]').textContent = config.idioma;
+            document.querySelector('[data-var="RELIGIONES"]').textContent = config.religiones;
             document.querySelector('[data-var="FECHA_CREACION"]').textContent = config.fecha_creacion;
             document.querySelector('[data-var="CREDITOS"]').textContent = config.creditos;
+            
+            // Actualizar emoji de bandera
+            const flagContainer = document.querySelector('.flag-container');
+            if (flagContainer && config.bandera_emoji) {
+                flagContainer.textContent = config.bandera_emoji;
+            }
             
             // Presupuesto
             document.querySelector('[data-var="PRESUPUESTO_DIA"]').textContent = config.presupuesto_dia;
@@ -1602,9 +1611,10 @@
         }
 
         /* LOGO MÁS GRANDE Y VISIBLE */
+        /* LOGO MÁS GRANDE Y VISIBLE */
         .logo-slot {
-            width: 80px;  /* Era 56px */
-            height: 52px;  /* Era 36px */
+            width: 100px;  /* Aumentado de 56px */
+            height: 65px;  /* Aumentado de 36px */
             margin-right: 12px;
             display: flex;
             align-items: center;
@@ -2389,7 +2399,7 @@
                         <img src="" alt="Logo" style="display: none;" />
                         <div class="logo-placeholder">LOGO<br><small>Click aquí</small></div>
                     </div>
-                    <div class="flag-container">🏳️</div>
+                    <div class="flag-container">🇯🇵</div>
                     <div class="country-title editable" data-limit="30" data-var="PAIS">{{PAÍS}}</div>
                     <div class="page-indicator">Página 1 de 1</div>
                 </div>
@@ -2444,16 +2454,20 @@
                                     <span class="editable" data-limit="15" data-var="MONEDA">{{Moneda}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🔌</div>
-                                    <span class="editable" data-limit="15" data-var="ENCHUFE">{{Enchufe}}</span>
+                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🏨</div>
+                                    <span class="editable" data-limit="20" data-var="COSTO_HOSPEDAJE">{{Hospedaje}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🆘</div>
-                                    <span class="editable" data-limit="15" data-var="EMERGENCIA">{{Emergencia}}</span>
+                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🍽️</div>
+                                    <span class="editable" data-limit="20" data-var="COSTO_COMIDA">{{Comida}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🗣️</div>
                                     <span class="editable" data-limit="20" data-var="IDIOMA">{{Idioma}}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; grid-column: span 2;">
+                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🛐</div>
+                                    <span class="editable" data-limit="40" data-var="RELIGIONES">{{Religiones principales}}</span>
                                 </div>
                             </div>
                         </div>
@@ -2481,7 +2495,54 @@
                             </div>
 
                             <div class="photo-grid" id="photoGrid">
-                                <!-- Las fotos mini se generarán aquí -->
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_1">
+                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="photo-placeholder">📷 IMG_1<br><small>Click para subir</small></div>
+                                    <div class="photo-controls">
+                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
+                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
+                                    </div>
+                                </div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_2">
+                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="photo-placeholder">📷 IMG_2<br><small>Click para subir</small></div>
+                                    <div class="photo-controls">
+                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
+                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
+                                    </div>
+                                </div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_3">
+                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="photo-placeholder">📷 IMG_3<br><small>Click para subir</small></div>
+                                    <div class="photo-controls">
+                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
+                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
+                                    </div>
+                                </div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_4">
+                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="photo-placeholder">📷 IMG_4<br><small>Click para subir</small></div>
+                                    <div class="photo-controls">
+                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
+                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
+                                    </div>
+                                </div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_5">
+                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="photo-placeholder">📷 IMG_5<br><small>Click para subir</small></div>
+                                    <div class="photo-controls">
+                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
+                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
+                                    </div>
+                                </div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_6">
+                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="photo-placeholder">📷 IMG_6<br><small>Click para subir</small></div>
+                                    <div class="photo-controls">
+                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
+                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2564,3 +2625,4 @@
     </div>
 </body>
 </html>
+
