@@ -20,6 +20,7 @@
             moneda: "Yen (JPY)",
             costo_hospedaje: "$50-80/noche", // Costo promedio de hospedaje
             costo_comida: "$15-30/día", // Costo promedio de comida
+            costo_bebida: "$5-8/cerveza", // Costo promedio de bebida en bar
             idioma: "Japonés",
             religiones: "Sintoísmo, Budismo", // Religiones principales
             fecha_creacion: "Enero 2024",
@@ -219,6 +220,7 @@
             document.querySelector('[data-var="COSTO_HOSPEDAJE"]').textContent = config.costo_hospedaje;
             document.querySelector('[data-var="COSTO_COMIDA"]').textContent = config.costo_comida;
             document.querySelector('[data-var="IDIOMA"]').textContent = config.idioma;
+            document.querySelector('[data-var="COSTO_BEBIDA"]').textContent = config.costo_bebida;
             document.querySelector('[data-var="RELIGIONES"]').textContent = config.religiones;
             document.querySelector('[data-var="FECHA_CREACION"]').textContent = config.fecha_creacion;
             document.querySelector('[data-var="CREDITOS"]').textContent = config.creditos;
@@ -348,19 +350,16 @@
             const desc = config[`desc_lugar${number}`] || '';
             const tipo = config[`tipo_lugar${number}`] || 'must';
             
-            const badges = {
-                'must': 'MUST',
-                'skip': 'SKIP', 
-                'eco': 'ECO',
-                'family': 'FAMILY'
-            };
+            const cat = PLACE_CATEGORIES[tipo] || PLACE_CATEGORIES['must'];
+            const badgeContent = `${cat.emoji} ${cat.label}`;
+            const badgeColor = cat.color;
             
             const div = document.createElement('div');
             div.className = 'place-item component flow-item';
             div.setAttribute('data-component', 'PLACE_ITEM');
             
             div.innerHTML = `
-                <span class="place-badge ${tipo}" onclick="cyclePlaceBadge(this)">${badges[tipo]}</span>
+                <span class="place-badge ${tipo}" onclick="cyclePlaceBadge(this)" style="background: ${badgeColor}">${badgeContent}</span>
                 <div class="place-text">
                     <div class="place-name editable" data-limit="20" data-var="LUGAR_${number}">${lugar}</div>
                     <div style="font-size: 9px; color: var(--text-light);">
@@ -926,8 +925,49 @@
             if (config.color_acento) root.style.setProperty('--coral', config.color_acento);
             if (config.color_texto) root.style.setProperty('--text-dark', config.color_texto);
             if (config.color_fondo_logo) root.style.setProperty('--logo-bg', config.color_fondo_logo);
+            
+            // Actualizar inputs de color en panel
+            updateColorInputs(config);
     
             console.log('🎨 Colores personalizados aplicados');
+        }
+
+        function updateColor(cssVar, value) {
+            document.documentElement.style.setProperty(cssVar, value);
+            
+            // Actualizar código visible
+            const codeSpan = event.target.nextElementSibling;
+            if (codeSpan) codeSpan.textContent = value.toUpperCase();
+            
+            // Actualizar TEMPLATE_CONFIG
+            const configMap = {
+                '--teal-primary': 'color_primario',
+                '--teal-light': 'color_secundario',
+                '--coral': 'color_acento',
+                '--sand': 'color_fondo'
+            };
+            
+            if (configMap[cssVar]) {
+                TEMPLATE_CONFIG[configMap[cssVar]] = value;
+            }
+            
+            showToast(`🎨 Color actualizado: ${value}`);
+        }
+
+        function updateColorInputs(config) {
+            const inputs = {
+                'colorPrimario': config.color_primario || '#0F7A78',
+                'colorSecundario': config.color_secundario || '#5FB4B2',
+                'colorAcento': config.color_acento || '#FF6B61',
+                'colorFondo': config.color_fondo || '#F6EFE6'
+            };
+            
+            Object.entries(inputs).forEach(([id, value]) => {
+                const input = document.getElementById(id);
+                const code = document.getElementById(id + 'Code');
+                if (input) input.value = value;
+                if (code) code.textContent = value.toUpperCase();
+            });
         }
 
         function reinitializeJS() {
@@ -1294,7 +1334,7 @@
             photoFrame.setAttribute('data-frame', `IMG_${counters.photos}`);
             
             photoFrame.innerHTML = `
-                <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
                 <div class="photo-placeholder">
                     📷 IMG_${counters.photos}<br>
                     <small>Click para subir</small>
@@ -1437,6 +1477,31 @@
             if (placeholder) placeholder.style.display = 'block';
         }
 
+        function togglePhotoRatio(frame) {
+            event.stopPropagation(); // Evitar que se abra el selector de archivo
+            
+            const badge = frame.querySelector('.dimension-badge');
+            const isHero = frame.classList.contains('hero');
+            
+            if (isHero) {
+                // Cambiar de hero (2.5:1) a mini (1:1)
+                frame.classList.remove('hero');
+                frame.classList.add('mini');
+                frame.style.aspectRatio = '1/1';
+                frame.style.gridColumn = 'span 1';
+                if (badge) badge.textContent = '1:1';
+            } else {
+                // Cambiar de mini (1:1) a hero (2.5:1)
+                frame.classList.remove('mini');
+                frame.classList.add('hero');
+                frame.style.aspectRatio = '2.5/1';
+                frame.style.gridColumn = 'span 2';
+                if (badge) badge.textContent = '2.5:1';
+            }
+            
+            showToast(`📐 Cambiado a ${isHero ? '1:1' : '2.5:1'}`);
+        }
+
         function uploadFlag(flagContainer) {
             const input = document.createElement('input');
             input.type = 'file';
@@ -1509,15 +1574,155 @@
             });
         }
 
+        // Sistema de categorías con emojis
+        const PLACE_CATEGORIES = {
+            'must': { emoji: '⭐', label: 'MUST', color: '#FF6B61' },
+            'skip': { emoji: '⛔', label: 'SKIP', color: '#999' },
+            'museo': { emoji: '🏛️', label: 'MUSEO', color: '#9C27B0' },
+            'comida': { emoji: '🍽️', label: 'COMIDA', color: '#FF9800' },
+            'templo': { emoji: '⛩️', label: 'TEMPLO', color: '#E91E63' },
+            'monumento': { emoji: '🗿', label: 'MONUMENTO', color: '#607D8B' },
+            'hike': { emoji: '🥾', label: 'HIKE', color: '#4CAF50' },
+            'naturaleza': { emoji: '🌲', label: 'NATURA', color: '#2E7D32' },
+            'playa': { emoji: '🏖️', label: 'PLAYA', color: '#00BCD4' },
+            'bar': { emoji: '🍺', label: 'BAR', color: '#795548' },
+            'cafe': { emoji: '☕', label: 'CAFÉ', color: '#6D4C41' },
+            'compras': { emoji: '🛍️', label: 'COMPRAS', color: '#E91E63' },
+            'deporte': { emoji: '⚽', label: 'DEPORTE', color: '#4CAF50' },
+            'mirador': { emoji: '🌄', label: 'MIRADOR', color: '#3F51B5' },
+            'mistico': { emoji: '🔮', label: 'MÍSTICO', color: '#7B1FA2' },
+            'sagrado': { emoji: '🙏', label: 'SAGRADO', color: '#C62828' },
+            'secreto': { emoji: '🤫', label: 'SECRETO', color: '#37474F' },
+            'raro': { emoji: '👽', label: 'RARO', color: '#00695C' },
+            'privado': { emoji: '🔒', label: 'PRIVADO', color: '#455A64' },
+            'desagradable': { emoji: '😬', label: 'EVITAR', color: '#BF360C' },
+            'sucio': { emoji: '🚫', label: 'SUCIO', color: '#8D6E63' },
+            'cementerio': { emoji: '⚰️', label: 'PANTEÓN', color: '#424242' },
+            'bailar': { emoji: '💃', label: 'BAILAR', color: '#D81B60' },
+            'gobierno': { emoji: '🏛️', label: 'GOB.', color: '#1565C0' },
+            'social': { emoji: '🤝', label: 'SOCIAL', color: '#00897B' },
+            'animales': { emoji: '🦁', label: 'ANIMAL', color: '#FF8F00' },
+            'discoteca': { emoji: '🪩', label: 'DISCO', color: '#AA00FF' },
+            'vecindario': { emoji: '🏘️', label: 'BARRIO', color: '#5D4037' },
+            'pueblo': { emoji: '🏘️', label: 'PUEBLO', color: '#8D6E63' },
+            'rio': { emoji: '🏞️', label: 'RÍO', color: '#0288D1' },
+            'lago': { emoji: '🌊', label: 'LAGO', color: '#0277BD' },
+            'mar': { emoji: '🌊', label: 'MAR', color: '#01579B' },
+            'festival': { emoji: '🎉', label: 'FESTIV.', color: '#F50057' },
+            'rancho': { emoji: '🤠', label: 'RANCHO', color: '#A1887F' },
+            'granja': { emoji: '🚜', label: 'GRANJA', color: '#689F38' },
+            'mercado': { emoji: '🛒', label: 'MERCADO', color: '#F57C00' },
+            'panaderia': { emoji: '🥐', label: 'PANAD.', color: '#FFB300' },
+            'parque': { emoji: '🌳', label: 'PARQUE', color: '#43A047' },
+            'masaje': { emoji: '💆', label: 'MASAJE', color: '#CE93D8' },
+            'libreria': { emoji: '📚', label: 'LIBRER.', color: '#5C6BC0' },
+            'palacio': { emoji: '🏰', label: 'PALACIO', color: '#FFC107' },
+            'peligro': { emoji: '⚠️', label: 'PELIGRO', color: '#D32F2F' },
+            'bucket': { emoji: '📝', label: 'BUCKET', color: '#546E7A' }
+        };
+
         function cyclePlaceBadge(badge) {
-            saveState();
-            const types = ['must', 'skip', 'eco', 'family'];
-            const labels = ['MUST', 'SKIP', 'ECO', 'FAMILY'];
-            const currentIndex = types.findIndex(type => badge.classList.contains(type));
-            const nextIndex = (currentIndex + 1) % types.length;
+            // Mostrar modal de selección
+            showCategoryModal(badge);
+        }
+
+        function showCategoryModal(badge) {
+            // Remover modal existente si hay
+            const existingModal = document.getElementById('categoryModal');
+            if (existingModal) existingModal.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'categoryModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10002;
+            `;
+
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white;
+                border-radius: 12px;
+                padding: 20px;
+                max-width: 400px;
+                max-height: 70vh;
+                overflow-y: auto;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            `;
+
+            content.innerHTML = `
+                <h3 style="margin: 0 0 15px 0; color: var(--teal-primary); font-size: 16px;">Seleccionar Categoría</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                    ${Object.entries(PLACE_CATEGORIES).map(([key, cat]) => `
+                        <button onclick="selectCategory('${key}', this)" style="
+                            background: ${cat.color};
+                            color: white;
+                            border: none;
+                            padding: 8px 4px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-size: 10px;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            gap: 2px;
+                            transition: transform 0.2s;
+                        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <span style="font-size: 16px;">${cat.emoji}</span>
+                            <span>${cat.label}</span>
+                        </button>
+                    `).join('')}
+                </div>
+                <button onclick="closeCategoryModal()" style="
+                    width: 100%;
+                    margin-top: 15px;
+                    padding: 10px;
+                    background: #eee;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                ">Cancelar</button>
+            `;
+
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            // Guardar referencia al badge actual
+            modal.dataset.targetBadge = badge.className;
+            window.currentCategoryBadge = badge;
+
+            // Cerrar al hacer clic fuera
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeCategoryModal();
+            });
+        }
+
+        function selectCategory(categoryKey, button) {
+            const badge = window.currentCategoryBadge;
+            const cat = PLACE_CATEGORIES[categoryKey];
             
-            badge.className = `place-badge ${types[nextIndex]}`;
-            badge.textContent = labels[nextIndex];
+            if (badge && cat) {
+                saveState();
+                badge.className = `place-badge ${categoryKey}`;
+                badge.innerHTML = `${cat.emoji} ${cat.label}`;
+                badge.style.background = cat.color;
+                badge.style.color = 'white';
+            }
+            
+            closeCategoryModal();
+        }
+
+        function closeCategoryModal() {
+            const modal = document.getElementById('categoryModal');
+            if (modal) modal.remove();
+            window.currentCategoryBadge = null;
         }
 
         // ===== SISTEMA DE DESHACER =====
@@ -1706,6 +1911,40 @@
                 }
             });
             
+            // Botón flotante para salir de preview
+            let exitBtn = document.getElementById('exitPreviewBtn');
+            
+            if (isPreview) {
+                if (!exitBtn) {
+                    exitBtn = document.createElement('button');
+                    exitBtn.id = 'exitPreviewBtn';
+                    exitBtn.innerHTML = '✏️ Volver a Editar';
+                    exitBtn.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        right: 20px;
+                        background: var(--teal-primary);
+                        color: white;
+                        border: none;
+                        padding: 12px 20px;
+                        border-radius: 25px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                        z-index: 10000;
+                        transition: all 0.2s;
+                    `;
+                    exitBtn.onmouseover = () => exitBtn.style.transform = 'scale(1.05)';
+                    exitBtn.onmouseout = () => exitBtn.style.transform = 'scale(1)';
+                    exitBtn.onclick = togglePreview;
+                    document.body.appendChild(exitBtn);
+                }
+                exitBtn.style.display = 'block';
+            } else {
+                if (exitBtn) exitBtn.style.display = 'none';
+            }
+            
             const btn = document.querySelector('.preview-btn');
             if (btn) {
                 btn.textContent = isPreview ? '✏️ Editar' : '👁️ Vista previa';
@@ -1713,7 +1952,61 @@
         }
 
         function toggleHelp() {
-            alert(`🎯 GUÍA V5.1 - Sistema Híbrido
+            alert(`🎯 GUÍA DE VIAJE V5.2 - Sistema Completo
+
+📋 FUNCIONALIDADES PRINCIPALES:
+
+🖼️ FOTOS:
+- Click en badge (1:1/2.5:1) para cambiar ratio
+- Subir múltiples imágenes a la vez
+- Drag & drop soportado
+- Las dimensiones no aparecen en PDF
+
+📍 CATEGORÍAS DE LUGARES:
+- 40+ categorías con emojis
+- Click en etiqueta para ver todas
+- Incluye: MUST, MUSEO, COMIDA, TEMPLO, 
+  HIKE, PLAYA, BAR, CAFÉ, MIRADOR, etc.
+
+🎨 COLORES PERSONALIZABLES:
+- Edita colores desde el panel lateral
+- Muestra código hexadecimal
+- Se aplica en tiempo real
+
+📱 RESPONSIVE:
+- Funciona en móvil y escritorio
+- Panel se adapta en pantallas pequeñas
+- 2 columnas siempre visibles (escalado)
+
+💾 GUARDAR/EXPORTAR:
+- 💾 Guardar Sesión: Guarda localmente (Ctrl+S)
+- 📥 Exportar: Descarga JSON con todo
+- 📤 Importar: Carga JSON guardado
+- 📄 PDF: Exporta limpio sin controles
+
+👁️ VISTA PREVIA:
+- Muestra cómo se verá el PDF
+- Botón flotante para volver a editar
+- Escape para salir rápido
+
+⚡ ATAJOS DE TECLADO:
+- Ctrl+S → Guardar sesión
+- Ctrl+Z → Deshacer
+- Escape → Salir de vista previa
+
+📊 INFORMACIÓN INCLUIDA:
+- Presupuesto (por día y total)
+- Costos: hospedaje, comida, bebida
+- Moneda, idioma, religiones
+- Itinerario día por día
+- Top lugares con categorías
+- Consejos rápidos
+
+💡 TIPS:
+- Edita cualquier texto con click
+- Los contadores se ocultan en PDF
+- Arrastra pins del mapa
+- Usa el buscador de categorías`);
 
 📝 WORKFLOW RECOMENDADO:
 1. Copia index.html para nuevo país
@@ -1798,6 +2091,24 @@
                 if (e.key === 'Escape') {
                     const isPreview = document.body.classList.contains('preview-mode');
                     if (isPreview) togglePreview();
+                }
+            });
+            
+            // Toggle panel en móvil
+            setupMobilePanel();
+        }
+
+        function setupMobilePanel() {
+            const panel = document.querySelector('.control-panel');
+            if (!panel) return;
+            
+            panel.addEventListener('click', function(e) {
+                // Solo toggle si es pantalla pequeña y click en área superior
+                if (window.innerWidth <= 768) {
+                    const rect = panel.getBoundingClientRect();
+                    if (e.clientY < rect.top + 30) {
+                        panel.classList.toggle('expanded');
+                    }
                 }
             });
         }
@@ -1985,7 +2296,7 @@
             flex-shrink: 0;
         }
 
-        /* LAYOUT 2 COLUMNAS */
+        /* LAYOUT 2 COLUMNAS CON SECCIONES EXPANDIBLES */
         .content-area {
             flex: 1;
             display: grid;
@@ -1999,6 +2310,32 @@
             flex-direction: column;
             gap: var(--gap);
             overflow: visible;
+        }
+
+        /* Secciones que pueden expandirse a 2 columnas */
+        .expandable-section {
+            grid-column: span 1;
+        }
+
+        .content-area.expanded-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--gap);
+        }
+
+        .content-area.expanded-layout .left-column {
+            flex: 0 0 38%;
+            min-width: 250px;
+        }
+
+        .content-area.expanded-layout .right-column {
+            flex: 1;
+            min-width: 350px;
+        }
+
+        .content-area.expanded-layout .full-width-section {
+            flex: 0 0 100%;
+            width: 100%;
         }
 
         .flow-container {
@@ -2451,10 +2788,17 @@
             flex-shrink: 0;
         }
 
-        .place-badge.must { background: var(--coral); color: var(--white); }
-        .place-badge.skip { background: #E5E5E5; color: var(--text-light); }
-        .place-badge.eco { background: #4CAF50; color: var(--white); }
-        .place-badge.family { background: #FF9800; color: var(--white); }
+        .place-badge { 
+            background: var(--coral); 
+            color: var(--white); 
+            min-width: 50px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .place-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
 
         .place-text {
             font-size: 10px;
@@ -2747,8 +3091,79 @@
             .page-indicator {
                 display: none !important;
             }
-        }
 
+            /* Ocultar badges de dimensiones de fotos */
+            .dimension-badge {
+                display: none !important;
+            }
+        }
+        
+        /* PANEL RESPONSIVE MÓVIL */
+        @media screen and (max-width: 768px) {
+            .control-panel {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 6px;
+                padding: 10px;
+                border-radius: 12px 12px 0 0;
+                max-height: 60px;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .control-panel.expanded {
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+
+            .control-panel .control-btn-main {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+
+            .control-panel .color-editor {
+                display: none;
+            }
+
+            .control-panel.expanded .color-editor {
+                display: block;
+                width: 100%;
+            }
+
+            .control-panel .status-bar {
+                display: none;
+            }
+
+            .control-panel::before {
+                content: '⬆️ Menú';
+                position: absolute;
+                top: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--teal-primary);
+                color: white;
+                padding: 4px 12px;
+                border-radius: 12px 12px 0 0;
+                font-size: 10px;
+                cursor: pointer;
+            }
+
+            .control-panel.expanded::before {
+                content: '⬇️ Cerrar';
+            }
+
+            /* Más espacio para el documento */
+            .page {
+                margin-bottom: 80px;
+            }
+        }
+    
         /* ANIMACIONES */
         .fade-in {
             animation: fadeIn 0.3s ease-in;
@@ -2763,7 +3178,7 @@
 <body>
     <!-- Panel de control -->
     <div class="control-panel">
-        <button class="control-btn-main reload-config-btn" onclick="initializeFromConfig()" data-tooltip="Resetear a variables (ignora ediciones)">🔄 Recargar Config</button>
+        <!-- Eliminado: Recargar Config -->
         <button class="control-btn-main upload-images-btn" onclick="uploadMultipleImages()" data-tooltip="Cargar múltiples fotos a la vez">📷 Subir Imágenes</button>
         <button class="control-btn-main help-btn" onclick="toggleHelp()" data-tooltip="Mostrar guía de uso">❓ Ayuda</button>
         <button class="control-btn-main save-btn" onclick="autosaveJSON()" data-tooltip="Guardar sesión localmente (Ctrl+S)">💾 Guardar Sesión</button>
@@ -2772,6 +3187,41 @@
         <button class="control-btn-main undo-btn" onclick="undo()" id="undoBtn" disabled data-tooltip="Deshacer última acción (Ctrl+Z)">↶ Deshacer</button>
         <button class="control-btn-main export-btn" onclick="exportTemplate('A4')" data-tooltip="Exportar a PDF tamaño A4">📄 PDF A4</button>
         <button class="control-btn-main preview-btn" onclick="togglePreview()" data-tooltip="Vista previa sin controles (Escape)">👁️ Vista previa</button>
+        
+        <!-- Editor de Colores -->
+        <div class="color-editor" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+            <div style="font-size: 10px; font-weight: 600; color: #666; margin-bottom: 8px;">🎨 Colores</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <div class="color-input-group">
+                    <label style="font-size: 9px; color: #888;">Primario</label>
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <input type="color" id="colorPrimario" value="#0F7A78" onchange="updateColor('--teal-primary', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
+                        <span id="colorPrimarioCode" style="font-size: 8px; color: #666;">#0F7A78</span>
+                    </div>
+                </div>
+                <div class="color-input-group">
+                    <label style="font-size: 9px; color: #888;">Secundario</label>
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <input type="color" id="colorSecundario" value="#5FB4B2" onchange="updateColor('--teal-light', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
+                        <span id="colorSecundarioCode" style="font-size: 8px; color: #666;">#5FB4B2</span>
+                    </div>
+                </div>
+                <div class="color-input-group">
+                    <label style="font-size: 9px; color: #888;">Acento</label>
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <input type="color" id="colorAcento" value="#FF6B61" onchange="updateColor('--coral', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
+                        <span id="colorAcentoCode" style="font-size: 8px; color: #666;">#FF6B61</span>
+                    </div>
+                </div>
+                <div class="color-input-group">
+                    <label style="font-size: 9px; color: #888;">Fondo</label>
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <input type="color" id="colorFondo" value="#F6EFE6" onchange="updateColor('--sand', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
+                        <span id="colorFondoCode" style="font-size: 8px; color: #666;">#F6EFE6</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <div class="status-bar">
             <div class="status-indicator">
@@ -2860,9 +3310,13 @@
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🗣️</div>
                                     <span class="editable" data-limit="20" data-var="IDIOMA">{{Idioma}}</span>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; grid-column: span 2;">
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
+                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🍺</div>
+                                    <span class="editable" data-limit="15" data-var="COSTO_BEBIDA">{{Bebida}}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🛐</div>
-                                    <span class="editable" data-limit="40" data-var="RELIGIONES">{{Religiones principales}}</span>
+                                    <span class="editable" data-limit="30" data-var="RELIGIONES">{{Religiones}}</span>
                                 </div>
                             </div>
                         </div>
@@ -2879,7 +3333,7 @@
                             </div>
                             
                             <div class="photo-frame hero component" data-component="PHOTO_FRAME" data-frame="IMG_HERO">
-                                <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">2.5:1</div>
+                                <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">2.5:1</div>
                                 <div class="photo-placeholder">
                                     📸 Imagen Principal<br>
                                     <small>Click o arrastra (2.5:1)</small>
@@ -2892,7 +3346,7 @@
 
                             <div class="photo-grid" id="photoGrid">
                                 <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_1">
-                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
                                     <div class="photo-placeholder">📷 IMG_1<br><small>Click para subir</small></div>
                                     <div class="photo-controls">
                                         <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
@@ -2900,7 +3354,7 @@
                                     </div>
                                 </div>
                                 <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_2">
-                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
                                     <div class="photo-placeholder">📷 IMG_2<br><small>Click para subir</small></div>
                                     <div class="photo-controls">
                                         <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
@@ -2908,7 +3362,7 @@
                                     </div>
                                 </div>
                                 <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_3">
-                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
                                     <div class="photo-placeholder">📷 IMG_3<br><small>Click para subir</small></div>
                                     <div class="photo-controls">
                                         <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
@@ -2916,7 +3370,7 @@
                                     </div>
                                 </div>
                                 <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_4">
-                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
                                     <div class="photo-placeholder">📷 IMG_4<br><small>Click para subir</small></div>
                                     <div class="photo-controls">
                                         <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
@@ -2924,7 +3378,7 @@
                                     </div>
                                 </div>
                                 <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_5">
-                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
                                     <div class="photo-placeholder">📷 IMG_5<br><small>Click para subir</small></div>
                                     <div class="photo-controls">
                                         <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
@@ -2932,7 +3386,7 @@
                                     </div>
                                 </div>
                                 <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_6">
-                                    <div style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px;">1:1</div>
+                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
                                     <div class="photo-placeholder">📷 IMG_6<br><small>Click para subir</small></div>
                                     <div class="photo-controls">
                                         <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
@@ -3025,6 +3479,7 @@
     </div>
 </body>
 </html>
+
 
 
 
