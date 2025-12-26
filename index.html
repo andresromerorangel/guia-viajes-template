@@ -723,7 +723,7 @@
 
         function serializeTemplate() {
             const data = {
-                version: '5.1',
+                version: '5.2',
                 timestamp: new Date().toISOString(),
                 counters: { ...counters },
                 autoExtendEnabled: autoExtendEnabled,
@@ -733,6 +733,13 @@
                 mapData: {
                     type: TEMPLATE_CONFIG.mapa_tipo,
                     url: TEMPLATE_CONFIG.mapa_url
+                },
+                // NUEVO: Guardar colores personalizados
+                colors: {
+                    primario: TEMPLATE_CONFIG.color_primario,
+                    secundario: TEMPLATE_CONFIG.color_secundario,
+                    acento: TEMPLATE_CONFIG.color_acento,
+                    fondo: TEMPLATE_CONFIG.color_fondo
                 }
             };
             
@@ -744,26 +751,28 @@
                 }
             });
             
-            // Guardar imágenes
-            document.querySelectorAll('.photo-frame.has-image').forEach(frame => {
+            // Guardar imágenes con su ratio
+            document.querySelectorAll('.photo-frame').forEach(frame => {
                 const frameId = frame.dataset.frame;
                 if (frameId) {
                     data.images[frameId] = {
-                        backgroundImage: frame.style.backgroundImage,
-                        title: frame.querySelector('.photo-title')?.textContent || ''
+                        backgroundImage: frame.style.backgroundImage || '',
+                        hasImage: frame.classList.contains('has-image'),
+                        isHero: frame.classList.contains('hero'),
+                        ratio: frame.classList.contains('hero') ? '2.5:1' : '1:1'
                     };
                 }
             });
             
             // Guardar logo
             const logoImg = document.querySelector('.logo-slot img');
-            if (logoImg && logoImg.src && logoImg.src !== window.location.href) {
+            if (logoImg && logoImg.src && logoImg.src !== window.location.href && logoImg.style.display !== 'none') {
                 data.logo = logoImg.src;
             }
             
             // Guardar bandera
             const flagImg = document.querySelector('.flag-container img');
-            if (flagImg && flagImg.src && flagImg.src !== window.location.href) {
+            if (flagImg && flagImg.src && flagImg.src !== window.location.href && flagImg.style.display !== 'none') {
                 data.flag = flagImg.src;
             }
             
@@ -779,6 +788,14 @@
                 left: pin.style.left
             }));
             
+            // NUEVO: Guardar categorías de lugares
+            const placeBadges = document.querySelectorAll('.place-badge');
+            data.components.placeCategories = Array.from(placeBadges).map((badge, index) => {
+                const classes = Array.from(badge.classList);
+                const categoryClass = classes.find(c => c !== 'place-badge') || 'must';
+                return { index: index + 1, category: categoryClass };
+            });
+            
             return data;
         }
 
@@ -790,6 +807,27 @@
             
             counters = { ...data.counters };
             
+            // NUEVO: Restaurar colores
+            if (data.colors) {
+                if (data.colors.primario) {
+                    TEMPLATE_CONFIG.color_primario = data.colors.primario;
+                    document.documentElement.style.setProperty('--teal-primary', data.colors.primario);
+                }
+                if (data.colors.secundario) {
+                    TEMPLATE_CONFIG.color_secundario = data.colors.secundario;
+                    document.documentElement.style.setProperty('--teal-light', data.colors.secundario);
+                }
+                if (data.colors.acento) {
+                    TEMPLATE_CONFIG.color_acento = data.colors.acento;
+                    document.documentElement.style.setProperty('--coral', data.colors.acento);
+                }
+                if (data.colors.fondo) {
+                    TEMPLATE_CONFIG.color_fondo = data.colors.fondo;
+                    document.documentElement.style.setProperty('--sand', data.colors.fondo);
+                }
+                updateColorInputs(TEMPLATE_CONFIG);
+            }
+            
             // Restaurar contenido editable
             Object.entries(data.editableContent || {}).forEach(([varName, content]) => {
                 const element = document.querySelector(`[data-var="${varName}"]`);
@@ -798,14 +836,33 @@
                 }
             });
             
-            // Restaurar imágenes
+            // Restaurar imágenes con su ratio
             Object.entries(data.images || {}).forEach(([frameId, imageData]) => {
                 const frame = document.querySelector(`[data-frame="${frameId}"]`);
                 if (frame) {
-                    frame.style.backgroundImage = imageData.backgroundImage;
-                    frame.classList.add('has-image');
-                    const placeholder = frame.querySelector('.photo-placeholder');
-                    if (placeholder) placeholder.style.display = 'none';
+                    if (imageData.backgroundImage && imageData.hasImage) {
+                        frame.style.backgroundImage = imageData.backgroundImage;
+                        frame.classList.add('has-image');
+                        const placeholder = frame.querySelector('.photo-placeholder');
+                        if (placeholder) placeholder.style.display = 'none';
+                    }
+                    
+                    // Restaurar ratio
+                    if (imageData.isHero) {
+                        frame.classList.remove('mini');
+                        frame.classList.add('hero');
+                        frame.style.aspectRatio = '2.5/1';
+                        frame.style.gridColumn = 'span 2';
+                        const badge = frame.querySelector('.dimension-badge');
+                        if (badge) badge.textContent = '2.5:1';
+                    } else {
+                        frame.classList.remove('hero');
+                        frame.classList.add('mini');
+                        frame.style.aspectRatio = '1/1';
+                        frame.style.gridColumn = 'span 1';
+                        const badge = frame.querySelector('.dimension-badge');
+                        if (badge) badge.textContent = '1:1';
+                    }
                 }
             });
             
@@ -834,6 +891,7 @@
             // Restaurar nivel de coste
             if (data.components?.costRating) {
                 const circles = document.querySelectorAll('.cost-circle');
+                const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
                 circles.forEach((circle, index) => {
                     if (index < data.components.costRating) {
                         circle.classList.remove('empty');
@@ -841,6 +899,11 @@
                         circle.classList.add('empty');
                     }
                 });
+                const costText = document.querySelector('.cost-text');
+                if (costText) {
+                    costText.textContent = `${data.components.costRating}/5 — ${labels[data.components.costRating-1]}`;
+                }
+                TEMPLATE_CONFIG.coste_nivel = data.components.costRating;
             }
             
             // Restaurar mapa
@@ -852,6 +915,7 @@
                 mapContainer.innerHTML = '';
                 mapContainer.appendChild(img);
                 mapContainer.classList.add('has-custom-map');
+                TEMPLATE_CONFIG.mapa_url = data.mapData.url;
             }
             
             // Restaurar pins
@@ -865,6 +929,22 @@
                         }
                     });
                 }, 100);
+            }
+            
+            // NUEVO: Restaurar categorías de lugares
+            if (data.components?.placeCategories) {
+                setTimeout(() => {
+                    const badges = document.querySelectorAll('.place-badge');
+                    data.components.placeCategories.forEach(catData => {
+                        const badge = badges[catData.index - 1];
+                        if (badge && PLACE_CATEGORIES[catData.category]) {
+                            const cat = PLACE_CATEGORIES[catData.category];
+                            badge.className = `place-badge ${catData.category}`;
+                            badge.innerHTML = `${cat.emoji} ${cat.label}`;
+                            badge.style.background = cat.color;
+                        }
+                    });
+                }, 200);
             }
             
             updateAllCounters();
@@ -1553,13 +1633,22 @@
 
         // ===== FUNCIONES DE UTILIDAD =====
         function setupCostRating() {
-            document.querySelectorAll('.cost-circle').forEach((circle, index) => {
-                circle.addEventListener('click', function() {
+            const circles = document.querySelectorAll('.cost-circle');
+            
+            circles.forEach((circle, index) => {
+                // Remover listeners anteriores clonando el elemento
+                const newCircle = circle.cloneNode(true);
+                circle.parentNode.replaceChild(newCircle, circle);
+                
+                newCircle.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     saveState();
-                    const circles = this.parentElement.querySelectorAll('.cost-circle');
+                    
+                    const allCircles = this.parentElement.querySelectorAll('.cost-circle');
                     const value = index + 1;
                     
-                    circles.forEach((c, i) => {
+                    // Actualizar visualización
+                    allCircles.forEach((c, i) => {
                         if (i < value) {
                             c.classList.remove('empty');
                         } else {
@@ -1567,9 +1656,18 @@
                         }
                     });
                     
-                    const costText = this.parentElement.parentElement.querySelector('.cost-text');
+                    // Actualizar texto
+                    const costText = document.querySelector('.cost-text');
                     const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
-                    costText.textContent = `${value}/5 — ${labels[value-1]}`;
+                    if (costText) {
+                        costText.textContent = `${value}/5 — ${labels[value-1]}`;
+                    }
+                    
+                    // Actualizar TEMPLATE_CONFIG
+                    TEMPLATE_CONFIG.coste_nivel = value;
+                    
+                    // Feedback visual
+                    showToast(`💰 Nivel de coste: ${value}/5 - ${labels[value-1]}`);
                 });
             });
         }
@@ -1868,28 +1966,29 @@
         
         // ===== EXPORTACIÓN PDF =====
         function exportTemplate(format) {
-            // Ocultar todos los controles y elementos de edición
-            document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .editable').forEach(el => {
+            // Ocultar controles (NO los editables, solo controles de UI)
+            document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .section-controls, .photo-controls, .item-counter, .dimension-badge').forEach(el => {
                 el.style.display = 'none';
             });
             
-            // Limpiar bordes de editables
+            // Limpiar estilos visuales de editables (pero NO ocultarlos)
             document.querySelectorAll('.editable').forEach(el => {
                 el.style.border = 'none';
                 el.style.background = 'transparent';
+                el.style.padding = '0';
             });
             
             window.print();
             
             // Restaurar después de imprimir
             setTimeout(() => {
-                document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls').forEach(el => {
+                document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .section-controls, .photo-controls, .item-counter, .dimension-badge').forEach(el => {
                     el.style.display = '';
                 });
                 document.querySelectorAll('.editable').forEach(el => {
-                    el.style.display = '';
                     el.style.border = '';
                     el.style.background = '';
+                    el.style.padding = '';
                 });
             }, 1000);
         }
@@ -2276,6 +2375,19 @@
             overflow: visible;
         }
 
+        /* Secciones de ancho completo */
+        .full-width-section {
+            grid-column: 1 / -1;
+            width: 100%;
+        }
+
+        /* Grid para lugares en 2 columnas */
+        .places-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
         .left-column, .right-column {
             display: flex;
             flex-direction: column;
@@ -2514,12 +2626,13 @@
         }
 
         .cost-circle {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             background: var(--coral);
             cursor: pointer;
             transition: all 0.2s;
+            border: 2px solid transparent;
         }
 
         .cost-circle.empty {
@@ -2527,7 +2640,13 @@
         }
 
         .cost-circle:hover {
-            transform: scale(1.1);
+            transform: scale(1.2);
+            border-color: var(--teal-primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .cost-circle:active {
+            transform: scale(0.95);
         }
 
         .cost-text {
@@ -3409,31 +3528,34 @@
                             <div class="flow-container" id="itineraryList"></div>
                         </div>
 
-                        <!-- Top lugares -->
-                        <div class="top-places flow-item">
-                            <div class="section-header">
-                                <div class="section-title">Top Lugares</div>
-                                <div class="section-controls">
-                                    <span class="item-counter" id="placeCounter">0/12 lugares</span>
-                                    <button class="add-btn remove-btn" onclick="removeLastPlace()" id="removePlaceBtn">−</button>
-                                    <button class="add-btn" onclick="addPlace()" id="addPlaceBtn">+</button>
-                                </div>
-                            </div>
-                            <div class="flow-container" id="placesList"></div>
-                        </div>
+                        <!-- Top lugares - MOVIDO A SECCIÓN FULL-WIDTH -->
+                    </div>
 
-                        <!-- Consejos rápidos -->
-                        <div class="quick-tips flow-item">
-                            <div class="section-header">
-                                <div class="section-title">Consejos Rápidos</div>
-                                <div class="section-controls">
-                                    <span class="item-counter" id="tipCounter">0/12 consejos</span>
-                                    <button class="add-btn remove-btn" onclick="removeLastTip()" id="removeTipBtn">−</button>
-                                    <button class="add-btn" onclick="addTip()" id="addTipBtn">+</button>
-                                </div>
+                    <!-- SECCIONES FULL-WIDTH (fuera de las columnas) -->
+                    <!-- Top lugares -->
+                    <div class="top-places flow-item full-width-section">
+                        <div class="section-header">
+                            <div class="section-title">Top Lugares</div>
+                            <div class="section-controls">
+                                <span class="item-counter" id="placeCounter">0/12 lugares</span>
+                                <button class="add-btn remove-btn" onclick="removeLastPlace()" id="removePlaceBtn">−</button>
+                                <button class="add-btn" onclick="addPlace()" id="addPlaceBtn">+</button>
                             </div>
-                            <div class="tips-grid" id="tipsList"></div>
                         </div>
+                        <div class="flow-container places-grid" id="placesList"></div>
+                    </div>
+
+                    <!-- Consejos rápidos -->
+                    <div class="quick-tips flow-item full-width-section">
+                        <div class="section-header">
+                            <div class="section-title">Consejos Rápidos</div>
+                            <div class="section-controls">
+                                <span class="item-counter" id="tipCounter">0/12 consejos</span>
+                                <button class="add-btn remove-btn" onclick="removeLastTip()" id="removeTipBtn">−</button>
+                                <button class="add-btn" onclick="addTip()" id="addTipBtn">+</button>
+                            </div>
+                        </div>
+                        <div class="tips-grid" id="tipsList"></div>
                     </div>
                 </div>
 
@@ -3450,6 +3572,7 @@
     </div>
 </body>
 </html>
+
 
 
 
