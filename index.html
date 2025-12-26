@@ -758,8 +758,14 @@
             
             // Guardar logo
             const logoImg = document.querySelector('.logo-slot img');
-            if (logoImg && logoImg.src) {
+            if (logoImg && logoImg.src && logoImg.src !== window.location.href) {
                 data.logo = logoImg.src;
+            }
+            
+            // Guardar bandera
+            const flagImg = document.querySelector('.flag-container img');
+            if (flagImg && flagImg.src && flagImg.src !== window.location.href) {
+                data.flag = flagImg.src;
             }
             
             // Guardar nivel de coste
@@ -813,6 +819,17 @@
                 img.style.display = 'block';
                 placeholder.style.display = 'none';
                 logoSlot.classList.add('has-logo');
+            }
+            
+            // Restaurar bandera
+            if (data.flag) {
+                const flagContainer = document.querySelector('.flag-container');
+                const img = flagContainer.querySelector('img');
+                const placeholder = flagContainer.querySelector('.flag-placeholder');
+                img.src = data.flag;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+                flagContainer.classList.add('has-flag');
             }
             
             // Restaurar nivel de coste
@@ -1534,6 +1551,116 @@
             }
         }
 
+        // ===== EXPORTAR/IMPORTAR ARCHIVO =====
+        function exportToFile() {
+            try {
+                const templateData = serializeTemplate();
+                const pais = document.querySelector('[data-var="PAIS"]')?.textContent || 'guia';
+                const fecha = new Date().toISOString().split('T')[0];
+                const filename = `${pais.replace(/[^a-zA-Z0-9]/g, '_')}_${fecha}.json`;
+                
+                const blob = new Blob([JSON.stringify(templateData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showToast(`📥 Exportado: ${filename}`);
+            } catch (error) {
+                console.error('Error al exportar:', error);
+                showToast('❌ Error al exportar', 'error');
+            }
+        }
+        
+        function importFromFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        
+                        if (!data.version) {
+                            showToast('❌ Archivo no válido', 'error');
+                            return;
+                        }
+                        
+                        // Limpiar secciones antes de restaurar
+                        clearAllSections();
+                        
+                        // Regenerar elementos basándose en los contadores
+                        if (data.counters) {
+                            // Regenerar ciudades
+                            for (let i = 1; i <= data.counters.cities; i++) {
+                                const container = document.querySelector('#citiesList');
+                                const cityText = data.editableContent[`CIUDAD_${i}`] || `Ciudad ${i}`;
+                                const cityElement = createCityElement(i, cityText);
+                                container.appendChild(cityElement);
+                            }
+                            
+                            // Regenerar días
+                            for (let i = 1; i <= data.counters.days; i++) {
+                                const container = document.querySelector('#itineraryList');
+                                const dayText = data.editableContent[`DIA_${i}`] || `Día ${i}`;
+                                const actText = data.editableContent[`ACTIVIDAD_${i}`] || '';
+                                const dayElement = createDayElement(i, dayText, actText);
+                                container.appendChild(dayElement);
+                            }
+                            
+                            // Regenerar lugares
+                            for (let i = 1; i <= data.counters.places; i++) {
+                                const container = document.querySelector('#placesList');
+                                const config = {
+                                    [`lugar${i}`]: data.editableContent[`LUGAR_${i}`] || `Lugar ${i}`,
+                                    [`ciudad_lugar${i}`]: data.editableContent[`CIUDAD_LUGAR_${i}`] || 'Ciudad',
+                                    [`desc_lugar${i}`]: data.editableContent[`DESC_LUGAR_${i}`] || 'Descripción',
+                                    [`tipo_lugar${i}`]: 'must'
+                                };
+                                const placeElement = createPlaceElement(i, config);
+                                container.appendChild(placeElement);
+                            }
+                            
+                            // Regenerar consejos
+                            const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
+                            for (let i = 1; i <= data.counters.tips; i++) {
+                                const container = document.querySelector('#tipsList');
+                                const tipText = data.editableContent[`TIP_${i}`] || `Consejo ${i}`;
+                                const tipElement = createTipElement(i, tipText, iconos[i-1] || '💡');
+                                container.appendChild(tipElement);
+                            }
+                            
+                            // Regenerar pins del mapa
+                            regenerateMapPins(data.counters.cities, TEMPLATE_CONFIG);
+                        }
+                        
+                        // Restaurar el resto de datos
+                        restoreTemplate(data);
+                        
+                        // Reinicializar JS
+                        reinitializeJS();
+                        
+                        showToast(`📂 Importado: ${file.name}`);
+                        
+                    } catch (error) {
+                        console.error('Error al importar:', error);
+                        showToast('❌ Error al leer archivo', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+        
         // ===== EXPORTACIÓN PDF =====
         function exportTemplate(format) {
             // Ocultar todos los controles y elementos de edición
@@ -2457,6 +2584,9 @@
             cursor: not-allowed;
         }
 
+        .export-file-btn { background: #FF9800; color: var(--white); }
+        .import-file-btn { background: #795548; color: var(--white); }
+
         .status-bar {
             display: flex;
             align-items: center;
@@ -2487,7 +2617,7 @@
             background: transparent !important;
         }
 
-        /* RESPONSIVE */
+        /* RESPONSIVE - MANTIENE 2 COLUMNAS SIEMPRE */
         @media screen and (max-width: 1200px) {
             .page {
                 transform: scale(0.8);
@@ -2498,9 +2628,22 @@
         @media screen and (max-width: 900px) {
             .page {
                 transform: scale(0.6);
+                transform-origin: top center;
             }
-            .content-area {
-                grid-template-columns: 1fr;
+            /* 2 columnas se mantienen, solo escala */
+        }
+
+        @media screen and (max-width: 600px) {
+            .page {
+                transform: scale(0.45);
+                transform-origin: top center;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            .page {
+                transform: scale(0.35);
+                transform-origin: top center;
             }
         }
 
@@ -2624,6 +2767,8 @@
         <button class="control-btn-main upload-images-btn" onclick="uploadMultipleImages()" data-tooltip="Cargar múltiples fotos a la vez">📷 Subir Imágenes</button>
         <button class="control-btn-main help-btn" onclick="toggleHelp()" data-tooltip="Mostrar guía de uso">❓ Ayuda</button>
         <button class="control-btn-main save-btn" onclick="autosaveJSON()" data-tooltip="Guardar sesión localmente (Ctrl+S)">💾 Guardar Sesión</button>
+        <button class="control-btn-main export-file-btn" onclick="exportToFile()" data-tooltip="Descargar plantilla completa con imágenes">📥 Exportar Archivo</button>
+        <button class="control-btn-main import-file-btn" onclick="importFromFile()" data-tooltip="Cargar plantilla desde archivo JSON">📤 Importar Archivo</button>
         <button class="control-btn-main undo-btn" onclick="undo()" id="undoBtn" disabled data-tooltip="Deshacer última acción (Ctrl+Z)">↶ Deshacer</button>
         <button class="control-btn-main export-btn" onclick="exportTemplate('A4')" data-tooltip="Exportar a PDF tamaño A4">📄 PDF A4</button>
         <button class="control-btn-main preview-btn" onclick="togglePreview()" data-tooltip="Vista previa sin controles (Escape)">👁️ Vista previa</button>
@@ -2880,6 +3025,7 @@
     </div>
 </body>
 </html>
+
 
 
 
