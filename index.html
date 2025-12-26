@@ -13,7 +13,7 @@
             // === INFORMACIÓN BÁSICA ===
             pais: "Japón",
             nombre_pais: "Japón - Tierra del Sol Naciente",
-            bandera_emoji: "&#x1F1EF;&#x1F1F5;", // Emoji de la bandera del país
+            bandera_imagen: "", // URL o base64 de imagen de bandera (dejar vacío para subir manualmente)
             fechas: "Marzo - Mayo 2024",
             duracion: "14 días",
             coste_nivel: 2, // 1-5
@@ -97,6 +97,14 @@
             
             // === LOGO ===
             logo: "",
+
+            // === COLORES PERSONALIZABLES ===
+            color_fondo: "#F6EFE6",        // Fondo general (arena/beige)
+            color_primario: "#0F7A78",     // Color principal (teal oscuro)
+            color_secundario: "#5FB4B2",   // Color secundario (teal claro)
+            color_acento: "#FF6B61",       // Color de acento (coral)
+            color_texto: "#2F3A3A",        // Texto oscuro
+            color_fondo_logo: "#000000",   // Fondo del logo (blanco por defecto)
         };
 
 // 🔧 FUNCIÓN DE DETECCIÓN AUTOMÁTICA
@@ -145,6 +153,9 @@
             // CRÍTICO: Limpiar todo antes de regenerar
             clearAllSections();
             
+            // Aplicar colores personalizados
+            applyCustomColors(config);
+
             // Actualizar información básica
             updateBasicInfo(config);
             
@@ -212,10 +223,17 @@
             document.querySelector('[data-var="FECHA_CREACION"]').textContent = config.fecha_creacion;
             document.querySelector('[data-var="CREDITOS"]').textContent = config.creditos;
             
-            // Actualizar emoji de bandera
+            // Cargar imagen de bandera si existe
             const flagContainer = document.querySelector('.flag-container');
-            if (flagContainer && config.bandera_emoji) {
-                flagContainer.textContent = config.bandera_emoji;
+            if (flagContainer && config.bandera_imagen) {
+                const img = flagContainer.querySelector('img');
+                const placeholder = flagContainer.querySelector('.flag-placeholder');
+                if (img && placeholder) {
+                    img.src = config.bandera_imagen;
+                    img.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    flagContainer.classList.add('has-flag');
+                }
             }
             
             // Presupuesto
@@ -881,7 +899,20 @@
             page.style.height = 'auto';
             page.style.minHeight = '297mm';
         }
-        
+
+        function applyCustomColors(config) {
+            const root = document.documentElement;
+    
+            if (config.color_fondo) root.style.setProperty('--sand', config.color_fondo);
+            if (config.color_primario) root.style.setProperty('--teal-primary', config.color_primario);
+            if (config.color_secundario) root.style.setProperty('--teal-light', config.color_secundario);
+            if (config.color_acento) root.style.setProperty('--coral', config.color_acento);
+            if (config.color_texto) root.style.setProperty('--text-dark', config.color_texto);
+            if (config.color_fondo_logo) root.style.setProperty('--logo-bg', config.color_fondo_logo);
+    
+            console.log('🎨 Colores personalizados aplicados');
+        }
+
         function reinitializeJS() {
             document.querySelectorAll('.editable').forEach(setupEditableElement);
             setupPhotoDragDrop();
@@ -1140,6 +1171,82 @@
             setTimeout(() => expandPageToFit(), 100);
         }
 
+        // ===== FUNCIONES DE QUITAR ELEMENTOS =====
+        function removeLastCity() {
+            const container = document.querySelector('#citiesList');
+            const items = container.querySelectorAll('[data-component="CITY_ITEM"]');
+            if (items.length <= 1) {
+                showToast('⚠️ Debe mantener al menos 1 ciudad', 'error');
+                return;
+            }
+            saveState();
+            items[items.length - 1].remove();
+    
+            // Quitar último pin del mapa
+            const pins = document.querySelectorAll('.map-pin');
+            if (pins.length > 0) pins[pins.length - 1].remove();
+    
+            counters.cities--;
+            updateCounterDisplay('cities');
+            showToast('🗑️ Ciudad eliminada');
+        }
+
+        function removeLastPhoto() {
+            const container = document.querySelector('#photoGrid');
+            const items = container.querySelectorAll('[data-component="PHOTO_FRAME"]');
+            if (items.length <= 1) {
+                showToast('⚠️ Debe mantener al menos 1 foto', 'error');
+                return;
+            }
+            saveState();
+            items[items.length - 1].remove();
+            counters.photos--;
+            updateCounterDisplay('photos');
+            showToast('🗑️ Foto eliminada');
+        }
+
+        function removeLastDay() {
+            const container = document.querySelector('#itineraryList');
+            const items = container.querySelectorAll('[data-component="ITINERARY_CARD"]');
+            if (items.length <= 1) {
+                showToast('⚠️ Debe mantener al menos 1 día', 'error');
+                return;
+            }
+            saveState();
+            items[items.length - 1].remove();
+            counters.days--;
+            updateCounterDisplay('days');
+            showToast('🗑️ Día eliminado');
+        }
+
+        function removeLastPlace() {
+            const container = document.querySelector('#placesList');
+            const items = container.querySelectorAll('[data-component="PLACE_ITEM"]');
+            if (items.length <= 1) {
+                showToast('⚠️ Debe mantener al menos 1 lugar', 'error');
+                return;
+            }
+            saveState();
+            items[items.length - 1].remove();
+            counters.places--;
+            updateCounterDisplay('places');
+            showToast('🗑️ Lugar eliminado');
+        }
+
+        function removeLastTip() {
+            const container = document.querySelector('#tipsList');
+            const items = container.querySelectorAll('[data-component="TIP_ITEM"]');
+            if (items.length <= 1) {
+                showToast('⚠️ Debe mantener al menos 1 consejo', 'error');
+                return;
+            }
+            saveState();
+            items[items.length - 1].remove();
+            counters.tips--;
+            updateCounterDisplay('tips');
+            showToast('🗑️ Consejo eliminado');
+        }
+
         function addMapPin(number) {
             const mapContainer = document.querySelector('.map-container');
             const pin = document.createElement('div');
@@ -1311,6 +1418,32 @@
             
             const placeholder = frame.querySelector('.photo-placeholder');
             if (placeholder) placeholder.style.display = 'block';
+        }
+
+        function uploadFlag(flagContainer) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = flagContainer.querySelector('img');
+                        const placeholder = flagContainer.querySelector('.flag-placeholder');
+                
+                        img.src = event.target.result;
+                        img.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        flagContainer.classList.add('has-flag');
+                
+                        // Guardar en config
+                        TEMPLATE_CONFIG.bandera_imagen = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
         }
 
         function uploadLogo(logoSlot) {
@@ -1501,11 +1634,11 @@
         };
 
         const limits = {
-            photos: 7,
-            cities: 12,
-            days: 10,
-            places: 12,
-            tips: 12
+            photos: 20,
+            cities: 30,
+            days: 60,
+            places: 20,
+            tips: 15
         };
 
         let autoExtendEnabled = true;
@@ -1613,18 +1746,18 @@
         /* LOGO MÁS GRANDE Y VISIBLE */
         /* LOGO MÁS GRANDE Y VISIBLE */
         .logo-slot {
-            width: 100px;  /* Aumentado de 56px */
-            height: 65px;  /* Aumentado de 36px */
+            width: 100px;
+            height: 65px;
             margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 6px;
-            background: rgba(255,255,255,0.95);
+            background: var(--logo-bg, rgba(255,255,255,0.95));
             border: 2px dashed rgba(15, 122, 120, 0.3);
             cursor: pointer;
             transition: all 0.2s;
-            padding: 4px;
+            padding: 2px;
         }
 
         .logo-slot:hover {
@@ -1658,14 +1791,40 @@
             height: 36px;
             background: var(--white);
             border-radius: 4px;
-            border: 2px solid var(--teal-primary);
+            border: 2px dashed rgba(15, 122, 120, 0.4);
             margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 8px;
             color: var(--teal-primary);
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .flag-container:hover {
+            border-color: var(--teal-primary);
+            background: rgba(255,255,255,0.9);
+            transform: scale(1.05);
+        }
+
+        .flag-container.has-flag {
+            border-style: solid;
+            border-color: var(--white);
+        }
+
+        .flag-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .flag-placeholder {
+            text-align: center;
+            line-height: 1.1;
+            color: rgba(15, 122, 120, 0.7);
         }
 
         .country-title {
@@ -1835,6 +1994,18 @@
             cursor: not-allowed;
         }
 
+        .add-btn.remove-btn {
+            background: var(--coral);
+            padding: 6px 8px;
+        }
+
+        .add-btn.remove-btn:hover {
+            background: #e55a50;
+        }
+
+        .add-btn.remove-btn:disabled {
+            background: #ccc;
+        }
         /* TARJETA RESUMEN */
         .summary-card {
             background: var(--white);
@@ -2335,27 +2506,103 @@
 
         /* IMPRESIÓN - LIMPIO */
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+    
             body { 
                 margin: 0; 
-                background: var(--white); 
+                background: var(--sand) !important;
+                background-color: var(--sand) !important;
             }
+    
             .page { 
                 box-shadow: none; 
                 margin: 0;
                 width: 210mm;
                 min-height: 297mm;
                 page-break-inside: avoid;
+                background: var(--sand) !important;
             }
+    
             .control-panel,
             .component-controls,
             .add-btn,
             .map-controls,
-            .photo-controls {
+            .photo-controls,
+            .item-counter,
+            .section-controls {
                 display: none !important;
             }
+    
             .editable {
                 border: none !important;
                 background: transparent !important;
+            }
+    
+            /* Preservar colores del header */
+            .master-header {
+                background: linear-gradient(135deg, var(--teal-primary), var(--teal-light)) !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+    
+            /* Preservar colores de los círculos de coste */
+            .cost-circle {
+                background: var(--coral) !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+    
+            .cost-circle.empty {
+                background: #E5E5E5 !important;
+            }
+    
+            /* Preservar badges de lugares */
+            .place-badge.must { background: var(--coral) !important; color: white !important; }
+            .place-badge.skip { background: #E5E5E5 !important; }
+            .place-badge.eco { background: #4CAF50 !important; color: white !important; }
+            .place-badge.family { background: #FF9800 !important; color: white !important; }
+    
+            /* Preservar iconos de consejos */
+            .tip-icon {
+                background: var(--coral) !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+    
+            /* Preservar pins del mapa */
+            .map-pin {
+                background: var(--coral) !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+    
+            /* Preservar numeración de ciudades */
+            [data-component="CITY_ITEM"] > div:first-child {
+                background: var(--teal-primary) !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+    
+            /* Preservar iconos de información */
+            .summary-card div[style*="background: var(--teal-light)"] {
+                background: var(--teal-light) !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+    
+            /* Preservar borde del itinerario */
+            .itinerary-card {
+                border-left: 4px solid var(--teal-light) !important;
+                background: #f8fffe !important;
+            }
+    
+            /* Preservar borde del presupuesto */
+            .budget-section {
+                border-left: 3px solid var(--teal-primary) !important;
+                background: #f8fffe !important;
+            }
+    
+            /* Ocultar indicador de página en header si no se necesita */
+            .page-indicator {
+                display: none !important;
             }
         }
 
@@ -2399,7 +2646,10 @@
                         <img src="" alt="Logo" style="display: none;" />
                         <div class="logo-placeholder">LOGO<br><small>Click aquí</small></div>
                     </div>
-                    <div class="flag-container">🇯🇵</div>
+                    <div class="flag-container" onclick="uploadFlag(this)">
+                        <img src="" alt="Bandera" style="display: none;" />
+                        <div class="flag-placeholder">🏳️<br><small>Click</small></div>
+                    </div>
                     <div class="country-title editable" data-limit="30" data-var="PAIS">{{PAÍS}}</div>
                     <div class="page-indicator">Página 1 de 1</div>
                 </div>
@@ -2478,7 +2728,8 @@
                                 <div class="section-title">Fotos del Viaje</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="photoCounter">0/7 fotos</span>
-                                    <button class="add-btn" onclick="addPhoto()" id="addPhotoBtn">+ Foto</button>
+                                    <button class="add-btn remove-btn" onclick="removeLastPhoto()" id="removePhotoBtn">−</button>
+                                    <button class="add-btn" onclick="addPhoto()" id="addPhotoBtn">+</button>
                                 </div>
                             </div>
                             
@@ -2554,8 +2805,9 @@
                             <div class="section-header">
                                 <div class="section-title">Ruta del Viaje</div>
                                 <div class="section-controls">
-                                    <span class="item-counter" id="cityCounter">0/12 ciudades</span>
-                                    <button class="add-btn" onclick="addCity()" id="addCityBtn">+ Ciudad</button>
+                                    <span class="item-counter" id="cityCounter">0/20 ciudades</span>
+                                    <button class="add-btn remove-btn" onclick="removeLastCity()" id="removeCityBtn">−</button>
+                                    <button class="add-btn" onclick="addCity()" id="addCityBtn">+</button>
                                 </div>
                             </div>
                             
@@ -2579,8 +2831,9 @@
                             <div class="section-header">
                                 <div class="section-title">Itinerario</div>
                                 <div class="section-controls">
-                                    <span class="item-counter" id="dayCounter">0/10 días</span>
-                                    <button class="add-btn" onclick="addItineraryDay()" id="addDayBtn">+ Día</button>
+                                    <span class="item-counter" id="dayCounter">0/30 días</span>
+                                    <button class="add-btn remove-btn" onclick="removeLastDay()" id="removeDayBtn">−</button>
+                                    <button class="add-btn" onclick="addItineraryDay()" id="addDayBtn">+</button>
                                 </div>
                             </div>
                             <div class="flow-container" id="itineraryList"></div>
@@ -2592,7 +2845,8 @@
                                 <div class="section-title">Top Lugares</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="placeCounter">0/12 lugares</span>
-                                    <button class="add-btn" onclick="addPlace()" id="addPlaceBtn">+ Lugar</button>
+                                    <button class="add-btn remove-btn" onclick="removeLastPlace()" id="removePlaceBtn">−</button>
+                                    <button class="add-btn" onclick="addPlace()" id="addPlaceBtn">+</button>
                                 </div>
                             </div>
                             <div class="flow-container" id="placesList"></div>
@@ -2604,7 +2858,8 @@
                                 <div class="section-title">Consejos Rápidos</div>
                                 <div class="section-controls">
                                     <span class="item-counter" id="tipCounter">0/12 consejos</span>
-                                    <button class="add-btn" onclick="addTip()" id="addTipBtn">+ Consejo</button>
+                                    <button class="add-btn remove-btn" onclick="removeLastTip()" id="removeTipBtn">−</button>
+                                    <button class="add-btn" onclick="addTip()" id="addTipBtn">+</button>
                                 </div>
                             </div>
                             <div class="tips-grid" id="tipsList"></div>
@@ -2625,6 +2880,7 @@
     </div>
 </body>
 </html>
+
 
 
 
