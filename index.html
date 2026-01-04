@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plantilla Guía de Viaje V5.1</title>
+    <title>Plantilla Guía de Viaje V5.1 - CORREGIDO</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <!-- ===== CONFIGURACIÓN DE VARIABLES ===== -->
@@ -13,16 +13,16 @@
             // === INFORMACIÓN BÁSICA ===
             pais: "Japón",
             nombre_pais: "Japón - Tierra del Sol Naciente",
-            bandera_imagen: "", // URL o base64 de imagen de bandera (dejar vacío para subir manualmente)
+            bandera_imagen: "",
             fechas: "Marzo - Mayo 2024",
             duracion: "14 días",
-            coste_nivel: 2, // 1-5
+            coste_nivel: 2,
             moneda: "Yen (JPY)",
-            costo_hospedaje: "$50-80/noche", // Costo promedio de hospedaje
-            costo_comida: "$15-30/día", // Costo promedio de comida
-            costo_bebida: "$5-8/cerveza", // Costo promedio de bebida en bar
+            costo_hospedaje: "$50-80/noche",
+            costo_comida: "$15-30/día",
+            costo_bebida: "$5-8/cerveza",
             idioma: "Japonés",
-            religiones: "Sintoísmo, Budismo", // Religiones principales
+            religiones: "Sintoísmo, Budismo",
             fecha_creacion: "Enero 2024",
             creditos: "Fotos: @viajero_digital, Unsplash",
             
@@ -33,13 +33,12 @@
             // === CONFIGURACIÓN DE MAPA ===
             mapa_tipo: "upload",
             mapa_url: "",
-            mapa_enlace_google: "", // Enlace a Google My Maps (ej: "https://www.google.com/maps/d/...")
+            mapa_enlace_google: "",
             
-            // === CIUDADES (Si eliminas ciudad4, desaparecerá automáticamente) ===
+            // === CIUDADES ===
             ciudad1: "Tokio — Capital moderna y tradicional",
             ciudad2: "Kioto — Templos y cultura ancestral",
             ciudad3: "Osaka — Gastronomía y entretenimiento",
-            // ciudad4: "Hiroshima — Historia y memoria", // ← Comentado = no aparece
             
             // === ITINERARIO ===
             dia1: "Tokio - Shibuya",
@@ -101,47 +100,35 @@
             logo: "",
 
             // === COLORES PERSONALIZABLES ===
-            color_fondo: "#000000",        // Fondo general (negro)
-            color_primario: "#337653",     // Color principal (verde oscuro)
-            color_secundario: "#1DAA2D",   // Color secundario (verde brillante)
-            color_acento: "#EE3344",       // Color de acento (rojo)
-            color_texto: "#2F3A3A",        // Texto oscuro
-            color_fondo_logo: "#FFFFFF",   // Fondo del logo (blanco por defecto)
+            color_fondo: "#000000",
+            color_primario: "#337653",
+            color_secundario: "#1DAA2D",
+            color_acento: "#EE3344",
+            color_texto: "#2F3A3A",
+            color_fondo_logo: "#FFFFFF",
         };
 
-// 🔧 FUNCIÓN DE DETECCIÓN AUTOMÁTICA
+        // 🔧 FUNCIÓN DE DETECCIÓN AUTOMÁTICA
         function detectConfigCounts(config) {
-            const counts = {
-                ciudades: 0,
-                dias: 0, 
-                lugares: 0,
-                tips: 0,
-                fotos: 0
-            };
+            const counts = { ciudades: 0, dias: 0, lugares: 0, tips: 0, fotos: 0 };
             
             for (let key in config) {
                 if (key.startsWith('ciudad') && /\d+$/.test(key) && !key.includes('_')) {
-                    const num = parseInt(key.replace('ciudad', ''));
-                    counts.ciudades = Math.max(counts.ciudades, num);
+                    counts.ciudades = Math.max(counts.ciudades, parseInt(key.replace('ciudad', '')));
                 }
                 if (key.startsWith('dia') && /\d+$/.test(key)) {
-                    const num = parseInt(key.replace('dia', ''));
-                    counts.dias = Math.max(counts.dias, num);
+                    counts.dias = Math.max(counts.dias, parseInt(key.replace('dia', '')));
                 }
                 if (key.startsWith('lugar') && /\d+$/.test(key)) {
-                    const num = parseInt(key.replace('lugar', ''));
-                    counts.lugares = Math.max(counts.lugares, num);
+                    counts.lugares = Math.max(counts.lugares, parseInt(key.replace('lugar', '')));
                 }
                 if (key.startsWith('tip') && /\d+$/.test(key)) {
-                    const num = parseInt(key.replace('tip', ''));
-                    counts.tips = Math.max(counts.tips, num);
+                    counts.tips = Math.max(counts.tips, parseInt(key.replace('tip', '')));
                 }
                 if (key.startsWith('img') && /\d+$/.test(key)) {
-                    const num = parseInt(key.replace('img', ''));
-                    counts.fotos = Math.max(counts.fotos, num);
+                    counts.fotos = Math.max(counts.fotos, parseInt(key.replace('img', '')));
                 }
             }
-            
             return counts;
         }
         
@@ -152,37 +139,24 @@
             
             console.log('🎯 Inicializando V5.1 desde TEMPLATE_CONFIG:', counts);
             
-            // CRÍTICO: Limpiar todo antes de regenerar
             clearAllSections();
-            
-            // Aplicar colores personalizados
             applyCustomColors(config);
-
-            // Actualizar información básica
             updateBasicInfo(config);
-            
-            // Generar secciones
             generateCities(config, counts.ciudades);
             generateDays(config, counts.dias);  
             generatePlaces(config, counts.lugares);
             generateTips(config, counts.tips);
             loadImages(config, counts.fotos);
             loadLogo(config);
-            
-            // Inicializar mapa
             initializeMap(config);
-
-            // Cargar enlace de Google Maps
             updateMapLink(config);
             
-            // Actualizar contadores
             counters.cities = counts.ciudades;
             counters.days = counts.dias;
             counters.places = counts.lugares; 
             counters.tips = counts.tips;
             counters.photos = counts.fotos + 1;
             
-            // Reinicializar funcionalidad
             reinitializeJS();
             
             console.log('✅ Plantilla inicializada desde variables');
@@ -190,32 +164,25 @@
         
         // 🧹 LIMPIEZA COMPLETA DE SECCIONES
         function clearAllSections() {
-            // Limpiar ciudades
             const citiesList = document.querySelector('#citiesList');
             if (citiesList) citiesList.innerHTML = '';
             
-            // Limpiar días
             const itineraryList = document.querySelector('#itineraryList');
             if (itineraryList) itineraryList.innerHTML = '';
             
-            // Limpiar lugares
             const placesList = document.querySelector('#placesList');
             if (placesList) placesList.innerHTML = '';
             
-            // Limpiar consejos
             const tipsList = document.querySelector('#tipsList');
             if (tipsList) tipsList.innerHTML = '';
             
-            // Limpiar pins del mapa
-            const mapPins = document.querySelectorAll('.map-pin');
-            mapPins.forEach(pin => pin.remove());
+            document.querySelectorAll('.map-pin').forEach(pin => pin.remove());
             
-            console.log('🧹 Secciones limpiadas completamente');
+            console.log('🧹 Secciones limpiadas');
         }
         
         // 📝 ACTUALIZAR INFORMACIÓN BÁSICA
         function updateBasicInfo(config) {
-            // Sin contadores visibles - solo el texto
             document.querySelector('[data-var="PAIS"]').textContent = config.pais;
             document.querySelector('[data-var="NOMBRE_PAIS"]').textContent = config.nombre_pais;
             document.querySelector('[data-var="FECHAS"]').textContent = config.fechas;
@@ -229,7 +196,6 @@
             document.querySelector('[data-var="FECHA_CREACION"]').textContent = config.fecha_creacion;
             document.querySelector('[data-var="CREDITOS"]').textContent = config.creditos;
             
-            // Cargar imagen de bandera si existe
             const flagContainer = document.querySelector('.flag-container');
             if (flagContainer && config.bandera_imagen) {
                 const img = flagContainer.querySelector('img');
@@ -242,11 +208,9 @@
                 }
             }
             
-            // Presupuesto
             document.querySelector('[data-var="PRESUPUESTO_DIA"]').textContent = config.presupuesto_dia;
             document.querySelector('[data-var="TOTAL_GASTADO"]').textContent = config.total_gastado;
             
-            // Nivel de coste
             if (config.coste_nivel) {
                 const circles = document.querySelectorAll('.cost-circle');
                 const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
@@ -257,24 +221,24 @@
                         circle.classList.add('empty'); 
                     }
                 });
-                document.querySelector('.cost-text').textContent = `${config.coste_nivel}/5 — ${labels[config.coste_nivel-1]}`;
+                document.querySelector('.cost-text').textContent = config.coste_nivel + '/5 — ' + labels[config.coste_nivel-1];
             }
         }
         
         // 🏙️ GENERAR CIUDADES
         function generateCities(config, count) {
             const container = document.querySelector('#citiesList');
-            container.innerHTML = ''; // Limpieza total
+            container.innerHTML = '';
             
             for (let i = 1; i <= count; i++) {
-                const cityKey = `ciudad${i}`;
+                const cityKey = 'ciudad' + i;
                 if (config[cityKey]) {
                     const cityElement = createCityElement(i, config[cityKey]);
                     container.appendChild(cityElement);
                 }
             }
             
-            document.querySelector('#cityCounter').textContent = `${count}/12 ciudades`;
+            document.querySelector('#cityCounter').textContent = count + '/12 ciudades';
             regenerateMapPins(count, config);
         }
         
@@ -284,14 +248,7 @@
             div.setAttribute('data-component', 'CITY_ITEM');
             div.style.cssText = 'display: flex; align-items: center; gap: 8px; font-size: 9px;';
             
-            div.innerHTML = `
-                <div style="width: 16px; height: 16px; background: var(--teal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600;">${number}</div>
-                <span class="editable" data-limit="500" data-var="CIUDAD_${number}">${text}</span>
-                <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                </div>
-            `;
+            div.innerHTML = '<div style="width: 16px; height: 16px; background: var(--teal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600;">' + number + '</div><span class="editable" data-limit="500" data-var="CIUDAD_' + number + '">' + text + '</span><div class="component-controls"><button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button><button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button></div>';
             
             return div;
         }
@@ -299,18 +256,18 @@
         // 📅 GENERAR DÍAS DE ITINERARIO
         function generateDays(config, count) {
             const container = document.querySelector('#itineraryList');
-            container.innerHTML = ''; // Limpieza total
+            container.innerHTML = '';
             
             for (let i = 1; i <= count; i++) {
-                const dayKey = `dia${i}`;
-                const activityKey = `actividad${i}`;
+                const dayKey = 'dia' + i;
+                const activityKey = 'actividad' + i;
                 if (config[dayKey]) {
                     const dayElement = createDayElement(i, config[dayKey], config[activityKey] || '');
                     container.appendChild(dayElement);
                 }
             }
             
-            document.querySelector('#dayCounter').textContent = `${count}/10 días`;
+            document.querySelector('#dayCounter').textContent = count + '/10 días';
         }
         
         function createDayElement(number, dayText, activityText) {
@@ -318,16 +275,7 @@
             div.className = 'itinerary-card component flow-item';
             div.setAttribute('data-component', 'ITINERARY_CARD');
             
-            div.innerHTML = `
-                <div class="day-title">
-                    🕐 <span class="editable" data-limit="500" data-var="DIA_${number}">${dayText}</span>
-                </div>
-                <div class="day-activity editable" data-limit="500" data-var="ACTIVIDAD_${number}">${activityText}</div>
-                <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                </div>
-            `;
+            div.innerHTML = '<div class="day-title">🕐 <span class="editable" data-limit="500" data-var="DIA_' + number + '">' + dayText + '</span></div><div class="day-activity editable" data-limit="500" data-var="ACTIVIDAD_' + number + '">' + activityText + '</div><div class="component-controls"><button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button><button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button></div>';
             
             return div;
         }
@@ -335,67 +283,54 @@
         // 📍 GENERAR LUGARES
         function generatePlaces(config, count) {
             const container = document.querySelector('#placesList');
-            container.innerHTML = ''; // Limpieza total
+            container.innerHTML = '';
             
             for (let i = 1; i <= count; i++) {
-                const lugarKey = `lugar${i}`;
+                const lugarKey = 'lugar' + i;
                 if (config[lugarKey]) {
                     const placeElement = createPlaceElement(i, config);
                     container.appendChild(placeElement);
                 }
             }
             
-            document.querySelector('#placeCounter').textContent = `${count}/12 lugares`;
+            document.querySelector('#placeCounter').textContent = count + '/12 lugares';
         }
         
         function createPlaceElement(number, config) {
-            const lugar = config[`lugar${number}`] || '';
-            const ciudad = config[`ciudad_lugar${number}`] || '';
-            const desc = config[`desc_lugar${number}`] || '';
-            const tipo = config[`tipo_lugar${number}`] || 'must';
+            const lugar = config['lugar' + number] || '';
+            const ciudad = config['ciudad_lugar' + number] || '';
+            const desc = config['desc_lugar' + number] || '';
+            const tipo = config['tipo_lugar' + number] || 'must';
             
             const cat = PLACE_CATEGORIES[tipo] || PLACE_CATEGORIES['must'];
-            const badgeContent = `${cat.emoji} ${cat.label}`;
+            const badgeContent = cat.emoji + ' ' + cat.label;
             const badgeColor = cat.color;
             
             const div = document.createElement('div');
             div.className = 'place-item component flow-item';
             div.setAttribute('data-component', 'PLACE_ITEM');
             
-            div.innerHTML = `
-                <span class="place-badge ${tipo}" onclick="cyclePlaceBadge(this)" style="background: ${badgeColor}">${badgeContent}</span>
-                <div class="place-text">
-                    <div class="place-name editable" data-limit="500" data-var="LUGAR_${number}">${lugar}</div>
-                    <div style="font-size: 9px; color: var(--text-light);">
-                        <span class="editable" data-limit="500" data-var="CIUDAD_LUGAR_${number}">${ciudad}</span> — 
-                        <span class="editable" data-limit="500" data-var="DESC_LUGAR_${number}">${desc}</span>
-                    </div>
-                </div>
-                <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                </div>
-            `;
+            div.innerHTML = '<span class="place-badge ' + tipo + '" onclick="cyclePlaceBadge(this)" style="background: ' + badgeColor + '">' + badgeContent + '</span><div class="place-text"><div class="place-name editable" data-limit="500" data-var="LUGAR_' + number + '">' + lugar + '</div><div style="font-size: 9px; color: var(--text-light);"><span class="editable" data-limit="500" data-var="CIUDAD_LUGAR_' + number + '">' + ciudad + '</span> — <span class="editable" data-limit="500" data-var="DESC_LUGAR_' + number + '">' + desc + '</span></div></div><div class="component-controls"><button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button><button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button></div>';
             
             return div;
         }
         
-        // 💡 GENERAR CONSEJOS (CORREGIDO)
+        // 💡 GENERAR CONSEJOS
         function generateTips(config, count) {
             const container = document.querySelector('#tipsList');
-            container.innerHTML = ''; // Limpieza total
+            container.innerHTML = '';
             
             const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
             
             for (let i = 1; i <= count; i++) {
-                const tipKey = `tip${i}`;
+                const tipKey = 'tip' + i;
                 if (config[tipKey]) {
                     const tipElement = createTipElement(i, config[tipKey], iconos[i-1] || '💡');
                     container.appendChild(tipElement);
                 }
             }
             
-            document.querySelector('#tipCounter').textContent = `${count}/12 consejos`;
+            document.querySelector('#tipCounter').textContent = count + '/12 consejos';
         }
         
         function createTipElement(number, text, icon) {
@@ -403,14 +338,7 @@
             div.className = 'tip-item component flow-item';
             div.setAttribute('data-component', 'TIP_ITEM');
             
-            div.innerHTML = `
-                <div class="tip-icon">${icon}</div>
-                <span class="editable" data-limit="500" data-var="TIP_${number}">${text}</span>
-                <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                </div>
-            `;
+            div.innerHTML = '<div class="tip-icon">' + icon + '</div><span class="editable" data-limit="500" data-var="TIP_' + number + '">' + text + '</span><div class="component-controls"><button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button><button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button></div>';
             
             return div;
         }
@@ -422,9 +350,9 @@
             }
             
             for (let i = 1; i <= count; i++) {
-                const imgKey = `img${i}`;
+                const imgKey = 'img' + i;
                 if (config[imgKey]) {
-                    const frame = document.querySelector(`[data-frame="IMG_${i}"]`);
+                    const frame = document.querySelector('[data-frame="IMG_' + i + '"]');
                     if (frame) {
                         loadImageToFrame(frame, null, config[imgKey]);
                     }
@@ -446,7 +374,7 @@
             }
         }
 
-// ===== FUNCIONES DE MAPA =====
+        // ===== FUNCIONES DE MAPA =====
         function initializeMap(config) {
             const mapType = config.mapa_tipo || 'static';
             
@@ -463,7 +391,6 @@
             }
         }
 
-        // ===== FUNCIONES DE ENLACE GOOGLE MAPS =====
         function updateMapLink(config) {
             const linkElement = document.getElementById('googleMapsLink');
             const linkText = linkElement.querySelector('.link-text');
@@ -471,8 +398,6 @@
             if (config.mapa_enlace_google && config.mapa_enlace_google.trim() !== '') {
                 linkElement.href = config.mapa_enlace_google;
                 linkElement.classList.add('has-link');
-        
-                // Mostrar URL acortada o texto personalizado
                 const url = config.mapa_enlace_google;
                 if (url.includes('google.com/maps')) {
                     linkText.textContent = '📍 Abrir en Google My Maps';
@@ -488,20 +413,11 @@
 
         function editMapLink() {
             const currentLink = TEMPLATE_CONFIG.mapa_enlace_google || '';
-            const newLink = prompt(
-                '🗺️ Ingresa el enlace de Google My Maps:\n\n' +
-                'Puedes obtenerlo desde Google My Maps:\n' +
-                '1. Abre tu mapa en Google My Maps\n' +
-                '2. Click en "Compartir"\n' +
-                '3. Copia el enlace\n\n' +
-                'Enlace actual:',
-                currentLink
-            );
+            const newLink = prompt('🗺️ Ingresa el enlace de Google My Maps:\n\nEnlace actual:', currentLink);
     
             if (newLink !== null) {
                 TEMPLATE_CONFIG.mapa_enlace_google = newLink.trim();
                 updateMapLink(TEMPLATE_CONFIG);
-        
                 if (newLink.trim() !== '') {
                     showToast('🗺️ Enlace de mapa actualizado');
                 } else {
@@ -511,12 +427,10 @@
         }
 
         function handleMapLinkClick(element) {
-            // Si no tiene enlace, abrir editor
             if (!element.classList.contains('has-link')) {
                 editMapLink();
-                return false; // Prevenir navegación
+                return false;
             }
-            // Si tiene enlace, permitir navegación normal
             return true;
         }
         
@@ -538,23 +452,14 @@
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         const mapContainer = document.querySelector('.map-container');
-                        
-                        // Limpiar contenido anterior
                         const existingPins = Array.from(mapContainer.querySelectorAll('.map-pin'));
                         mapContainer.innerHTML = '';
                         
-                        // Crear imagen de fondo que se ajusta al contenedor
                         const img = document.createElement('img');
                         img.src = event.target.result;
-                        img.style.cssText = `
-                            width: 100%;
-                            height: 100%;
-                            object-fit: contain;
-                            object-position: center;
-                        `;
+                        img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; object-position: center;';
                         img.alt = 'Mapa personalizado';
                         
-                        // Ajustar altura del contenedor a la imagen
                         img.onload = function() {
                             const aspectRatio = this.naturalHeight / this.naturalWidth;
                             const containerWidth = mapContainer.offsetWidth;
@@ -565,14 +470,12 @@
                         mapContainer.appendChild(img);
                         mapContainer.classList.add('has-custom-map');
                         
-                        // Restaurar pins sobre la nueva imagen
-                        setTimeout(() => {
-                            existingPins.forEach(pin => {
+                        setTimeout(function() {
+                            existingPins.forEach(function(pin) {
                                 mapContainer.appendChild(pin);
                             });
                         }, 100);
                         
-                        // Guardar en config
                         TEMPLATE_CONFIG.mapa_url = event.target.result;
                     };
                     reader.readAsDataURL(file);
@@ -583,11 +486,8 @@
         
         function regenerateMapPins(count, config) {
             const mapContainer = document.querySelector('.map-container');
+            mapContainer.querySelectorAll('.map-pin').forEach(function(pin) { pin.remove(); });
             
-            // Limpiar pins existentes
-            mapContainer.querySelectorAll('.map-pin').forEach(pin => pin.remove());
-            
-            // Posiciones predeterminadas distribuidas
             const positions = [
                 {top: '25%', left: '70%'},
                 {top: '40%', left: '65%'},
@@ -596,7 +496,6 @@
                 {top: '50%', left: '75%'},
             ];
             
-            // Crear nuevos pins
             for (let i = 1; i <= count; i++) {
                 const pin = document.createElement('div');
                 pin.className = 'map-pin component';
@@ -629,8 +528,8 @@
                 {top: '50%', left: '75%'},
             ];
             
-            pins.forEach((pin, index) => {
-                setTimeout(() => {
+            pins.forEach(function(pin, index) {
+                setTimeout(function() {
                     const pos = positions[index] || {
                         top: (Math.random() * 60 + 20) + '%',
                         left: (Math.random() * 60 + 20) + '%'
@@ -638,34 +537,26 @@
                     pin.style.top = pos.top;
                     pin.style.left = pos.left;
                     pin.style.transform = 'scale(1.3)';
-                    setTimeout(() => pin.style.transform = 'scale(1)', 300);
+                    setTimeout(function() { pin.style.transform = 'scale(1)'; }, 300);
                 }, index * 200);
             });
         }
         
         function resetMapPins() {
-            const pins = document.querySelectorAll('.map-pin');
-            pins.forEach(pin => pin.remove());
-            
-            setTimeout(() => {
+            document.querySelectorAll('.map-pin').forEach(function(pin) { pin.remove(); });
+            setTimeout(function() {
                 regenerateMapPins(counters.cities, TEMPLATE_CONFIG);
             }, 300);
         }
 
         function setupMapPins() {
-            document.querySelectorAll('.map-pin').forEach(pin => {
+            document.querySelectorAll('.map-pin').forEach(function(pin) {
                 setupMapPinSingle(pin);
             });
         }
         
-        function setupMapPins() {
-                    document.querySelectorAll('.map-pin').forEach(pin => {
-                        setupMapPinSingle(pin);
-                    });
-                }
-        
-                function setupMapPinSingle(pin) {
-                    let isDragging = false;
+        function setupMapPinSingle(pin) {
+            let isDragging = false;
             let startX, startY, startLeft, startTop;
 
             pin.addEventListener('mousedown', function(e) {
@@ -704,9 +595,7 @@
             });
         }
         
-        function setupStaticMap() {
-            // Mantener SVG por defecto
-        }
+        function setupStaticMap() {}
         
         // ===== FUNCIONES DE EDICIÓN =====
         function setupEditableElement(element) {
@@ -721,9 +610,7 @@
 
             element.addEventListener('input', function() {
                 enforceLimit(this, limit);
-                debounce(() => {
-                    expandPageToFit();
-                }, 500)();
+                debounce(function() { expandPageToFit(); }, 500)();
             });
 
             element.addEventListener('blur', function() {
@@ -739,18 +626,13 @@
             });
         }
 
-        function enforceLimit(element, limit) {
-            // Ya no truncamos, solo permitimos que el texto fluya libremente
-            // El contenedor se expandirá automáticamente
-            return;
-        }
+        function enforceLimit(element, limit) { return; }
         
         // ===== FUNCIONES DE GUARDADO =====
         function autosaveJSON() {
             try {
                 const templateData = serializeTemplate();
                 localStorage.setItem('travel_guide_session', JSON.stringify(templateData));
-                
                 showToast('💾 Sesión guardada localmente');
                 
                 const statusDot = document.getElementById('saveStatus');
@@ -769,13 +651,11 @@
             try {
                 const saved = localStorage.getItem('travel_guide_session');
                 if (saved) {
-                    // Preguntar si restaurar sesión
-                    if (confirm('¿Restaurar sesión anterior? (Esto sobrescribirá las variables del código)')) {
+                    if (confirm('¿Restaurar sesión anterior?')) {
                         const templateData = JSON.parse(saved);
                         restoreTemplate(templateData);
                         showToast('📂 Sesión restaurada');
                     } else {
-                        // Limpiar localStorage y usar variables
                         localStorage.removeItem('travel_guide_session');
                         showToast('✨ Usando variables de TEMPLATE_CONFIG');
                     }
@@ -799,7 +679,6 @@
                     url: TEMPLATE_CONFIG.mapa_url,
                     enlace_google: TEMPLATE_CONFIG.mapa_enlace_google
                 },
-                // NUEVO: Guardar colores personalizados
                 colors: {
                     primario: TEMPLATE_CONFIG.color_primario,
                     secundario: TEMPLATE_CONFIG.color_secundario,
@@ -808,16 +687,14 @@
                 }
             };
             
-            // Guardar contenido editable
-            document.querySelectorAll('.editable').forEach(el => {
+            document.querySelectorAll('.editable').forEach(function(el) {
                 const varName = el.dataset.var;
                 if (varName) {
                     data.editableContent[varName] = el.textContent.trim();
                 }
             });
             
-            // Guardar imágenes con su ratio
-            document.querySelectorAll('.photo-frame').forEach(frame => {
+            document.querySelectorAll('.photo-frame').forEach(function(frame) {
                 const frameId = frame.dataset.frame;
                 if (frameId) {
                     data.images[frameId] = {
@@ -829,35 +706,32 @@
                 }
             });
             
-            // Guardar logo
             const logoImg = document.querySelector('.logo-slot img');
             if (logoImg && logoImg.src && logoImg.src !== window.location.href && logoImg.style.display !== 'none') {
                 data.logo = logoImg.src;
             }
             
-            // Guardar bandera
             const flagImg = document.querySelector('.flag-container img');
             if (flagImg && flagImg.src && flagImg.src !== window.location.href && flagImg.style.display !== 'none') {
                 data.flag = flagImg.src;
             }
             
-            // Guardar nivel de coste
             const filledCircles = document.querySelectorAll('.cost-circle:not(.empty)');
             data.components.costRating = filledCircles.length;
             
-            // Guardar posiciones de pins
             const mapPins = document.querySelectorAll('.map-pin');
-            data.components.mapPins = Array.from(mapPins).map(pin => ({
-                number: pin.textContent,
-                top: pin.style.top,
-                left: pin.style.left
-            }));
+            data.components.mapPins = Array.from(mapPins).map(function(pin) {
+                return {
+                    number: pin.textContent,
+                    top: pin.style.top,
+                    left: pin.style.left
+                };
+            });
             
-            // NUEVO: Guardar categorías de lugares
             const placeBadges = document.querySelectorAll('.place-badge');
-            data.components.placeCategories = Array.from(placeBadges).map((badge, index) => {
+            data.components.placeCategories = Array.from(placeBadges).map(function(badge, index) {
                 const classes = Array.from(badge.classList);
-                const categoryClass = classes.find(c => c !== 'place-badge') || 'must';
+                const categoryClass = classes.find(function(c) { return c !== 'place-badge'; }) || 'must';
                 return { index: index + 1, category: categoryClass };
             });
             
@@ -872,7 +746,6 @@
             
             counters = { ...data.counters };
             
-            // NUEVO: Restaurar colores
             if (data.colors) {
                 if (data.colors.primario) {
                     TEMPLATE_CONFIG.color_primario = data.colors.primario;
@@ -893,17 +766,19 @@
                 updateColorInputs(TEMPLATE_CONFIG);
             }
             
-            // Restaurar contenido editable
-            Object.entries(data.editableContent || {}).forEach(([varName, content]) => {
-                const element = document.querySelector(`[data-var="${varName}"]`);
+            Object.entries(data.editableContent || {}).forEach(function(entry) {
+                const varName = entry[0];
+                const content = entry[1];
+                const element = document.querySelector('[data-var="' + varName + '"]');
                 if (element) {
                     element.textContent = content;
                 }
             });
             
-            // Restaurar imágenes con su ratio
-            Object.entries(data.images || {}).forEach(([frameId, imageData]) => {
-                const frame = document.querySelector(`[data-frame="${frameId}"]`);
+            Object.entries(data.images || {}).forEach(function(entry) {
+                const frameId = entry[0];
+                const imageData = entry[1];
+                const frame = document.querySelector('[data-frame="' + frameId + '"]');
                 if (frame) {
                     if (imageData.backgroundImage && imageData.hasImage) {
                         frame.style.backgroundImage = imageData.backgroundImage;
@@ -912,7 +787,6 @@
                         if (placeholder) placeholder.style.display = 'none';
                     }
                     
-                    // Restaurar ratio
                     if (imageData.isHero) {
                         frame.classList.remove('mini');
                         frame.classList.add('hero');
@@ -931,7 +805,6 @@
                 }
             });
             
-            // Restaurar logo
             if (data.logo) {
                 const logoSlot = document.querySelector('.logo-slot');
                 const img = logoSlot.querySelector('img');
@@ -942,7 +815,6 @@
                 logoSlot.classList.add('has-logo');
             }
             
-            // Restaurar bandera
             if (data.flag) {
                 const flagContainer = document.querySelector('.flag-container');
                 const img = flagContainer.querySelector('img');
@@ -953,11 +825,10 @@
                 flagContainer.classList.add('has-flag');
             }
             
-            // Restaurar nivel de coste
-            if (data.components?.costRating) {
+            if (data.components && data.components.costRating) {
                 const circles = document.querySelectorAll('.cost-circle');
                 const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
-                circles.forEach((circle, index) => {
+                circles.forEach(function(circle, index) {
                     if (index < data.components.costRating) {
                         circle.classList.remove('empty');
                     } else {
@@ -966,45 +837,17 @@
                 });
                 const costText = document.querySelector('.cost-text');
                 if (costText) {
-                    costText.textContent = `${data.components.costRating}/5 — ${labels[data.components.costRating-1]}`;
+                    costText.textContent = data.components.costRating + '/5 — ' + labels[data.components.costRating-1];
                 }
                 TEMPLATE_CONFIG.coste_nivel = data.components.costRating;
             }
             
-            // Restaurar enlace de Google Maps
-            if (data.mapData?.enlace_google) {
+            if (data.mapData && data.mapData.enlace_google) {
                 TEMPLATE_CONFIG.mapa_enlace_google = data.mapData.enlace_google;
                 updateMapLink(TEMPLATE_CONFIG);
             }
 
-            // Restaurar mapa
-            if (data.mapData?.url) {
-            ```
-
-            ---
-
-            ## 📝 RESUMEN
-
-            | Paso | Acción | Ubicación |
-            |------|--------|-----------|
-            | 1 | Variable en config | `TEMPLATE_CONFIG` |
-            | 2 | HTML del enlace | Antes de `.map-controls` |
-            | 3 | CSS del enlace | Después de `.map-btn:hover` |
-            | 4 | Funciones JS | Antes de `setupMapUpload()` |
-            | 5 | Inicialización | En `initializeFromConfig()` |
-            | 6 | Estilos de impresión | En `@media print` |
-            | 7 | Serialización | En `serializeTemplate()` |
-            | 8 | Restauración | En `restoreTemplate()` |
-
-            ---
-
-            ## 🎨 Vista previa del resultado
-
-            El enlace aparecerá así en la plantilla:
-            ```
-            ┌─────────────────────────────────────────────────────┐
-            │ 🗺️ Ver ruta interactiva: [📍 Abrir en Google My Maps] ✏️ │
-            └─────────────────────────────────────────────────────┘
+            if (data.mapData && data.mapData.url) {
                 const mapContainer = document.querySelector('.map-container');
                 const img = document.createElement('img');
                 img.src = data.mapData.url;
@@ -1015,29 +858,38 @@
                 TEMPLATE_CONFIG.mapa_url = data.mapData.url;
             }
             
-            // Restaurar pins
-            if (data.components?.mapPins) {
-                setTimeout(() => {
-                    data.components.mapPins.forEach(pinData => {
-                        const pin = document.querySelector(`[data-pin="${pinData.number}"]`);
-                        if (pin) {
-                            pin.style.top = pinData.top;
-                            pin.style.left = pinData.left;
-                        }
+            // CORREGIDO: Restaurar pins del mapa
+            if (data.components && data.components.mapPins && data.components.mapPins.length > 0) {
+                setTimeout(function() {
+                    const mapContainer = document.querySelector('.map-container');
+                    mapContainer.querySelectorAll('.map-pin').forEach(function(pin) { pin.remove(); });
+                    
+                    data.components.mapPins.forEach(function(pinData) {
+                        const pin = document.createElement('div');
+                        pin.className = 'map-pin component';
+                        pin.setAttribute('data-component', 'MAP_PIN');
+                        pin.setAttribute('data-pin', pinData.number);
+                        pin.textContent = pinData.number;
+                        pin.style.top = pinData.top;
+                        pin.style.left = pinData.left;
+                        
+                        mapContainer.appendChild(pin);
+                        setupMapPinSingle(pin);
                     });
-                }, 100);
+                    
+                    console.log('📍 Pins del mapa restaurados:', data.components.mapPins.length);
+                }, 200);
             }
             
-            // NUEVO: Restaurar categorías de lugares
-            if (data.components?.placeCategories) {
-                setTimeout(() => {
+            if (data.components && data.components.placeCategories) {
+                setTimeout(function() {
                     const badges = document.querySelectorAll('.place-badge');
-                    data.components.placeCategories.forEach(catData => {
+                    data.components.placeCategories.forEach(function(catData) {
                         const badge = badges[catData.index - 1];
                         if (badge && PLACE_CATEGORIES[catData.category]) {
                             const cat = PLACE_CATEGORIES[catData.category];
-                            badge.className = `place-badge ${catData.category}`;
-                            badge.innerHTML = `${cat.emoji} ${cat.label}`;
+                            badge.className = 'place-badge ' + catData.category;
+                            badge.innerHTML = cat.emoji + ' ' + cat.label;
                             badge.style.background = cat.color;
                         }
                     });
@@ -1046,41 +898,32 @@
             
             updateAllCounters();
             document.querySelectorAll('.editable').forEach(setupEditableElement);
+            
+            console.log('✅ Template restaurado correctamente');
         }
         
-        // ===== FUNCIONES AUXILIARES =====
-        function showToast(message, type = 'success') {
+        function showToast(message, type) {
+            type = type || 'success';
             const toast = document.createElement('div');
             const bgColor = type === 'error' ? 'rgba(255, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0.8)';
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 100px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: ${bgColor};
-                color: white;
-                padding: 12px 24px;
-                border-radius: 8px;
-                font-size: 14px;
-                z-index: 10001;
-                animation: fadeIn 0.3s ease;
-            `;
+            toast.style.cssText = 'position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: ' + bgColor + '; color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 10001; animation: fadeIn 0.3s ease;';
             toast.textContent = message;
             document.body.appendChild(toast);
             
-            setTimeout(() => {
+            setTimeout(function() {
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.3s';
-                setTimeout(() => toast.remove(), 300);
+                setTimeout(function() { toast.remove(); }, 300);
             }, 2000);
         }
         
         function debounce(func, wait) {
             let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
+            return function() {
+                const args = arguments;
+                const later = function() {
                     clearTimeout(timeout);
-                    func(...args);
+                    func.apply(null, args);
                 };
                 clearTimeout(timeout);
                 timeout = setTimeout(later, wait);
@@ -1095,28 +938,22 @@
 
         function applyCustomColors(config) {
             const root = document.documentElement;
-    
             if (config.color_fondo) root.style.setProperty('--sand', config.color_fondo);
             if (config.color_primario) root.style.setProperty('--teal-primary', config.color_primario);
             if (config.color_secundario) root.style.setProperty('--teal-light', config.color_secundario);
             if (config.color_acento) root.style.setProperty('--coral', config.color_acento);
             if (config.color_texto) root.style.setProperty('--text-dark', config.color_texto);
             if (config.color_fondo_logo) root.style.setProperty('--logo-bg', config.color_fondo_logo);
-            
-            // Actualizar inputs de color en panel
             updateColorInputs(config);
-    
             console.log('🎨 Colores personalizados aplicados');
         }
 
         function updateColor(cssVar, value) {
             document.documentElement.style.setProperty(cssVar, value);
             
-            // Actualizar código visible
             const codeSpan = event.target.nextElementSibling;
             if (codeSpan) codeSpan.textContent = value.toUpperCase();
             
-            // Actualizar TEMPLATE_CONFIG
             const configMap = {
                 '--teal-primary': 'color_primario',
                 '--teal-light': 'color_secundario',
@@ -1128,7 +965,7 @@
                 TEMPLATE_CONFIG[configMap[cssVar]] = value;
             }
             
-            showToast(`🎨 Color actualizado: ${value}`);
+            showToast('🎨 Color actualizado: ' + value);
         }
 
         function updateColorInputs(config) {
@@ -1139,7 +976,9 @@
                 'colorFondo': config.color_fondo || '#F6EFE6'
             };
             
-            Object.entries(inputs).forEach(([id, value]) => {
+            Object.entries(inputs).forEach(function(entry) {
+                const id = entry[0];
+                const value = entry[1];
                 const input = document.getElementById(id);
                 const code = document.getElementById(id + 'Code');
                 if (input) input.value = value;
@@ -1153,14 +992,10 @@
             setupMapPins();
             setupCostRating();
             updateAllCounters();
-            
-            setTimeout(() => {
-                expandPageToFit();
-            }, 100);
+            setTimeout(function() { expandPageToFit(); }, 100);
         }
 
-
-// ===== FUNCIONES DE COMPONENTES =====
+        // ===== FUNCIONES DE COMPONENTES =====
         function duplicateComponent(button) {
             saveState();
             
@@ -1177,7 +1012,7 @@
             
             const limitKey = sectionLimits[componentType];
             if (limitKey && counters[limitKey] >= limits[limitKey]) {
-                alert(`Máximo ${limits[limitKey]} elementos permitidos`);
+                alert('Máximo ' + limits[limitKey] + ' elementos permitidos');
                 return;
             }
             
@@ -1193,8 +1028,7 @@
             
             clone.querySelectorAll('.editable').forEach(setupEditableElement);
             clone.classList.add('fade-in');
-            
-            setTimeout(() => expandPageToFit(), 100);
+            setTimeout(function() { expandPageToFit(); }, 100);
         }
 
         function deleteComponent(button) {
@@ -1203,7 +1037,7 @@
             const component = button.closest('.component');
             const componentType = component.dataset.component;
             
-            const siblings = component.parentElement.querySelectorAll(`[data-component="${componentType}"]`);
+            const siblings = component.parentElement.querySelectorAll('[data-component="' + componentType + '"]');
             if (siblings.length <= 1) {
                 alert('Debe mantener al menos un elemento');
                 return;
@@ -1213,7 +1047,7 @@
             component.style.opacity = '0';
             component.style.transform = 'translateX(-20px)';
             
-            setTimeout(() => {
+            setTimeout(function() {
                 component.remove();
                 
                 const sectionLimits = {
@@ -1243,20 +1077,19 @@
             
             if (componentType === 'ITINERARY_CARD') {
                 const dayTitle = clone.querySelector('.day-title .editable');
-                if (dayTitle) dayTitle.textContent = `Día ${counters.days + 1}: Ciudad`;
+                if (dayTitle) dayTitle.textContent = 'Día ' + (counters.days + 1) + ': Ciudad';
             }
             
-            clone.querySelectorAll('.editable').forEach(el => {
+            clone.querySelectorAll('.editable').forEach(function(el) {
                 const placeholder = el.dataset.var || 'Nuevo elemento';
-                el.textContent = `{{${placeholder}}}`;
+                el.textContent = '{{' + placeholder + '}}';
             });
         }
 
         function clearIDs(clone) {
-            clone.querySelectorAll('[id]').forEach(el => {
+            clone.querySelectorAll('[id]').forEach(function(el) {
                 el.removeAttribute('id');
             });
-            
             if (clone.dataset.component) {
                 clone.dataset.cloned = 'true';
             }
@@ -1264,22 +1097,22 @@
 
         function reindexCounters() {
             const dayCards = document.querySelectorAll('[data-component="ITINERARY_CARD"]');
-            dayCards.forEach((card, index) => {
+            dayCards.forEach(function(card, index) {
                 const dayTitle = card.querySelector('.day-title .editable');
                 if (dayTitle) {
-                    const currentText = dayTitle.textContent.replace(/Día \d+/, `Día ${index + 1}`);
+                    const currentText = dayTitle.textContent.replace(/Día \d+/, 'Día ' + (index + 1));
                     dayTitle.textContent = currentText;
                 }
             });
             
             const cityItems = document.querySelectorAll('[data-component="CITY_ITEM"]');
-            cityItems.forEach((item, index) => {
+            cityItems.forEach(function(item, index) {
                 const numberEl = item.querySelector('div[style*="background: var(--teal-primary)"]');
                 if (numberEl) numberEl.textContent = index + 1;
             });
             
             const mapPins = document.querySelectorAll('[data-component="MAP_PIN"]');
-            mapPins.forEach((pin, index) => {
+            mapPins.forEach(function(pin, index) {
                 pin.textContent = index + 1;
                 pin.dataset.pin = index + 1;
             });
@@ -1299,9 +1132,9 @@
             
             if (counterEl) {
                 const maxLimit = limits[type];
-                counterEl.textContent = `${counters[type]}/${maxLimit} ${getTypeLabel(type)}`;
+                counterEl.textContent = counters[type] + '/' + maxLimit + ' ' + getTypeLabel(type);
                 
-                const addBtnId = `add${type.charAt(0).toUpperCase() + type.slice(1, -1)}Btn`;
+                const addBtnId = 'add' + type.charAt(0).toUpperCase() + type.slice(1, -1) + 'Btn';
                 const addBtn = document.getElementById(addBtnId);
                 if (addBtn) {
                     addBtn.disabled = counters[type] >= maxLimit;
@@ -1310,18 +1143,12 @@
         }
 
         function getTypeLabel(type) {
-            const labels = {
-                'days': 'días',
-                'places': 'lugares',
-                'tips': 'consejos',
-                'cities': 'ciudades',
-                'photos': 'fotos'
-            };
+            const labels = { 'days': 'días', 'places': 'lugares', 'tips': 'consejos', 'cities': 'ciudades', 'photos': 'fotos' };
             return labels[type] || type;
         }
 
         function updateAllCounters() {
-            Object.keys(counters).forEach(type => {
+            Object.keys(counters).forEach(function(type) {
                 if (type !== 'pages') {
                     updateCounterDisplay(type);
                 }
@@ -1331,78 +1158,69 @@
         // ===== FUNCIONES DE AGREGAR ELEMENTOS =====
         function addItineraryDay() {
             if (counters.days >= limits.days) {
-                alert(`Máximo ${limits.days} días permitidos`);
+                alert('Máximo ' + limits.days + ' días permitidos');
                 return;
             }
-            
             saveState();
             const container = document.querySelector('#itineraryList');
-            const dayElement = createDayElement(counters.days + 1, `Día ${counters.days + 1}: Ciudad`, '');
+            const dayElement = createDayElement(counters.days + 1, 'Día ' + (counters.days + 1) + ': Ciudad', '');
             container.appendChild(dayElement);
-            
             counters.days++;
             updateCounterDisplay('days');
             dayElement.querySelectorAll('.editable').forEach(setupEditableElement);
-            setTimeout(() => expandPageToFit(), 100);
+            setTimeout(function() { expandPageToFit(); }, 100);
         }
 
         function addPlace() {
             if (counters.places >= limits.places) {
-                alert(`Máximo ${limits.places} lugares permitidos`);
+                alert('Máximo ' + limits.places + ' lugares permitidos');
                 return;
             }
-            
             saveState();
             const container = document.querySelector('#placesList');
-            const config = {
-                [`lugar${counters.places + 1}`]: `Lugar ${counters.places + 1}`,
-                [`ciudad_lugar${counters.places + 1}`]: 'Ciudad',
-                [`desc_lugar${counters.places + 1}`]: 'Descripción',
-                [`tipo_lugar${counters.places + 1}`]: 'must'
-            };
+            const config = {};
+            config['lugar' + (counters.places + 1)] = 'Lugar ' + (counters.places + 1);
+            config['ciudad_lugar' + (counters.places + 1)] = 'Ciudad';
+            config['desc_lugar' + (counters.places + 1)] = 'Descripción';
+            config['tipo_lugar' + (counters.places + 1)] = 'must';
             const placeElement = createPlaceElement(counters.places + 1, config);
             container.appendChild(placeElement);
-            
             counters.places++;
             updateCounterDisplay('places');
             placeElement.querySelectorAll('.editable').forEach(setupEditableElement);
-            setTimeout(() => expandPageToFit(), 100);
+            setTimeout(function() { expandPageToFit(); }, 100);
         }
 
         function addTip() {
             if (counters.tips >= limits.tips) {
-                alert(`Máximo ${limits.tips} consejos permitidos`);
+                alert('Máximo ' + limits.tips + ' consejos permitidos');
                 return;
             }
-            
             saveState();
             const container = document.querySelector('#tipsList');
             const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
-            const tipElement = createTipElement(counters.tips + 1, `Consejo ${counters.tips + 1}`, iconos[counters.tips] || '💡');
+            const tipElement = createTipElement(counters.tips + 1, 'Consejo ' + (counters.tips + 1), iconos[counters.tips] || '💡');
             container.appendChild(tipElement);
-            
             counters.tips++;
             updateCounterDisplay('tips');
             tipElement.querySelectorAll('.editable').forEach(setupEditableElement);
-            setTimeout(() => expandPageToFit(), 100);
+            setTimeout(function() { expandPageToFit(); }, 100);
         }
 
         function addCity() {
             if (counters.cities >= limits.cities) {
-                alert(`Máximo ${limits.cities} ciudades permitidas`);
+                alert('Máximo ' + limits.cities + ' ciudades permitidas');
                 return;
             }
-            
             saveState();
             const container = document.querySelector('#citiesList');
-            const cityElement = createCityElement(counters.cities + 1, `Ciudad ${counters.cities + 1} — descripción`);
+            const cityElement = createCityElement(counters.cities + 1, 'Ciudad ' + (counters.cities + 1) + ' — descripción');
             container.appendChild(cityElement);
-            
             counters.cities++;
             updateCounterDisplay('cities');
             addMapPin(counters.cities);
             cityElement.querySelectorAll('.editable').forEach(setupEditableElement);
-            setTimeout(() => expandPageToFit(), 100);
+            setTimeout(function() { expandPageToFit(); }, 100);
         }
 
         // ===== FUNCIONES DE QUITAR ELEMENTOS =====
@@ -1415,11 +1233,8 @@
             }
             saveState();
             items[items.length - 1].remove();
-    
-            // Quitar último pin del mapa
             const pins = document.querySelectorAll('.map-pin');
             if (pins.length > 0) pins[pins.length - 1].remove();
-    
             counters.cities--;
             updateCounterDisplay('cities');
             showToast('🗑️ Ciudad eliminada');
@@ -1488,10 +1303,8 @@
             pin.dataset.component = 'MAP_PIN';
             pin.dataset.pin = number;
             pin.textContent = number;
-            
             pin.style.top = (Math.random() * 60 + 20) + '%';
             pin.style.left = (Math.random() * 60 + 20) + '%';
-            
             mapContainer.appendChild(pin);
             setupMapPinSingle(pin);
         }
@@ -1499,38 +1312,21 @@
         // ===== FUNCIONES DE FOTOS =====
         function addPhoto() {
             if (counters.photos >= limits.photos) {
-                alert(`Máximo ${limits.photos} fotos permitidas`);
+                alert('Máximo ' + limits.photos + ' fotos permitidas');
                 return;
             }
-            
             saveState();
             const container = document.querySelector('#photoGrid');
             const photoFrame = document.createElement('div');
             photoFrame.className = 'photo-frame mini component';
             photoFrame.setAttribute('data-component', 'PHOTO_FRAME');
-            photoFrame.setAttribute('data-frame', `IMG_${counters.photos}`);
-            
-            photoFrame.innerHTML = `
-                <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
-                <div class="photo-placeholder">
-                    📷 IMG_${counters.photos}<br>
-                    <small>Click para subir</small>
-                </div>
-                <div class="photo-controls">
-                    <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                    <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                </div>
-                <div class="component-controls">
-                    <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
-                    <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
-                </div>
-            `;
-            
+            photoFrame.setAttribute('data-frame', 'IMG_' + counters.photos);
+            photoFrame.innerHTML = '<div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div><div class="photo-placeholder">📷 IMG_' + counters.photos + '<br><small>Click para subir</small></div><div class="photo-controls"><button class="photo-btn" onclick="changePhoto(this)">Cambiar</button><button class="photo-btn" onclick="removePhoto(this)">×</button></div><div class="component-controls"><button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button><button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button></div>';
             container.appendChild(photoFrame);
             counters.photos++;
             updateCounterDisplay('photos');
             setupPhotoDragDropSingle(photoFrame);
-            setTimeout(() => expandPageToFit(), 100);
+            setTimeout(function() { expandPageToFit(); }, 100);
         }
 
         function uploadMultipleImages() {
@@ -1541,17 +1337,15 @@
             input.onchange = function(e) {
                 const files = Array.from(e.target.files);
                 if (files.length === 0) return;
-                
                 const emptyFrames = Array.from(document.querySelectorAll('.photo-frame:not(.has-image)'));
                 let loaded = 0;
-                
-                files.forEach((file, index) => {
+                files.forEach(function(file, index) {
                     if (index < emptyFrames.length) {
                         loadImageToFrame(emptyFrames[index], file);
                         loaded++;
                     } else if (counters.photos < limits.photos) {
                         addPhoto();
-                        setTimeout(() => {
+                        setTimeout(function() {
                             const newFrame = document.querySelector('.photo-frame:not(.has-image)');
                             if (newFrame) {
                                 loadImageToFrame(newFrame, file);
@@ -1560,9 +1354,8 @@
                         }, 100);
                     }
                 });
-                
-                setTimeout(() => {
-                    showToast(`📸 ${loaded} imagen${loaded > 1 ? 'es' : ''} cargada${loaded > 1 ? 's' : ''}`);
+                setTimeout(function() {
+                    showToast('📸 ' + loaded + ' imagen' + (loaded > 1 ? 'es' : '') + ' cargada' + (loaded > 1 ? 's' : ''));
                 }, 500);
             };
             input.click();
@@ -1573,11 +1366,10 @@
         }
 
         function setupPhotoDragDropSingle(frame) {
-            // Remover listeners previos clonando
             const newFrame = frame.cloneNode(true);
             frame.parentNode.replaceChild(newFrame, frame);
             frame = newFrame;
-    
+
             frame.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1603,46 +1395,40 @@
                 }
             });
 
-            // Click para subir imagen - solo en el área del placeholder
             frame.addEventListener('click', function(e) {
-                // No abrir selector si se hizo clic en un botón de control
-                if (e.target.classList.contains('photo-btn') || 
-                    e.target.classList.contains('control-btn') ||
-                    e.target.classList.contains('dimension-badge')) {
+                if (e.target.classList.contains('photo-btn') || e.target.classList.contains('control-btn') || e.target.classList.contains('dimension-badge')) {
                     return;
                 }
-        
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'image/*';
-                input.onchange = (ev) => {
+                const self = this;
+                input.onchange = function(ev) {
                     if (ev.target.files[0]) {
-                        loadImageToFrame(this, ev.target.files[0]);
+                        loadImageToFrame(self, ev.target.files[0]);
                     }
                 };
                 input.click();
             });
         }
 
-        function loadImageToFrame(frame, file, url = null) {
-            const applyImage = (imageUrl) => {
-                frame.style.backgroundImage = `url(${imageUrl})`;
+        function loadImageToFrame(frame, file, url) {
+            const applyImage = function(imageUrl) {
+                frame.style.backgroundImage = 'url(' + imageUrl + ')';
                 frame.style.backgroundSize = 'cover';
                 frame.style.backgroundPosition = 'center';
                 frame.classList.add('has-image');
-        
                 const placeholder = frame.querySelector('.photo-placeholder');
                 if (placeholder) placeholder.style.display = 'none';
-        
                 showToast('📸 Imagen cargada');
-                setTimeout(() => expandPageToFit(), 100);
+                setTimeout(function() { expandPageToFit(); }, 100);
             };
-    
+
             if (url) {
                 applyImage(url);
                 return;
             }
-        
+            
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -1672,34 +1458,29 @@
             const frame = button.closest('.photo-frame');
             frame.style.backgroundImage = '';
             frame.classList.remove('has-image');
-            
             const placeholder = frame.querySelector('.photo-placeholder');
             if (placeholder) placeholder.style.display = 'block';
         }
 
         function togglePhotoRatio(frame) {
-            event.stopPropagation(); // Evitar que se abra el selector de archivo
-            
+            event.stopPropagation();
             const badge = frame.querySelector('.dimension-badge');
             const isHero = frame.classList.contains('hero');
             
             if (isHero) {
-                // Cambiar de hero (2.5:1) a mini (1:1)
                 frame.classList.remove('hero');
                 frame.classList.add('mini');
                 frame.style.aspectRatio = '1/1';
                 frame.style.gridColumn = 'span 1';
                 if (badge) badge.textContent = '1:1';
             } else {
-                // Cambiar de mini (1:1) a hero (2.5:1)
                 frame.classList.remove('mini');
                 frame.classList.add('hero');
                 frame.style.aspectRatio = '2.5/1';
                 frame.style.gridColumn = 'span 2';
                 if (badge) badge.textContent = '2.5:1';
             }
-            
-            showToast(`📐 Cambiado a ${isHero ? '1:1' : '2.5:1'}`);
+            showToast('📐 Cambiado a ' + (isHero ? '1:1' : '2.5:1'));
         }
 
         function uploadFlag(flagContainer) {
@@ -1713,13 +1494,10 @@
                     reader.onload = function(event) {
                         const img = flagContainer.querySelector('img');
                         const placeholder = flagContainer.querySelector('.flag-placeholder');
-                
                         img.src = event.target.result;
                         img.style.display = 'block';
                         placeholder.style.display = 'none';
                         flagContainer.classList.add('has-flag');
-                
-                        // Guardar en config
                         TEMPLATE_CONFIG.bandera_imagen = event.target.result;
                     };
                     reader.readAsDataURL(file);
@@ -1739,7 +1517,6 @@
                     reader.onload = function(event) {
                         const img = logoSlot.querySelector('img');
                         const placeholder = logoSlot.querySelector('.logo-placeholder');
-                        
                         img.src = event.target.result;
                         img.style.display = 'block';
                         placeholder.style.display = 'none';
@@ -1754,20 +1531,14 @@
         // ===== FUNCIONES DE UTILIDAD =====
         function setupCostRating() {
             const costCircles = document.querySelectorAll('.cost-circle');
-            
-            costCircles.forEach((circle) => {
-                // Usar el valor del data-value para determinar el índice
+            costCircles.forEach(function(circle) {
                 const value = parseInt(circle.getAttribute('data-value'));
-                
                 circle.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
                     saveState();
-                    
                     const allCircles = document.querySelectorAll('.cost-circle');
-            
-                    // Actualizar visualización
-                    allCircles.forEach((c) => {
+                    allCircles.forEach(function(c) {
                         const circleValue = parseInt(c.getAttribute('data-value'));
                         if (circleValue <= value) {
                             c.classList.remove('empty');
@@ -1775,24 +1546,17 @@
                             c.classList.add('empty');
                         }
                     });
-                    
-                    // Actualizar texto
                     const costText = document.querySelector('.cost-text');
                     const labels = ['Muy barato', 'Barato', 'Moderado', 'Caro', 'Muy caro'];
                     if (costText) {
-                        costText.textContent = `${value}/5 — ${labels[value-1]}`;
+                        costText.textContent = value + '/5 — ' + labels[value-1];
                     }
-            
-                    // Actualizar TEMPLATE_CONFIG
                     TEMPLATE_CONFIG.coste_nivel = value;
-            
-                    // Feedback visual
-                    showToast(`💰 Nivel de coste: ${value}/5 - ${labels[value-1]}`);
+                    showToast('💰 Nivel de coste: ' + value + '/5 - ' + labels[value-1]);
                 });
             });
         }
 
-        // Sistema de categorías con emojis
         const PLACE_CATEGORIES = {
             'must': { emoji: '⭐', label: 'MUST', color: '#FF6B61' },
             'skip': { emoji: '⛔', label: 'SKIP', color: '#999' },
@@ -1836,88 +1600,38 @@
             'libreria': { emoji: '📚', label: 'LIBRER.', color: '#5C6BC0' },
             'palacio': { emoji: '🏰', label: 'PALACIO', color: '#FFC107' },
             'peligro': { emoji: '⚠️', label: 'PELIGRO', color: '#D32F2F' },
-            'bucket': { emoji: '📝', label: 'BUCKET', color: '#546E7A' }
+            'bucket': { emoji: '📝', label: 'BUCKET', color: '#546E7A' },
+            'eco': { emoji: '🌿', label: 'ECO', color: '#4CAF50' },
+            'family': { emoji: '👨‍👩‍👧', label: 'FAMILY', color: '#FF9800' }
         };
 
         function cyclePlaceBadge(badge) {
-            // Mostrar modal de selección
             showCategoryModal(badge);
         }
 
         function showCategoryModal(badge) {
-            // Remover modal existente si hay
             const existingModal = document.getElementById('categoryModal');
             if (existingModal) existingModal.remove();
 
             const modal = document.createElement('div');
             modal.id = 'categoryModal';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10002;
-            `;
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10002;';
+
+            let buttonsHTML = '';
+            Object.keys(PLACE_CATEGORIES).forEach(function(key) {
+                const cat = PLACE_CATEGORIES[key];
+                buttonsHTML += '<button onclick="selectCategory(\'' + key + '\', this)" style="background: ' + cat.color + '; color: white; border: none; padding: 8px 4px; border-radius: 6px; cursor: pointer; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: transform 0.2s;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'"><span style="font-size: 16px;">' + cat.emoji + '</span><span>' + cat.label + '</span></button>';
+            });
 
             const content = document.createElement('div');
-            content.style.cssText = `
-                background: white;
-                border-radius: 12px;
-                padding: 20px;
-                max-width: 400px;
-                max-height: 70vh;
-                overflow-y: auto;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            `;
-
-            content.innerHTML = `
-                <h3 style="margin: 0 0 15px 0; color: var(--teal-primary); font-size: 16px;">Seleccionar Categoría</h3>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
-                    ${Object.entries(PLACE_CATEGORIES).map(([key, cat]) => `
-                        <button onclick="selectCategory('${key}', this)" style="
-                            background: ${cat.color};
-                            color: white;
-                            border: none;
-                            padding: 8px 4px;
-                            border-radius: 6px;
-                            cursor: pointer;
-                            font-size: 10px;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            gap: 2px;
-                            transition: transform 0.2s;
-                        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                            <span style="font-size: 16px;">${cat.emoji}</span>
-                            <span>${cat.label}</span>
-                        </button>
-                    `).join('')}
-                </div>
-                <button onclick="closeCategoryModal()" style="
-                    width: 100%;
-                    margin-top: 15px;
-                    padding: 10px;
-                    background: #eee;
-                    border: none;
-                    border-radius: 6px;
-                    cursor: pointer;
-                ">Cancelar</button>
-            `;
+            content.style.cssText = 'background: white; border-radius: 12px; padding: 20px; max-width: 400px; max-height: 70vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);';
+            content.innerHTML = '<h3 style="margin: 0 0 15px 0; color: var(--teal-primary); font-size: 16px;">Seleccionar Categoría</h3><div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">' + buttonsHTML + '</div><button onclick="closeCategoryModal()" style="width: 100%; margin-top: 15px; padding: 10px; background: #eee; border: none; border-radius: 6px; cursor: pointer;">Cancelar</button>';
 
             modal.appendChild(content);
             document.body.appendChild(modal);
-
-            // Guardar referencia al badge actual
-            modal.dataset.targetBadge = badge.className;
             window.currentCategoryBadge = badge;
 
-            // Cerrar al hacer clic fuera
-            modal.addEventListener('click', (e) => {
+            modal.addEventListener('click', function(e) {
                 if (e.target === modal) closeCategoryModal();
             });
         }
@@ -1925,15 +1639,13 @@
         function selectCategory(categoryKey, button) {
             const badge = window.currentCategoryBadge;
             const cat = PLACE_CATEGORIES[categoryKey];
-            
             if (badge && cat) {
                 saveState();
-                badge.className = `place-badge ${categoryKey}`;
-                badge.innerHTML = `${cat.emoji} ${cat.label}`;
+                badge.className = 'place-badge ' + categoryKey;
+                badge.innerHTML = cat.emoji + ' ' + cat.label;
                 badge.style.background = cat.color;
                 badge.style.color = 'white';
             }
-            
             closeCategoryModal();
         }
 
@@ -1950,23 +1662,19 @@
         function saveState() {
             const state = serializeTemplate();
             undoStack.push(JSON.stringify(state));
-            
             if (undoStack.length > MAX_UNDO) {
                 undoStack.shift();
             }
-            
             const undoBtn = document.getElementById('undoBtn');
             if (undoBtn) undoBtn.disabled = false;
         }
 
         function undo() {
             if (undoStack.length === 0) return;
-            
             const previousState = undoStack.pop();
             if (previousState) {
                 restoreTemplate(JSON.parse(previousState));
                 showToast('↶ Cambios deshechos');
-                
                 const undoBtn = document.getElementById('undoBtn');
                 if (undoBtn && undoStack.length === 0) {
                     undoBtn.disabled = true;
@@ -1978,9 +1686,10 @@
         function exportToFile() {
             try {
                 const templateData = serializeTemplate();
-                const pais = document.querySelector('[data-var="PAIS"]')?.textContent || 'guia';
+                const pais = document.querySelector('[data-var="PAIS"]');
+                const paisName = pais ? pais.textContent : 'guia';
                 const fecha = new Date().toISOString().split('T')[0];
-                const filename = `${pais.replace(/[^a-zA-Z0-9]/g, '_')}_${fecha}.json`;
+                const filename = paisName.replace(/[^a-zA-Z0-9]/g, '_') + '_' + fecha + '.json';
                 
                 const blob = new Blob([JSON.stringify(templateData, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
@@ -1993,7 +1702,7 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                showToast(`📥 Exportado: ${filename}`);
+                showToast('📥 Exportado: ' + filename);
             } catch (error) {
                 console.error('Error al exportar:', error);
                 showToast('❌ Error al exportar', 'error');
@@ -2018,61 +1727,75 @@
                             return;
                         }
                         
-                        // Limpiar secciones antes de restaurar
                         clearAllSections();
                         
-                        // Regenerar elementos basándose en los contadores
                         if (data.counters) {
-                            // Regenerar ciudades
                             for (let i = 1; i <= data.counters.cities; i++) {
                                 const container = document.querySelector('#citiesList');
-                                const cityText = data.editableContent[`CIUDAD_${i}`] || `Ciudad ${i}`;
+                                const cityText = data.editableContent['CIUDAD_' + i] || 'Ciudad ' + i;
                                 const cityElement = createCityElement(i, cityText);
                                 container.appendChild(cityElement);
                             }
                             
-                            // Regenerar días
                             for (let i = 1; i <= data.counters.days; i++) {
                                 const container = document.querySelector('#itineraryList');
-                                const dayText = data.editableContent[`DIA_${i}`] || `Día ${i}`;
-                                const actText = data.editableContent[`ACTIVIDAD_${i}`] || '';
+                                const dayText = data.editableContent['DIA_' + i] || 'Día ' + i;
+                                const actText = data.editableContent['ACTIVIDAD_' + i] || '';
                                 const dayElement = createDayElement(i, dayText, actText);
                                 container.appendChild(dayElement);
                             }
                             
-                            // Regenerar lugares
                             for (let i = 1; i <= data.counters.places; i++) {
                                 const container = document.querySelector('#placesList');
-                                const config = {
-                                    [`lugar${i}`]: data.editableContent[`LUGAR_${i}`] || `Lugar ${i}`,
-                                    [`ciudad_lugar${i}`]: data.editableContent[`CIUDAD_LUGAR_${i}`] || 'Ciudad',
-                                    [`desc_lugar${i}`]: data.editableContent[`DESC_LUGAR_${i}`] || 'Descripción',
-                                    [`tipo_lugar${i}`]: 'must'
-                                };
+                                const config = {};
+                                config['lugar' + i] = data.editableContent['LUGAR_' + i] || 'Lugar ' + i;
+                                config['ciudad_lugar' + i] = data.editableContent['CIUDAD_LUGAR_' + i] || 'Ciudad';
+                                config['desc_lugar' + i] = data.editableContent['DESC_LUGAR_' + i] || 'Descripción';
+                                config['tipo_lugar' + i] = 'must';
                                 const placeElement = createPlaceElement(i, config);
                                 container.appendChild(placeElement);
                             }
                             
-                            // Regenerar consejos
                             const iconos = ['💰', '🚌', '🔒', '📱', '🍽️', '⚡', '🎯', '📍', '🗺️', '⏰', '🎌', '🍜'];
                             for (let i = 1; i <= data.counters.tips; i++) {
                                 const container = document.querySelector('#tipsList');
-                                const tipText = data.editableContent[`TIP_${i}`] || `Consejo ${i}`;
+                                const tipText = data.editableContent['TIP_' + i] || 'Consejo ' + i;
                                 const tipElement = createTipElement(i, tipText, iconos[i-1] || '💡');
                                 container.appendChild(tipElement);
                             }
                             
-                            // Regenerar pins del mapa
-                            regenerateMapPins(data.counters.cities, TEMPLATE_CONFIG);
+                            // CORREGIDO: Regenerar pins del mapa con posiciones guardadas
+                            setTimeout(function() {
+                                const mapContainer = document.querySelector('.map-container');
+                                
+                                if (data.components && data.components.mapPins && data.components.mapPins.length > 0) {
+                                    mapContainer.querySelectorAll('.map-pin').forEach(function(pin) { pin.remove(); });
+                                    
+                                    data.components.mapPins.forEach(function(pinData) {
+                                        const pin = document.createElement('div');
+                                        pin.className = 'map-pin component';
+                                        pin.setAttribute('data-component', 'MAP_PIN');
+                                        pin.setAttribute('data-pin', pinData.number);
+                                        pin.textContent = pinData.number;
+                                        pin.style.top = pinData.top;
+                                        pin.style.left = pinData.left;
+                                        
+                                        mapContainer.appendChild(pin);
+                                        setupMapPinSingle(pin);
+                                    });
+                                    
+                                    console.log('📍 Pins restaurados desde archivo:', data.components.mapPins.length);
+                                } else {
+                                    regenerateMapPins(data.counters.cities, TEMPLATE_CONFIG);
+                                    console.log('📍 Pins regenerados para ciudades:', data.counters.cities);
+                                }
+                            }, 300);
                         }
                         
-                        // Restaurar el resto de datos
                         restoreTemplate(data);
-                        
-                        // Reinicializar JS
                         reinitializeJS();
                         
-                        showToast(`📂 Importado: ${file.name}`);
+                        showToast('📂 Importado: ' + file.name);
                         
                     } catch (error) {
                         console.error('Error al importar:', error);
@@ -2086,13 +1809,11 @@
         
         // ===== EXPORTACIÓN PDF =====
         function exportTemplate(format) {
-            // Ocultar controles (NO los editables, solo controles de UI)
-            document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .section-controls, .photo-controls, .item-counter, .dimension-badge').forEach(el => {
+            document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .section-controls, .photo-controls, .item-counter, .dimension-badge').forEach(function(el) {
                 el.style.display = 'none';
             });
             
-            // Limpiar estilos visuales de editables (pero NO ocultarlos)
-            document.querySelectorAll('.editable').forEach(el => {
+            document.querySelectorAll('.editable').forEach(function(el) {
                 el.style.border = 'none';
                 el.style.background = 'transparent';
                 el.style.padding = '0';
@@ -2100,12 +1821,11 @@
             
             window.print();
             
-            // Restaurar después de imprimir
-            setTimeout(() => {
-                document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .section-controls, .photo-controls, .item-counter, .dimension-badge').forEach(el => {
+            setTimeout(function() {
+                document.querySelectorAll('.component-controls, .add-btn, .control-panel, .map-controls, .section-controls, .photo-controls, .item-counter, .dimension-badge').forEach(function(el) {
                     el.style.display = '';
                 });
-                document.querySelectorAll('.editable').forEach(el => {
+                document.querySelectorAll('.editable').forEach(function(el) {
                     el.style.border = '';
                     el.style.background = '';
                     el.style.padding = '';
@@ -2116,11 +1836,11 @@
         function togglePreview() {
             const isPreview = document.body.classList.toggle('preview-mode');
             
-            document.querySelectorAll('.component-controls, .add-btn, .map-controls, .control-panel').forEach(el => {
+            document.querySelectorAll('.component-controls, .add-btn, .map-controls, .control-panel').forEach(function(el) {
                 el.style.display = isPreview ? 'none' : '';
             });
             
-            document.querySelectorAll('.editable').forEach(el => {
+            document.querySelectorAll('.editable').forEach(function(el) {
                 if (isPreview) {
                     el.style.border = 'none';
                     el.style.background = 'transparent';
@@ -2130,7 +1850,6 @@
                 }
             });
             
-            // Botón flotante para salir de preview
             let exitBtn = document.getElementById('exitPreviewBtn');
             
             if (isPreview) {
@@ -2138,24 +1857,9 @@
                     exitBtn = document.createElement('button');
                     exitBtn.id = 'exitPreviewBtn';
                     exitBtn.innerHTML = '✏️ Volver a Editar';
-                    exitBtn.style.cssText = `
-                        position: fixed;
-                        bottom: 20px;
-                        right: 20px;
-                        background: var(--teal-primary);
-                        color: white;
-                        border: none;
-                        padding: 12px 20px;
-                        border-radius: 25px;
-                        font-size: 14px;
-                        font-weight: 600;
-                        cursor: pointer;
-                        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-                        z-index: 10000;
-                        transition: all 0.2s;
-                    `;
-                    exitBtn.onmouseover = () => exitBtn.style.transform = 'scale(1.05)';
-                    exitBtn.onmouseout = () => exitBtn.style.transform = 'scale(1)';
+                    exitBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: var(--teal-primary); color: white; border: none; padding: 12px 20px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 10000; transition: all 0.2s;';
+                    exitBtn.onmouseover = function() { exitBtn.style.transform = 'scale(1.05)'; };
+                    exitBtn.onmouseout = function() { exitBtn.style.transform = 'scale(1)'; };
                     exitBtn.onclick = togglePreview;
                     document.body.appendChild(exitBtn);
                 }
@@ -2171,86 +1875,12 @@
         }
 
         function toggleHelp() {
-            alert(`🎯 GUÍA DE VIAJE V5.2 - Sistema Completo
-
-📋 FUNCIONALIDADES PRINCIPALES:
-
-🖼️ FOTOS:
-- Click en badge (1:1/2.5:1) para cambiar ratio
-- Subir múltiples imágenes a la vez
-- Drag & drop soportado
-- Las dimensiones no aparecen en PDF
-
-📍 CATEGORÍAS DE LUGARES:
-- 40+ categorías con emojis
-- Click en etiqueta para ver todas
-- Incluye: MUST, MUSEO, COMIDA, TEMPLO, 
-  HIKE, PLAYA, BAR, CAFÉ, MIRADOR, etc.
-
-🎨 COLORES PERSONALIZABLES:
-- Edita colores desde el panel lateral
-- Muestra código hexadecimal
-- Se aplica en tiempo real
-
-📱 RESPONSIVE:
-- Funciona en móvil y escritorio
-- Panel se adapta en pantallas pequeñas
-- 2 columnas siempre visibles (escalado)
-
-💾 GUARDAR/EXPORTAR:
-- 💾 Guardar Sesión: Guarda localmente (Ctrl+S)
-- 📥 Exportar: Descarga JSON con todo
-- 📤 Importar: Carga JSON guardado
-- 📄 PDF: Exporta limpio sin controles
-
-👁️ VISTA PREVIA:
-- Muestra cómo se verá el PDF
-- Botón flotante para volver a editar
-- Escape para salir rápido
-
-⚡ ATAJOS DE TECLADO:
-- Ctrl+S → Guardar sesión
-- Ctrl+Z → Deshacer
-- Escape → Salir de vista previa
-
-📊 INFORMACIÓN INCLUIDA:
-- Presupuesto (por día y total)
-- Costos: hospedaje, comida, bebida
-- Moneda, idioma, religiones
-- Itinerario día por día
-- Top lugares con categorías
-- Consejos rápidos
-
-📝 WORKFLOW RECOMENDADO:
-1. Modifica TEMPLATE_CONFIG con datos base
-2. Abre en navegador
-3. Haz ajustes finos editando en página
-4. Exporta a PDF
-
-💡 TIPS:
-- Edita cualquier texto con click
-- Los contadores se ocultan en PDF
-- Arrastra pins del mapa
-- Usa el buscador de categorías`);
+            alert('🎯 GUÍA DE VIAJE V5.2 - CORREGIDO\n\n📋 FUNCIONALIDADES:\n\n🖼️ FOTOS: Click en badge para cambiar ratio\n📍 CATEGORÍAS: 40+ categorías con emojis\n🎨 COLORES: Edita desde el panel lateral\n📱 RESPONSIVE: Funciona en móvil\n💾 GUARDAR: Ctrl+S guarda sesión\n↶ DESHACER: Ctrl+Z deshace cambios\n👁️ PREVIEW: Escape para salir\n\n✅ CORREGIDO: Pins del mapa se mantienen al importar');
         }
+
         // ===== VARIABLES GLOBALES =====
-        let counters = {
-            photos: 0,
-            cities: 0,
-            days: 0,
-            places: 0,
-            tips: 0,
-            pages: 1
-        };
-
-        const limits = {
-            photos: 20,
-            cities: 30,
-            days: 60,
-            places: 20,
-            tips: 15
-        };
-
+        let counters = { photos: 0, cities: 0, days: 0, places: 0, tips: 0, pages: 1 };
+        const limits = { photos: 20, cities: 30, days: 60, places: 20, tips: 15 };
         let autoExtendEnabled = true;
 
         // ===== INICIALIZACIÓN =====
@@ -2259,13 +1889,11 @@
             loadFromLocalStorage();
             setupEventListeners();
             setupKeyboardShortcuts();
-            console.log('✅ V5.1 cargado - Sistema híbrido activo');
+            console.log('✅ V5.2 CORREGIDO cargado');
         });
 
         function setupEventListeners() {
-            window.addEventListener('resize', debounce(() => {
-                expandPageToFit();
-            }, 300));
+            window.addEventListener('resize', debounce(function() { expandPageToFit(); }, 300));
         }
 
         function setupKeyboardShortcuts() {
@@ -2283,17 +1911,13 @@
                     if (isPreview) togglePreview();
                 }
             });
-            
-            // Toggle panel en móvil
             setupMobilePanel();
         }
 
         function setupMobilePanel() {
             const panel = document.querySelector('.control-panel');
             if (!panel) return;
-            
             panel.addEventListener('click', function(e) {
-                // Solo toggle si es pantalla pequeña y click en área superior
                 if (window.innerWidth <= 768) {
                     const rect = panel.getBoundingClientRect();
                     if (e.clientY < rect.top + 30) {
@@ -2304,13 +1928,8 @@
         }
     </script>
 
-
-<style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --teal-primary: #337653;
@@ -2324,1262 +1943,184 @@
             --gap: 16px;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--sand);
-            color: var(--text-dark);
-            line-height: 1.4;
-            overflow-x: hidden;
-        }
-
-        .document-container {
-            width: 100%;
-            min-height: 100vh;
-            background: var(--sand);
-        }
-
-        .page {
-            width: 210mm;
-            min-height: 297mm;
-            height: auto;
-            margin: 0 auto 20px;
-            background: var(--sand);
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            page-break-inside: avoid;
-            overflow: visible;
-        }
-
-        .page-content {
-            padding: var(--safe-margin);
-            height: auto;
-            display: flex;
-            flex-direction: column;
-            gap: var(--gap);
-        }
-
-        /* HEADER */
-        .master-header {
-            height: 80px;
-            background: linear-gradient(135deg, var(--teal-primary), var(--teal-light));
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            flex-shrink: 0;
-        }
-
-        /* LOGO MÁS GRANDE Y VISIBLE */
-        /* LOGO MÁS GRANDE Y VISIBLE */
-        .logo-slot {
-            width: 100px;
-            height: 65px;
-            margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            background: var(--logo-bg, rgba(255,255,255,0.95));
-            border: 2px dashed rgba(15, 122, 120, 0.3);
-            cursor: pointer;
-            transition: all 0.2s;
-            padding: 2px;
-        }
-
-        .logo-slot:hover {
-            border-color: var(--teal-primary);
-            background: var(--white);
-            transform: scale(1.05);
-        }
-
-        .logo-slot.has-logo {
-            border-style: solid;
-            border-color: var(--white);
-            background: var(--white);
-        }
-
-        .logo-slot img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .logo-placeholder {
-            font-size: 9px;
-            color: var(--teal-primary);
-            text-align: center;
-            line-height: 1.2;
-            font-weight: 600;
-        }
-
-        .flag-container {
-            width: 48px;
-            height: 36px;
-            background: var(--white);
-            border-radius: 4px;
-            border: 2px dashed rgba(15, 122, 120, 0.4);
-            margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            color: var(--teal-primary);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            overflow: hidden;
-        }
-
-        .flag-container:hover {
-            border-color: var(--teal-primary);
-            background: rgba(255,255,255,0.9);
-            transform: scale(1.05);
-        }
-
-        .flag-container.has-flag {
-            border-style: solid;
-            border-color: var(--white);
-        }
-
-        .flag-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: cover;
-        }
-
-        .flag-placeholder {
-            text-align: center;
-            line-height: 1.1;
-            color: rgba(15, 122, 120, 0.7);
-        }
-
-        .country-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 32px;
-            color: var(--white);
-            flex: 1;
-        }
-
-        .page-indicator {
-            position: absolute;
-            top: 8px;
-            right: 16px;
-            background: rgba(255,255,255,0.9);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 8px;
-            color: var(--teal-primary);
-            font-weight: 500;
-        }
-
-        /* FOOTER */
-        .master-footer {
-            margin-top: auto;
-            padding-top: 12px;
-            border-top: 1px solid #E5E5E5;
-            font-size: 8px;
-            color: #999;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        /* LAYOUT 2 COLUMNAS CON SECCIONES EXPANDIBLES */
-        .content-area {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 38% 62%;
-            gap: var(--gap);
-            overflow: visible;
-        }
-
-        /* Secciones de ancho completo */
-        .full-width-section {
-            grid-column: 1 / -1;
-            width: 100%;
-        }
-
-        /* Grid para lugares en 2 columnas */
-        .places-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .left-column, .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: var(--gap);
-            overflow: visible;
-        }
-
-        /* Secciones que pueden expandirse a 2 columnas */
-        .expandable-section {
-            grid-column: span 1;
-        }
-
-        .content-area.expanded-layout {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--gap);
-        }
-
-        .content-area.expanded-layout .left-column {
-            flex: 0 0 38%;
-            min-width: 250px;
-        }
-
-        .content-area.expanded-layout .right-column {
-            flex: 1;
-            min-width: 350px;
-        }
-
-        .content-area.expanded-layout .full-width-section {
-            flex: 0 0 100%;
-            width: 100%;
-        }
-
-        .flow-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            overflow: visible;
-        }
-
-        .flow-item {
-            flex-shrink: 0;
-            break-inside: avoid;
-        }
-
-        /* COMPONENTES */
-        .component {
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .component:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(15, 122, 120, 0.15);
-        }
-
-        .component:hover .component-controls {
-            opacity: 1;
-        }
-
-        .component-controls {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            display: flex;
-            gap: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            z-index: 10;
-        }
-
-        .control-btn {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: transform 0.1s;
-        }
-
-        .control-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .duplicate-btn {
-            background: var(--teal-light);
-            color: var(--white);
-        }
-
-        .delete-btn {
-            background: var(--coral);
-            color: var(--white);
-        }
-
-        /* SECCIONES */
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding: 8px 0;
-            border-bottom: 1px solid #E5E5E5;
-        }
-
-        .section-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            color: var(--teal-primary);
-        }
-
-        .section-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .item-counter {
-            font-size: 10px;
-            color: var(--text-light);
-            background: #f0f0f0;
-            padding: 2px 6px;
-            border-radius: 8px;
-        }
-
-        .add-btn {
-            background: var(--teal-primary);
-            color: var(--white);
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: background 0.2s;
-        }
-
-        .add-btn:hover {
-            background: #0d6866;
-        }
-
-        .add-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .add-btn.remove-btn {
-            background: var(--coral);
-            padding: 6px 8px;
-        }
-
-        .add-btn.remove-btn:hover {
-            background: #e55a50;
-        }
-
-        .add-btn.remove-btn:disabled {
-            background: #ccc;
-        }
-        /* TARJETA RESUMEN */
-        .summary-card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1);
-            flex-shrink: 0;
-        }
-
-        .summary-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 20px;
-            color: var(--teal-primary);
-            margin-bottom: 12px;
-        }
-
-        .summary-item {
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
-
-        .summary-label {
-            font-weight: 600;
-            color: var(--teal-primary);
-        }
-
-        /* PRESUPUESTO */
-        .budget-section {
-            background: #f8fffe;
-            border-left: 3px solid var(--teal-primary);
-            padding: 12px;
-            margin-top: 12px;
-            border-radius: 0 6px 6px 0;
-        }
-
-        .budget-title {
-            font-weight: 600;
-            color: var(--teal-primary);
-            font-size: 11px;
-            margin-bottom: 8px;
-        }
-
-        .budget-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            margin-bottom: 4px;
-        }
-
-        .budget-label {
-            color: var(--text-light);
-        }
-
-        .budget-value {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        /* NIVEL DE COSTE */
-        .cost-rating {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 8px 0;
-        }
-
-        .cost-circles {
-            display: flex;
-            gap: 3px;
-        }
-
-        .cost-circle {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--coral);
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-
-        .cost-circle.empty {
-            background: #E5E5E5;
-        }
-
-        .cost-circle:hover {
-            transform: scale(1.2);
-            border-color: var(--teal-primary);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .cost-circle:active {
-            transform: scale(0.95);
-        }
-
-        .cost-text {
-            font-size: 10px;
-            color: var(--text-light);
-        }
-
-        /* FOTOS */
-        .photo-section {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1);
-        }
-
-        .photo-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .photo-frame {
-            background: #f8f9fa;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            min-height: 60px;
-        }
-
-        .photo-frame.hero {
-            grid-column: span 2;
-            aspect-ratio: 2.5/1;  /* CAMBIADO de 3/1 a 2.5/1 */
-            min-height: 80px;
-        }
-
-        .photo-frame.mini {
-            aspect-ratio: 1/1;
-        }
-
-        .photo-frame:hover {
-            border-color: var(--teal-primary);
-            background: #f0f9f9;
-        }
-
-        .photo-frame.has-image {
-            border-style: solid;
-            border-color: var(--teal-primary);
-        }
-
-        .photo-placeholder {
-            text-align: center;
-            color: var(--text-light);
-            font-size: 9px;
-            padding: 8px;
-        }
-
-        .photo-controls {
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            display: flex;
-            gap: 2px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .photo-frame:hover .photo-controls {
-            opacity: 1;
-        }
-
-        .photo-btn {
-            background: rgba(0,0,0,0.7);
-            color: var(--white);
-            border: none;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-size: 8px;
-            cursor: pointer;
-        }
-
-        /* MAPA - AJUSTE AUTOMÁTICO */
-        .map-section {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1);
-        }
-
-        .map-controls {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .map-btn {
-            background: var(--teal-light);
-            color: var(--white);
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: none;
-        }
-
-        .map-btn:hover {
-            background: var(--teal-primary);
-            transform: translateY(-1px);
-        }
-
-        /* Enlace de Google My Maps */
-        .map-link-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(15, 122, 120, 0.2);
-        }
-
-        .map-link-icon {
-            font-size: 16px;
-        }
-
-        .map-link-label {
-            font-size: 10px;
-            color: var(--text-dark);
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .map-link {
-            flex: 1;
-            font-size: 10px;
-            color: var(--teal-primary);
-            text-decoration: none;
-            padding: 4px 8px;
-            background: rgba(255,255,255,0.7);
-            border-radius: 4px;
-            border: 1px dashed rgba(15, 122, 120, 0.3);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            transition: all 0.2s;
-        }
-
-        .map-link:hover {
-            background: rgba(255,255,255,0.9);
-            border-color: var(--teal-primary);
-        }
-
-        .map-link.has-link {
-            border-style: solid;
-            color: #1a73e8;
-            font-weight: 500;
-        }
-
-        .map-link.has-link:hover {
-            text-decoration: underline;
-            background: #e8f0fe;
-        }
-
-        .map-link .link-text {
-            display: block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .edit-link-btn {
-            background: var(--teal-light);
-            color: white;
-            border: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .edit-link-btn:hover {
-            background: var(--teal-primary);
-            transform: scale(1.1);
-        }
-        .map-container {
-            width: 100%;
-            height: 140px;  /* Altura inicial */
-            background: linear-gradient(135deg, #f0f9f9, #e6f7f7);
-            border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 12px;
-            transition: height 0.3s ease;
-        }
-
-        .map-container.has-custom-map {
-            border: 2px solid var(--teal-primary);
-            background: #f8f9fa;
-            height: auto;  /* Se ajusta al contenido */
-        }
-
-        .map-route {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .map-pin {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: var(--coral);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 10px;
-            font-weight: 600;
-            border: 2px solid var(--white);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            cursor: move;
-            transition: transform 0.2s;
-            z-index: 5;
-        }
-
-        .map-pin:hover {
-            transform: scale(1.1);
-        }
-
-        /* ITINERARIO */
-        .itinerary-section {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1);
-        }
-
-        .itinerary-card {
-            background: #f8fffe;
-            border-left: 4px solid var(--teal-light);
-            padding: 12px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 8px;
-            position: relative;
-            break-inside: avoid;
-        }
-
-        .day-title {
-            font-weight: 600;
-            color: var(--teal-primary);
-            font-size: 12px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .day-activity {
-            font-size: 10px;
-            color: var(--text-light);
-            line-height: 1.3;
-        }
-
-        /* TOP LUGARES */
-        .top-places {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1);
-        }
-
-        .place-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            border-radius: 6px;
-            background: #f8fffe;
-            margin-bottom: 8px;
-            position: relative;
-            break-inside: avoid;
-        }
-
-        .place-badge {
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-size: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .place-badge { 
-            background: var(--coral); 
-            color: var(--white); 
-            min-width: 50px;
-            text-align: center;
-            transition: all 0.2s;
-        }
-        .place-badge:hover {
-            transform: scale(1.1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .place-text {
-            font-size: 10px;
-            flex: 1;
-        }
-
-        .place-name {
-            font-weight: 600;
-            color: var(--teal-primary);
-        }
-
-        /* CONSEJOS */
-        .quick-tips {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1);
-        }
-
-        .tips-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .tip-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 9px;
-            padding: 8px;
-            background: #f8fffe;
-            border-radius: 6px;
-            position: relative;
-            break-inside: avoid;
-        }
-
-        .tip-icon {
-            width: 16px;
-            height: 16px;
-            background: var(--coral);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 8px;
-            flex-shrink: 0;
-        }
-
-        /* EDITABLE - SIN CONTADORES VISIBLES */
-        .editable {
-            background: rgba(255, 107, 97, 0.1);
-            padding: 2px 4px;
-            border-radius: 3px;
-            border: 1px dashed var(--coral);
-            cursor: text;
-            position: relative;
-            min-height: 1.2em;
-            word-wrap: break-word;
-        }
-
-        .editable:hover {
-            background: rgba(255, 107, 97, 0.2);
-        }
-
-        .editable:focus {
-            background: rgba(255, 107, 97, 0.3);
-            outline: none;
-        }
-
-        /* PANEL DE CONTROL */
-        .control-panel {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: var(--white);
-            padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-
-        .control-btn-main {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .control-btn-main:hover {
-            transform: translateY(-1px);
-        }
-
-        .control-btn-main:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            right: 110%;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            white-space: nowrap;
-            z-index: 1001;
-        }
-
-        .reload-config-btn { background: #9C27B0; color: var(--white); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--sand); color: var(--text-dark); line-height: 1.4; overflow-x: hidden; }
+        .document-container { width: 100%; min-height: 100vh; background: var(--sand); }
+        .page { width: 210mm; min-height: 297mm; height: auto; margin: 0 auto 20px; background: var(--sand); position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.1); page-break-inside: avoid; overflow: visible; }
+        .page-content { padding: var(--safe-margin); height: auto; display: flex; flex-direction: column; gap: var(--gap); }
+        .master-header { height: 80px; background: linear-gradient(135deg, var(--teal-primary), var(--teal-light)); border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; }
+        .logo-slot { width: 100px; height: 65px; margin-right: 12px; display: flex; align-items: center; justify-content: center; border-radius: 6px; background: var(--logo-bg, rgba(255,255,255,0.95)); border: 2px dashed rgba(15, 122, 120, 0.3); cursor: pointer; transition: all 0.2s; padding: 2px; }
+        .logo-slot:hover { border-color: var(--teal-primary); background: var(--white); transform: scale(1.05); }
+        .logo-slot.has-logo { border-style: solid; border-color: var(--white); background: var(--white); }
+        .logo-slot img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .logo-placeholder { font-size: 9px; color: var(--teal-primary); text-align: center; line-height: 1.2; font-weight: 600; }
+        .flag-container { width: 48px; height: 36px; background: var(--white); border-radius: 4px; border: 2px dashed rgba(15, 122, 120, 0.4); margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: var(--teal-primary); font-weight: 600; cursor: pointer; transition: all 0.2s; overflow: hidden; }
+        .flag-container:hover { border-color: var(--teal-primary); background: rgba(255,255,255,0.9); transform: scale(1.05); }
+        .flag-container.has-flag { border-style: solid; border-color: var(--white); }
+        .flag-container img { max-width: 100%; max-height: 100%; object-fit: cover; }
+        .flag-placeholder { text-align: center; line-height: 1.1; color: rgba(15, 122, 120, 0.7); }
+        .country-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 32px; color: var(--white); flex: 1; }
+        .page-indicator { position: absolute; top: 8px; right: 16px; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 6px; font-size: 8px; color: var(--teal-primary); font-weight: 500; }
+        .master-footer { margin-top: auto; padding-top: 12px; border-top: 1px solid #E5E5E5; font-size: 8px; color: #999; text-align: center; flex-shrink: 0; }
+        .content-area { flex: 1; display: grid; grid-template-columns: 38% 62%; gap: var(--gap); overflow: visible; }
+        .full-width-section { grid-column: 1 / -1; width: 100%; }
+        .places-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .left-column, .right-column { display: flex; flex-direction: column; gap: var(--gap); overflow: visible; }
+        .flow-container { display: flex; flex-direction: column; gap: 8px; overflow: visible; }
+        .flow-item { flex-shrink: 0; break-inside: avoid; }
+        .component { position: relative; transition: all 0.2s ease; }
+        .component:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(15, 122, 120, 0.15); }
+        .component:hover .component-controls { opacity: 1; }
+        .component-controls { position: absolute; top: -8px; right: -8px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; z-index: 10; }
+        .control-btn { width: 20px; height: 20px; border-radius: 50%; border: none; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.1s; }
+        .control-btn:hover { transform: scale(1.1); }
+        .duplicate-btn { background: var(--teal-light); color: var(--white); }
+        .delete-btn { background: var(--coral); color: var(--white); }
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 8px 0; border-bottom: 1px solid #E5E5E5; }
+        .section-title { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; color: var(--teal-primary); }
+        .section-controls { display: flex; align-items: center; gap: 8px; }
+        .item-counter { font-size: 10px; color: var(--text-light); background: #f0f0f0; padding: 2px 6px; border-radius: 8px; }
+        .add-btn { background: var(--teal-primary); color: var(--white); border: none; padding: 6px 10px; border-radius: 6px; font-size: 10px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background 0.2s; }
+        .add-btn:hover { background: #0d6866; }
+        .add-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .add-btn.remove-btn { background: var(--coral); padding: 6px 8px; }
+        .add-btn.remove-btn:hover { background: #e55a50; }
+        .summary-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1); flex-shrink: 0; }
+        .summary-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 20px; color: var(--teal-primary); margin-bottom: 12px; }
+        .summary-item { margin-bottom: 8px; font-size: 12px; }
+        .summary-label { font-weight: 600; color: var(--teal-primary); }
+        .budget-section { background: #f8fffe; border-left: 3px solid var(--teal-primary); padding: 12px; margin-top: 12px; border-radius: 0 6px 6px 0; }
+        .budget-title { font-weight: 600; color: var(--teal-primary); font-size: 11px; margin-bottom: 8px; }
+        .budget-item { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; }
+        .budget-label { color: var(--text-light); }
+        .budget-value { font-weight: 600; color: var(--text-dark); }
+        .cost-rating { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+        .cost-circles { display: flex; gap: 3px; }
+        .cost-circle { width: 14px; height: 14px; border-radius: 50%; background: var(--coral); cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+        .cost-circle.empty { background: #E5E5E5; }
+        .cost-circle:hover { transform: scale(1.2); border-color: var(--teal-primary); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .cost-text { font-size: 10px; color: var(--text-light); }
+        .photo-section { background: var(--white); border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1); }
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .photo-frame { background: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; min-height: 60px; }
+        .photo-frame.hero { grid-column: span 2; aspect-ratio: 2.5/1; min-height: 80px; }
+        .photo-frame.mini { aspect-ratio: 1/1; }
+        .photo-frame:hover { border-color: var(--teal-primary); background: #f0f9f9; }
+        .photo-frame.has-image { border-style: solid; border-color: var(--teal-primary); }
+        .photo-placeholder { text-align: center; color: var(--text-light); font-size: 9px; padding: 8px; }
+        .photo-controls { position: absolute; bottom: 4px; right: 4px; display: flex; gap: 2px; opacity: 0; transition: opacity 0.2s; }
+        .photo-frame:hover .photo-controls { opacity: 1; }
+        .photo-btn { background: rgba(0,0,0,0.7); color: var(--white); border: none; padding: 2px 4px; border-radius: 3px; font-size: 8px; cursor: pointer; }
+        .map-section { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1); }
+        .map-controls { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+        .map-btn { background: var(--teal-light); color: var(--white); border: none; padding: 6px 10px; border-radius: 6px; font-size: 10px; cursor: pointer; transition: all 0.2s; display: inline-flex; }
+        .map-btn:hover { background: var(--teal-primary); transform: translateY(-1px); }
+        .map-link-container { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: linear-gradient(135deg, #e8f5e9, #e3f2fd); border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(15, 122, 120, 0.2); }
+        .map-link-icon { font-size: 16px; }
+        .map-link-label { font-size: 10px; color: var(--text-dark); font-weight: 600; white-space: nowrap; }
+        .map-link { flex: 1; font-size: 10px; color: var(--teal-primary); text-decoration: none; padding: 4px 8px; background: rgba(255,255,255,0.7); border-radius: 4px; border: 1px dashed rgba(15, 122, 120, 0.3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: all 0.2s; }
+        .map-link:hover { background: rgba(255,255,255,0.9); border-color: var(--teal-primary); }
+        .map-link.has-link { border-style: solid; color: #1a73e8; font-weight: 500; }
+        .map-link.has-link:hover { text-decoration: underline; background: #e8f0fe; }
+        .edit-link-btn { background: var(--teal-light); color: white; border: none; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .edit-link-btn:hover { background: var(--teal-primary); transform: scale(1.1); }
+        .map-container { width: 100%; height: 140px; background: linear-gradient(135deg, #f0f9f9, #e6f7f7); border-radius: 8px; position: relative; overflow: hidden; margin-bottom: 12px; transition: height 0.3s ease; }
+        .map-container.has-custom-map { border: 2px solid var(--teal-primary); background: #f8f9fa; height: auto; }
+        .map-route { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .map-pin { position: absolute; width: 20px; height: 20px; background: var(--coral); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 10px; font-weight: 600; border: 2px solid var(--white); box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: move; transition: transform 0.2s; z-index: 5; }
+        .map-pin:hover { transform: scale(1.1); }
+        .itinerary-section { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1); }
+        .itinerary-card { background: #f8fffe; border-left: 4px solid var(--teal-light); padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 8px; position: relative; break-inside: avoid; }
+        .day-title { font-weight: 600; color: var(--teal-primary); font-size: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .day-activity { font-size: 10px; color: var(--text-light); line-height: 1.3; }
+        .top-places { background: var(--white); border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1); }
+        .place-item { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; background: #f8fffe; margin-bottom: 8px; position: relative; break-inside: avoid; }
+        .place-badge { padding: 2px 6px; border-radius: 8px; font-size: 8px; font-weight: 600; cursor: pointer; flex-shrink: 0; background: var(--coral); color: var(--white); min-width: 50px; text-align: center; transition: all 0.2s; }
+        .place-badge:hover { transform: scale(1.1); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .place-text { font-size: 10px; flex: 1; }
+        .place-name { font-weight: 600; color: var(--teal-primary); }
+        .quick-tips { background: var(--white); border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1); }
+        .tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .tip-item { display: flex; align-items: center; gap: 6px; font-size: 9px; padding: 8px; background: #f8fffe; border-radius: 6px; position: relative; break-inside: avoid; }
+        .tip-icon { width: 16px; height: 16px; background: var(--coral); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 8px; flex-shrink: 0; }
+        .editable { background: rgba(255, 107, 97, 0.1); padding: 2px 4px; border-radius: 3px; border: 1px dashed var(--coral); cursor: text; position: relative; min-height: 1.2em; word-wrap: break-word; }
+        .editable:hover { background: rgba(255, 107, 97, 0.2); }
+        .editable:focus { background: rgba(255, 107, 97, 0.3); outline: none; }
+        .control-panel { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; background: var(--white); padding: 12px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .control-btn-main { padding: 8px 12px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.2s; position: relative; }
+        .control-btn-main:hover { transform: translateY(-1px); }
         .upload-images-btn { background: #2196F3; color: var(--white); }
         .help-btn { background: var(--teal-primary); color: var(--white); }
         .save-btn { background: #4CAF50; color: var(--white); }
         .undo-btn { background: #666; color: var(--white); }
+        .undo-btn:disabled { background: #ccc; cursor: not-allowed; }
         .export-btn { background: var(--coral); color: var(--white); }
         .preview-btn { background: var(--teal-light); color: var(--white); }
-
-        .undo-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
         .export-file-btn { background: #FF9800; color: var(--white); }
         .import-file-btn { background: #795548; color: var(--white); }
-
-        .status-bar {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 10px;
-            color: var(--text-light);
-            padding: 4px 0;
-            border-top: 1px solid #eee;
-            margin-top: 8px;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #4CAF50;
-        }
-
-        /* MODO VISTA PREVIA */
-        .preview-mode .editable {
-            border: none !important;
-            background: transparent !important;
-        }
-
-        /* RESPONSIVE - MANTIENE 2 COLUMNAS SIEMPRE */
-        @media screen and (max-width: 1200px) {
-            .page {
-                transform: scale(0.8);
-                transform-origin: top center;
-            }
-        }
-
-        @media screen and (max-width: 900px) {
-            .page {
-                transform: scale(0.6);
-                transform-origin: top center;
-            }
-            /* 2 columnas se mantienen, solo escala */
-        }
-
-        @media screen and (max-width: 600px) {
-            .page {
-                transform: scale(0.45);
-                transform-origin: top center;
-            }
-        }
-
-        @media screen and (max-width: 400px) {
-            .page {
-                transform: scale(0.35);
-                transform-origin: top center;
-            }
-        }
-
-        /* IMPRESIÓN - LIMPIO */
+        .status-bar { display: flex; align-items: center; gap: 8px; font-size: 10px; color: var(--text-light); padding: 4px 0; border-top: 1px solid #eee; margin-top: 8px; }
+        .status-indicator { display: flex; align-items: center; gap: 4px; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4CAF50; }
+        .preview-mode .editable { border: none !important; background: transparent !important; }
+        @media screen and (max-width: 1200px) { .page { transform: scale(0.8); transform-origin: top center; } }
+        @media screen and (max-width: 900px) { .page { transform: scale(0.6); transform-origin: top center; } }
+        @media screen and (max-width: 600px) { .page { transform: scale(0.45); transform-origin: top center; } }
         @media print {
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-            }
-    
-            body { 
-                margin: 0; 
-                background: var(--sand) !important;
-                background-color: var(--sand) !important;
-            }
-    
-            .page { 
-                box-shadow: none; 
-                margin: 0;
-                width: 210mm;
-                min-height: 297mm;
-                page-break-inside: avoid;
-                background: var(--sand) !important;
-            }
-    
-            .control-panel,
-            .component-controls,
-            .add-btn,
-            .map-controls,
-            .photo-controls,
-            .item-counter,
-            .section-controls {
-                display: none !important;
-            }
-    
-            .editable {
-                border: none !important;
-                background: transparent !important;
-            }
-    
-            /* Preservar colores del header */
-            .master-header {
-                background: linear-gradient(135deg, var(--teal-primary), var(--teal-light)) !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-    
-            /* Preservar colores de los círculos de coste */
-            .cost-circle {
-                background: var(--coral) !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-    
-            .cost-circle.empty {
-                background: #E5E5E5 !important;
-            }
-    
-            /* Preservar badges de lugares */
-            .place-badge.must { background: var(--coral) !important; color: white !important; }
-            .place-badge.skip { background: #E5E5E5 !important; }
-            .place-badge.eco { background: #4CAF50 !important; color: white !important; }
-            .place-badge.family { background: #FF9800 !important; color: white !important; }
-    
-            /* Preservar iconos de consejos */
-            .tip-icon {
-                background: var(--coral) !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-    
-            /* Preservar pins del mapa */
-            .map-pin {
-                background: var(--coral) !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-    
-            /* Preservar numeración de ciudades */
-            [data-component="CITY_ITEM"] > div:first-child {
-                background: var(--teal-primary) !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-    
-            /* Preservar iconos de información */
-            .summary-card div[style*="background: var(--teal-light)"] {
-                background: var(--teal-light) !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-    
-            /* Preservar borde del itinerario */
-            .itinerary-card {
-                border-left: 4px solid var(--teal-light) !important;
-                background: #f8fffe !important;
-            }
-    
-            /* Preservar borde del presupuesto */
-            .budget-section {
-                border-left: 3px solid var(--teal-primary) !important;
-                background: #f8fffe !important;
-            }
-    
-            /* Ocultar indicador de página en header si no se necesita */
-            .page-indicator {
-                display: none !important;
-            }
-
-            /* Enlace de Google Maps en PDF */
-            .map-link-container {
-                background: #f0f7f0 !important;
-                -webkit-print-color-adjust: exact !important;
-            }
-
-            .edit-link-btn {
-                display: none !important;
-            }
-
-            .map-link {
-                border: none !important;
-                background: transparent !important;
-                color: #1a73e8 !important;
-            }
-
-            .map-link:not(.has-link) {
-                display: none !important;
-            }
-
-            .map-link-container:has(.map-link:not(.has-link)) {
-                display: none !important;
-            }
-
-            /* Ocultar badges de dimensiones de fotos */
-            .dimension-badge {
-                display: none !important;
-            }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body { margin: 0; background: var(--sand) !important; }
+            .page { box-shadow: none; margin: 0; width: 210mm; min-height: 297mm; }
+            .control-panel, .component-controls, .add-btn, .map-controls, .photo-controls, .item-counter, .section-controls, .dimension-badge { display: none !important; }
+            .editable { border: none !important; background: transparent !important; }
+            .master-header { background: linear-gradient(135deg, var(--teal-primary), var(--teal-light)) !important; }
+            .cost-circle { background: var(--coral) !important; }
+            .cost-circle.empty { background: #E5E5E5 !important; }
+            .tip-icon, .map-pin { background: var(--coral) !important; }
+            .itinerary-card { border-left: 4px solid var(--teal-light) !important; background: #f8fffe !important; }
+            .budget-section { border-left: 3px solid var(--teal-primary) !important; }
+            .edit-link-btn { display: none !important; }
+            .map-link:not(.has-link), .map-link-container:has(.map-link:not(.has-link)) { display: none !important; }
         }
-        
-        /* PANEL RESPONSIVE MÓVIL */
-        @media screen and (max-width: 768px) {
-            .control-panel {
-                position: fixed;
-                top: auto;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 6px;
-                padding: 10px;
-                border-radius: 12px 12px 0 0;
-                max-height: 60px;
-                overflow: hidden;
-                transition: max-height 0.3s ease;
-            }
-
-            .control-panel.expanded {
-                max-height: 80vh;
-                overflow-y: auto;
-            }
-
-            .control-panel .control-btn-main {
-                padding: 6px 10px;
-                font-size: 11px;
-            }
-
-            .control-panel .color-editor {
-                display: none;
-            }
-
-            .control-panel.expanded .color-editor {
-                display: block;
-                width: 100%;
-            }
-
-            .control-panel .status-bar {
-                display: none;
-            }
-
-            .control-panel::before {
-                content: '⬆️ Menú';
-                position: absolute;
-                top: -25px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: var(--teal-primary);
-                color: white;
-                padding: 4px 12px;
-                border-radius: 12px 12px 0 0;
-                font-size: 10px;
-                cursor: pointer;
-            }
-
-            .control-panel.expanded::before {
-                content: '⬇️ Cerrar';
-            }
-
-            /* Más espacio para el documento */
-            .page {
-                margin-bottom: 80px;
-            }
-        }
-    
-        /* ANIMACIONES */
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <!-- Panel de control -->
     <div class="control-panel">
-        <!-- Eliminado: Recargar Config -->
-        <button class="control-btn-main upload-images-btn" onclick="uploadMultipleImages()" data-tooltip="Cargar múltiples fotos a la vez">📷 Subir Imágenes</button>
-        <button class="control-btn-main help-btn" onclick="toggleHelp()" data-tooltip="Mostrar guía de uso">❓ Ayuda</button>
-        <button class="control-btn-main save-btn" onclick="autosaveJSON()" data-tooltip="Guardar sesión localmente (Ctrl+S)">💾 Guardar Sesión</button>
-        <button class="control-btn-main export-file-btn" onclick="exportToFile()" data-tooltip="Descargar plantilla completa con imágenes">📥 Exportar Archivo</button>
-        <button class="control-btn-main import-file-btn" onclick="importFromFile()" data-tooltip="Cargar plantilla desde archivo JSON">📤 Importar Archivo</button>
-        <button class="control-btn-main undo-btn" onclick="undo()" id="undoBtn" disabled data-tooltip="Deshacer última acción (Ctrl+Z)">↶ Deshacer</button>
-        <button class="control-btn-main export-btn" onclick="exportTemplate('A4')" data-tooltip="Exportar a PDF tamaño A4">📄 PDF A4</button>
-        <button class="control-btn-main preview-btn" onclick="togglePreview()" data-tooltip="Vista previa sin controles (Escape)">👁️ Vista previa</button>
-        
-        <!-- Editor de Colores -->
+        <button class="control-btn-main upload-images-btn" onclick="uploadMultipleImages()">📷 Subir Imágenes</button>
+        <button class="control-btn-main help-btn" onclick="toggleHelp()">❓ Ayuda</button>
+        <button class="control-btn-main save-btn" onclick="autosaveJSON()">💾 Guardar Sesión</button>
+        <button class="control-btn-main export-file-btn" onclick="exportToFile()">📥 Exportar Archivo</button>
+        <button class="control-btn-main import-file-btn" onclick="importFromFile()">📤 Importar Archivo</button>
+        <button class="control-btn-main undo-btn" onclick="undo()" id="undoBtn" disabled>↶ Deshacer</button>
+        <button class="control-btn-main export-btn" onclick="exportTemplate('A4')">📄 PDF A4</button>
+        <button class="control-btn-main preview-btn" onclick="togglePreview()">👁️ Vista previa</button>
         <div class="color-editor" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
             <div style="font-size: 10px; font-weight: 600; color: #666; margin-bottom: 8px;">🎨 Colores</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                <div class="color-input-group">
-                    <label style="font-size: 9px; color: #888;">Primario</label>
-                    <div style="display: flex; gap: 4px; align-items: center;">
-                        <input type="color" id="colorPrimario" value="#337653" onchange="updateColor('--teal-primary', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
-                        <span id="colorPrimarioCode" style="font-size: 8px; color: #666;">#337653</span>
-                    </div>
-                </div>
-                <div class="color-input-group">
-                    <label style="font-size: 9px; color: #888;">Secundario</label>
-                    <div style="display: flex; gap: 4px; align-items: center;">
-                        <input type="color" id="colorSecundario" value="#1DAA2D" onchange="updateColor('--teal-light', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
-                        <span id="colorSecundarioCode" style="font-size: 8px; color: #666;">#1DAA2D</span>
-                    </div>
-                </div>
-                <div class="color-input-group">
-                    <label style="font-size: 9px; color: #888;">Acento</label>
-                    <div style="display: flex; gap: 4px; align-items: center;">
-                        <input type="color" id="colorAcento" value="#EE3344" onchange="updateColor('--coral', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
-                        <span id="colorAcentoCode" style="font-size: 8px; color: #666;">#EE3344</span>
-                    </div>
-                </div>
-                <div class="color-input-group">
-                    <label style="font-size: 9px; color: #888;">Fondo</label>
-                    <div style="display: flex; gap: 4px; align-items: center;">
-                        <input type="color" id="colorFondo" value="#000000" onchange="updateColor('--sand', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
-                        <span id="colorFondoCode" style="font-size: 8px; color: #666;">#000000</span>
-                    </div>
-                </div>
+                <div><label style="font-size: 9px; color: #888;">Primario</label><div style="display: flex; gap: 4px; align-items: center;"><input type="color" id="colorPrimario" value="#337653" onchange="updateColor('--teal-primary', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;"><span id="colorPrimarioCode" style="font-size: 8px; color: #666;">#337653</span></div></div>
+                <div><label style="font-size: 9px; color: #888;">Secundario</label><div style="display: flex; gap: 4px; align-items: center;"><input type="color" id="colorSecundario" value="#1DAA2D" onchange="updateColor('--teal-light', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;"><span id="colorSecundarioCode" style="font-size: 8px; color: #666;">#1DAA2D</span></div></div>
+                <div><label style="font-size: 9px; color: #888;">Acento</label><div style="display: flex; gap: 4px; align-items: center;"><input type="color" id="colorAcento" value="#EE3344" onchange="updateColor('--coral', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;"><span id="colorAcentoCode" style="font-size: 8px; color: #666;">#EE3344</span></div></div>
+                <div><label style="font-size: 9px; color: #888;">Fondo</label><div style="display: flex; gap: 4px; align-items: center;"><input type="color" id="colorFondo" value="#000000" onchange="updateColor('--sand', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;"><span id="colorFondoCode" style="font-size: 8px; color: #666;">#000000</span></div></div>
             </div>
         </div>
-        
-        <div class="status-bar">
-            <div class="status-indicator">
-                <div class="status-dot" id="saveStatus"></div>
-                <span id="saveText">V5.1</span>
-            </div>
-        </div>
+        <div class="status-bar"><div class="status-indicator"><div class="status-dot" id="saveStatus"></div><span id="saveText">V5.2 CORREGIDO</span></div></div>
     </div>
 
-    <!-- Documento principal -->
     <div class="document-container">
         <div class="page" id="page-1" data-page="1">
             <div class="page-content">
-                <!-- Header -->
                 <div class="master-header">
-                    <div class="logo-slot" onclick="uploadLogo(this)">
-                        <img src="" alt="Logo" style="display: none;" />
-                        <div class="logo-placeholder">LOGO<br><small>Click aquí</small></div>
-                    </div>
-                    <div class="flag-container" onclick="uploadFlag(this)">
-                        <img src="" alt="Bandera" style="display: none;" />
-                        <div class="flag-placeholder">🏳️<br><small>Click</small></div>
-                    </div>
+                    <div class="logo-slot" onclick="uploadLogo(this)"><img src="" alt="Logo" style="display: none;" /><div class="logo-placeholder">LOGO<br><small>Click aquí</small></div></div>
+                    <div class="flag-container" onclick="uploadFlag(this)"><img src="" alt="Bandera" style="display: none;" /><div class="flag-placeholder">🏳️<br><small>Click</small></div></div>
                     <div class="country-title editable" data-limit="500" data-var="PAIS">{{PAÍS}}</div>
                     <div class="page-indicator">Página 1 de 1</div>
                 </div>
 
-                <!-- Área de contenido (2 COLUMNAS) -->
                 <div class="content-area">
-                    <!-- COLUMNA IZQUIERDA -->
                     <div class="left-column">
-                        <!-- Tarjeta resumen -->
                         <div class="summary-card component flow-item">
                             <div class="summary-title editable" data-limit="500" data-var="NOMBRE_PAIS">{{NOMBRE DEL PAÍS}}</div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">Fechas:</span> 
-                                <span class="editable" data-limit="500" data-var="FECHAS">{{Fechas}}</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Duración:</span> 
-                                <span class="editable" data-limit="500" data-var="DURACION">{{Duración}}</span>
-                            </div>
-                            
-                            <!-- Nivel de coste -->
+                            <div class="summary-item"><span class="summary-label">Fechas:</span> <span class="editable" data-limit="500" data-var="FECHAS">{{Fechas}}</span></div>
+                            <div class="summary-item"><span class="summary-label">Duración:</span> <span class="editable" data-limit="500" data-var="DURACION">{{Duración}}</span></div>
                             <div class="cost-rating component" data-component="COST_RATING">
                                 <span class="summary-label">Coste:</span>
                                 <div class="cost-circles">
@@ -3591,213 +2132,87 @@
                                 </div>
                                 <span class="cost-text">3/5 — Moderado</span>
                             </div>
-
-                            <!-- Presupuesto -->
                             <div class="budget-section">
                                 <div class="budget-title">💰 Presupuesto</div>
-                                <div class="budget-item">
-                                    <span class="budget-label">Por día:</span>
-                                    <span class="budget-value editable" data-limit="500" data-var="PRESUPUESTO_DIA">{{Presupuesto/día}}</span>
-                                </div>
-                                <div class="budget-item">
-                                    <span class="budget-label">Total gastado:</span>
-                                    <span class="budget-value editable" data-limit="500" data-var="TOTAL_GASTADO">{{Total}}</span>
-                                </div>
+                                <div class="budget-item"><span class="budget-label">Por día:</span><span class="budget-value editable" data-limit="500" data-var="PRESUPUESTO_DIA">{{Presupuesto/día}}</span></div>
+                                <div class="budget-item"><span class="budget-label">Total gastado:</span><span class="budget-value editable" data-limit="500" data-var="TOTAL_GASTADO">{{Total}}</span></div>
                             </div>
-
-                            <!-- Información esencial -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">💰</div>
-                                    <span class="editable" data-limit="500" data-var="MONEDA">{{Moneda}}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🏨</div>
-                                    <span class="editable" data-limit="500" data-var="COSTO_HOSPEDAJE">{{Hospedaje}}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🍽️</div>
-                                    <span class="editable" data-limit="500" data-var="COSTO_COMIDA">{{Comida}}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🗣️</div>
-                                    <span class="editable" data-limit="500" data-var="IDIOMA">{{Idioma}}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🍺</div>
-                                    <span class="editable" data-limit="500" data-var="COSTO_BEBIDA">{{Bebida}}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
-                                    <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🛐</div>
-                                    <span class="editable" data-limit="500" data-var="RELIGIONES">{{Religiones}}</span>
-                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;"><div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">💰</div><span class="editable" data-limit="500" data-var="MONEDA">{{Moneda}}</span></div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;"><div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🏨</div><span class="editable" data-limit="500" data-var="COSTO_HOSPEDAJE">{{Hospedaje}}</span></div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;"><div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🍽️</div><span class="editable" data-limit="500" data-var="COSTO_COMIDA">{{Comida}}</span></div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;"><div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🗣️</div><span class="editable" data-limit="500" data-var="IDIOMA">{{Idioma}}</span></div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;"><div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🍺</div><span class="editable" data-limit="500" data-var="COSTO_BEBIDA">{{Bebida}}</span></div>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;"><div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🛐</div><span class="editable" data-limit="500" data-var="RELIGIONES">{{Religiones}}</span></div>
                             </div>
                         </div>
-
-                        <!-- Sección de fotos -->
                         <div class="photo-section flow-item">
                             <div class="section-header">
                                 <div class="section-title">Fotos del Viaje</div>
-                                <div class="section-controls">
-                                    <span class="item-counter" id="photoCounter">0/7 fotos</span>
-                                    <button class="add-btn remove-btn" onclick="removeLastPhoto()" id="removePhotoBtn">−</button>
-                                    <button class="add-btn" onclick="addPhoto()" id="addPhotoBtn">+</button>
-                                </div>
+                                <div class="section-controls"><span class="item-counter" id="photoCounter">0/7 fotos</span><button class="add-btn remove-btn" onclick="removeLastPhoto()">−</button><button class="add-btn" onclick="addPhoto()" id="addPhotoBtn">+</button></div>
                             </div>
-                            
                             <div class="photo-frame hero component" data-component="PHOTO_FRAME" data-frame="IMG_HERO">
                                 <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">2.5:1</div>
-                                <div class="photo-placeholder">
-                                    📸 Imagen Principal<br>
-                                    <small>Click o arrastra (2.5:1)</small>
-                                </div>
-                                <div class="photo-controls">
-                                    <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                    <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                                </div>
+                                <div class="photo-placeholder">📸 Imagen Principal<br><small>Click o arrastra (2.5:1)</small></div>
+                                <div class="photo-controls"><button class="photo-btn" onclick="changePhoto(this)">Cambiar</button><button class="photo-btn" onclick="removePhoto(this)">×</button></div>
                             </div>
-
                             <div class="photo-grid" id="photoGrid">
-                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_1">
-                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
-                                    <div class="photo-placeholder">📷 IMG_1<br><small>Click para subir</small></div>
-                                    <div class="photo-controls">
-                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                                    </div>
-                                </div>
-                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_2">
-                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
-                                    <div class="photo-placeholder">📷 IMG_2<br><small>Click para subir</small></div>
-                                    <div class="photo-controls">
-                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                                    </div>
-                                </div>
-                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_3">
-                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
-                                    <div class="photo-placeholder">📷 IMG_3<br><small>Click para subir</small></div>
-                                    <div class="photo-controls">
-                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                                    </div>
-                                </div>
-                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_4">
-                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
-                                    <div class="photo-placeholder">📷 IMG_4<br><small>Click para subir</small></div>
-                                    <div class="photo-controls">
-                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                                    </div>
-                                </div>
-                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_5">
-                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
-                                    <div class="photo-placeholder">📷 IMG_5<br><small>Click para subir</small></div>
-                                    <div class="photo-controls">
-                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                                    </div>
-                                </div>
-                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_6">
-                                    <div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div>
-                                    <div class="photo-placeholder">📷 IMG_6<br><small>Click para subir</small></div>
-                                    <div class="photo-controls">
-                                        <button class="photo-btn" onclick="changePhoto(this)">Cambiar</button>
-                                        <button class="photo-btn" onclick="removePhoto(this)">×</button>
-                                    </div>
-                                </div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_1"><div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div><div class="photo-placeholder">📷 IMG_1<br><small>Click para subir</small></div><div class="photo-controls"><button class="photo-btn" onclick="changePhoto(this)">Cambiar</button><button class="photo-btn" onclick="removePhoto(this)">×</button></div></div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_2"><div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div><div class="photo-placeholder">📷 IMG_2<br><small>Click para subir</small></div><div class="photo-controls"><button class="photo-btn" onclick="changePhoto(this)">Cambiar</button><button class="photo-btn" onclick="removePhoto(this)">×</button></div></div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_3"><div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div><div class="photo-placeholder">📷 IMG_3<br><small>Click para subir</small></div><div class="photo-controls"><button class="photo-btn" onclick="changePhoto(this)">Cambiar</button><button class="photo-btn" onclick="removePhoto(this)">×</button></div></div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_4"><div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div><div class="photo-placeholder">📷 IMG_4<br><small>Click para subir</small></div><div class="photo-controls"><button class="photo-btn" onclick="changePhoto(this)">Cambiar</button><button class="photo-btn" onclick="removePhoto(this)">×</button></div></div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_5"><div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div><div class="photo-placeholder">📷 IMG_5<br><small>Click para subir</small></div><div class="photo-controls"><button class="photo-btn" onclick="changePhoto(this)">Cambiar</button><button class="photo-btn" onclick="removePhoto(this)">×</button></div></div>
+                                <div class="photo-frame mini component" data-component="PHOTO_FRAME" data-frame="IMG_6"><div class="dimension-badge" style="position: absolute; top: 4px; left: 4px; background: var(--teal-primary); color: white; padding: 1px 3px; border-radius: 2px; font-size: 7px; cursor: pointer;" onclick="togglePhotoRatio(this.parentElement)">1:1</div><div class="photo-placeholder">📷 IMG_6<br><small>Click para subir</small></div><div class="photo-controls"><button class="photo-btn" onclick="changePhoto(this)">Cambiar</button><button class="photo-btn" onclick="removePhoto(this)">×</button></div></div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- COLUMNA DERECHA -->
                     <div class="right-column">
-                        <!-- Mapa -->
                         <div class="map-section flow-item">
                             <div class="section-header">
                                 <div class="section-title">Ruta del Viaje</div>
-                                <div class="section-controls">
-                                    <span class="item-counter" id="cityCounter">0/20 ciudades</span>
-                                    <button class="add-btn remove-btn" onclick="removeLastCity()" id="removeCityBtn">−</button>
-                                    <button class="add-btn" onclick="addCity()" id="addCityBtn">+</button>
-                                </div>
+                                <div class="section-controls"><span class="item-counter" id="cityCounter">0/20 ciudades</span><button class="add-btn remove-btn" onclick="removeLastCity()">−</button><button class="add-btn" onclick="addCity()" id="addCityBtn">+</button></div>
                             </div>
-                            
-                            <!-- Enlace a Google My Maps -->
                             <div class="map-link-container">
                                 <span class="map-link-icon">🗺️</span>
                                 <span class="map-link-label">Ver ruta interactiva:</span>
-                                <a href="#" class="map-link editable-link" id="googleMapsLink" data-var="MAPA_ENLACE" target="_blank" onclick="return handleMapLinkClick(this)">
-                                    <span class="link-text">Click para agregar enlace de Google My Maps</span>
-                                </a>
-                                <button class="edit-link-btn" onclick="editMapLink()" title="Editar enlace">✏️</button>
+                                <a href="#" class="map-link" id="googleMapsLink" target="_blank" onclick="return handleMapLinkClick(this)"><span class="link-text">Click para agregar enlace</span></a>
+                                <button class="edit-link-btn" onclick="editMapLink()">✏️</button>
                             </div>
-
                             <div class="map-controls">
                                 <button class="map-btn" id="uploadMapBtn" onclick="uploadMapImage()">📤 Subir Mapa</button>
                                 <button class="map-btn" onclick="autoPlacePins()">🎯 Auto-ubicar</button>
                                 <button class="map-btn" onclick="resetMapPins()">🔄 Reset Pins</button>
                             </div>
-                            
                             <div class="map-container">
-                                <svg class="map-route" viewBox="0 0 100 100">
-                                    <path d="M 20 30 Q 40 20 60 40 T 80 70" stroke="var(--teal-primary)" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
-                                </svg>
+                                <svg class="map-route" viewBox="0 0 100 100"><path d="M 20 30 Q 40 20 60 40 T 80 70" stroke="var(--teal-primary)" stroke-width="2" fill="none" stroke-dasharray="5,5"/></svg>
                             </div>
-                            
                             <div class="flow-container" id="citiesList"></div>
                         </div>
-
-                        <!-- Itinerario -->
                         <div class="itinerary-section flow-item">
                             <div class="section-header">
                                 <div class="section-title">Itinerario</div>
-                                <div class="section-controls">
-                                    <span class="item-counter" id="dayCounter">0/30 días</span>
-                                    <button class="add-btn remove-btn" onclick="removeLastDay()" id="removeDayBtn">−</button>
-                                    <button class="add-btn" onclick="addItineraryDay()" id="addDayBtn">+</button>
-                                </div>
+                                <div class="section-controls"><span class="item-counter" id="dayCounter">0/30 días</span><button class="add-btn remove-btn" onclick="removeLastDay()">−</button><button class="add-btn" onclick="addItineraryDay()" id="addDayBtn">+</button></div>
                             </div>
                             <div class="flow-container" id="itineraryList"></div>
                         </div>
-
-                        <!-- Top lugares - MOVIDO A SECCIÓN FULL-WIDTH -->
                     </div>
-
-                    <!-- SECCIONES FULL-WIDTH (fuera de las columnas) -->
-                    <!-- Top lugares -->
                     <div class="top-places flow-item full-width-section">
                         <div class="section-header">
                             <div class="section-title">Top Lugares</div>
-                            <div class="section-controls">
-                                <span class="item-counter" id="placeCounter">0/12 lugares</span>
-                                <button class="add-btn remove-btn" onclick="removeLastPlace()" id="removePlaceBtn">−</button>
-                                <button class="add-btn" onclick="addPlace()" id="addPlaceBtn">+</button>
-                            </div>
+                            <div class="section-controls"><span class="item-counter" id="placeCounter">0/12 lugares</span><button class="add-btn remove-btn" onclick="removeLastPlace()">−</button><button class="add-btn" onclick="addPlace()" id="addPlaceBtn">+</button></div>
                         </div>
                         <div class="flow-container places-grid" id="placesList"></div>
                     </div>
-
-                    <!-- Consejos rápidos -->
                     <div class="quick-tips flow-item full-width-section">
                         <div class="section-header">
                             <div class="section-title">Consejos Rápidos</div>
-                            <div class="section-controls">
-                                <span class="item-counter" id="tipCounter">0/12 consejos</span>
-                                <button class="add-btn remove-btn" onclick="removeLastTip()" id="removeTipBtn">−</button>
-                                <button class="add-btn" onclick="addTip()" id="addTipBtn">+</button>
-                            </div>
+                            <div class="section-controls"><span class="item-counter" id="tipCounter">0/12 consejos</span><button class="add-btn remove-btn" onclick="removeLastTip()">−</button><button class="add-btn" onclick="addTip()" id="addTipBtn">+</button></div>
                         </div>
                         <div class="tips-grid" id="tipsList"></div>
                     </div>
                 </div>
-
-                <!-- Footer -->
                 <div class="master-footer">
-                    <div>
-                        <strong>Creado:</strong> <span class="editable" data-limit="500" data-var="FECHA_CREACION">{{Fecha}}</span> | 
-                        <strong>Créditos:</strong> <span class="editable" data-limit="500" data-var="CREDITOS">{{Créditos}}</span>
-                    </div>
+                    <div><strong>Creado:</strong> <span class="editable" data-limit="500" data-var="FECHA_CREACION">{{Fecha}}</span> | <strong>Créditos:</strong> <span class="editable" data-limit="500" data-var="CREDITOS">{{Créditos}}</span></div>
                     <div style="margin-top: 4px;">⚠️ Información aproximada — verificar requisitos oficiales</div>
                 </div>
             </div>
@@ -3805,18 +2220,3 @@
     </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
