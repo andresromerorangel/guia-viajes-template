@@ -590,9 +590,21 @@
                 regenerateMapPins(counters.cities, TEMPLATE_CONFIG);
             }, 300);
         }
+
+        function setupMapPins() {
+            document.querySelectorAll('.map-pin').forEach(pin => {
+                setupMapPinSingle(pin);
+            });
+        }
         
-        function setupMapPinSingle(pin) {
-            let isDragging = false;
+        function setupMapPins() {
+                    document.querySelectorAll('.map-pin').forEach(pin => {
+                        setupMapPinSingle(pin);
+                    });
+                }
+        
+                function setupMapPinSingle(pin) {
+                    let isDragging = false;
             let startX, startY, startLeft, startTop;
 
             pin.addEventListener('mousedown', function(e) {
@@ -3586,6 +3598,7 @@
     </div>
 </body>
 </html>
+
 
 
 
