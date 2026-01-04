@@ -699,6 +699,10 @@
                 if (frameId) {
                     data.images[frameId] = {
                         backgroundImage: frame.style.backgroundImage || '',
+                        backgroundSize: frame.style.backgroundSize || '',
+                        backgroundPosition: frame.style.backgroundPosition || '',
+                        cropPosition: frame.dataset.cropPosition || '',
+                        imageUrl: frame.dataset.imageUrl || '',
                         hasImage: frame.classList.contains('has-image'),
                         isHero: frame.classList.contains('hero'),
                         ratio: frame.classList.contains('hero') ? '2.5:1' : '1:1'
@@ -785,6 +789,20 @@
                         frame.classList.add('has-image');
                         const placeholder = frame.querySelector('.photo-placeholder');
                         if (placeholder) placeholder.style.display = 'none';
+                        
+                        // Restaurar posición de recorte
+                        if (imageData.backgroundSize) {
+                            frame.style.backgroundSize = imageData.backgroundSize;
+                        }
+                        if (imageData.backgroundPosition) {
+                            frame.style.backgroundPosition = imageData.backgroundPosition;
+                        }
+                        if (imageData.cropPosition) {
+                            frame.dataset.cropPosition = imageData.cropPosition;
+                        }
+                        if (imageData.imageUrl) {
+                            frame.dataset.imageUrl = imageData.imageUrl;
+                        }
                     }
                     
                     if (imageData.isHero) {
@@ -1412,33 +1430,247 @@
             });
         }
 
+        // Variables globales para el crop
+        let currentCropFrame = null;
+        let currentCropImageUrl = null;
+        let cropPositions = { hero: { x: 50, y: 50 }, square: { x: 50, y: 50 } };
+        let cropZoom = 100;
+        let isDraggingCrop = false;
+        let dragStartX, dragStartY, dragStartPosX, dragStartPosY;
+        let activeCropPreview = null;
+
         function loadImageToFrame(frame, file, url) {
-            const applyImage = function(imageUrl) {
-                frame.style.backgroundImage = 'url(' + imageUrl + ')';
-                frame.style.backgroundSize = 'cover';
-                frame.style.backgroundPosition = 'center';
-                frame.classList.add('has-image');
-                const placeholder = frame.querySelector('.photo-placeholder');
-                if (placeholder) placeholder.style.display = 'none';
-                showToast('📸 Imagen cargada');
-                setTimeout(function() { expandPageToFit(); }, 100);
+            const processImage = function(imageUrl) {
+                // Si ya tiene posición guardada o es carga desde URL (import), aplicar directamente
+                const savedPos = frame.dataset.cropPosition;
+                if (savedPos || url) {
+                    applyImageDirectly(frame, imageUrl, savedPos);
+                } else {
+                    // Abrir editor de recorte
+                    openCropModal(frame, imageUrl);
+                }
             };
 
             if (url) {
-                applyImage(url);
+                processImage(url);
                 return;
             }
             
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    applyImage(e.target.result);
+                    processImage(e.target.result);
                 };
                 reader.onerror = function() {
                     showToast('❌ Error al cargar imagen', 'error');
                 };
                 reader.readAsDataURL(file);
             }
+        }
+
+        function applyImageDirectly(frame, imageUrl, position) {
+            let posX = 50, posY = 50, zoom = 100;
+            if (position) {
+                try {
+                    const pos = JSON.parse(position);
+                    posX = pos.x || 50;
+                    posY = pos.y || 50;
+                    zoom = pos.zoom || 100;
+                } catch(e) {}
+            }
+            
+            frame.style.backgroundImage = 'url(' + imageUrl + ')';
+            frame.style.backgroundSize = (zoom * 1.2) + '%';
+            frame.style.backgroundPosition = posX + '% ' + posY + '%';
+            frame.classList.add('has-image');
+            frame.dataset.imageUrl = imageUrl;
+            
+            const placeholder = frame.querySelector('.photo-placeholder');
+            if (placeholder) placeholder.style.display = 'none';
+            
+            showToast('📸 Imagen aplicada');
+            setTimeout(function() { expandPageToFit(); }, 100);
+        }
+
+        function openCropModal(frame, imageUrl) {
+            currentCropFrame = frame;
+            currentCropImageUrl = imageUrl;
+            cropZoom = 100;
+            cropPositions = { hero: { x: 50, y: 50 }, square: { x: 50, y: 50 } };
+            
+            const modal = document.getElementById('cropModal');
+            const imgHero = document.getElementById('cropImgHero');
+            const imgSquare = document.getElementById('cropImgSquare');
+            const zoomSlider = document.getElementById('cropZoomSlider');
+            
+            imgHero.src = imageUrl;
+            imgSquare.src = imageUrl;
+            zoomSlider.value = 100;
+            document.getElementById('cropZoomValue').textContent = '100%';
+            
+            // Configurar tamaño inicial
+            imgHero.onload = function() {
+                updateCropImageSize(imgHero, cropZoom);
+                updateCropImageSize(imgSquare, cropZoom);
+                centerCropImages();
+            };
+            
+            modal.classList.add('active');
+            setupCropDragging();
+        }
+
+        function closeCropModal() {
+            document.getElementById('cropModal').classList.remove('active');
+            currentCropFrame = null;
+            currentCropImageUrl = null;
+        }
+
+        function updateCropZoom(value) {
+            cropZoom = parseInt(value);
+            document.getElementById('cropZoomValue').textContent = value + '%';
+            
+            const imgHero = document.getElementById('cropImgHero');
+            const imgSquare = document.getElementById('cropImgSquare');
+            
+            updateCropImageSize(imgHero, cropZoom);
+            updateCropImageSize(imgSquare, cropZoom);
+        }
+
+        function updateCropImageSize(img, zoom) {
+            const container = img.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            const imgRatio = img.naturalWidth / img.naturalHeight;
+            const containerRatio = containerRect.width / containerRect.height;
+            
+            let baseWidth, baseHeight;
+            if (imgRatio > containerRatio) {
+                baseHeight = containerRect.height;
+                baseWidth = baseHeight * imgRatio;
+            } else {
+                baseWidth = containerRect.width;
+                baseHeight = baseWidth / imgRatio;
+            }
+            
+            const scaledWidth = baseWidth * (zoom / 100);
+            const scaledHeight = baseHeight * (zoom / 100);
+            
+            img.style.width = scaledWidth + 'px';
+            img.style.height = scaledHeight + 'px';
+        }
+
+        function centerCropImages() {
+            const imgHero = document.getElementById('cropImgHero');
+            const imgSquare = document.getElementById('cropImgSquare');
+            
+            centerSingleCropImage(imgHero);
+            centerSingleCropImage(imgSquare);
+        }
+
+        function centerSingleCropImage(img) {
+            const container = img.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            
+            const left = (containerRect.width - img.offsetWidth) / 2;
+            const top = (containerRect.height - img.offsetHeight) / 2;
+            
+            img.style.left = left + 'px';
+            img.style.top = top + 'px';
+        }
+
+        function resetCropPosition() {
+            cropZoom = 100;
+            document.getElementById('cropZoomSlider').value = 100;
+            document.getElementById('cropZoomValue').textContent = '100%';
+            updateCropZoom(100);
+            centerCropImages();
+            cropPositions = { hero: { x: 50, y: 50 }, square: { x: 50, y: 50 } };
+        }
+
+        function setupCropDragging() {
+            const previewHero = document.getElementById('cropPreviewHero');
+            const previewSquare = document.getElementById('cropPreviewSquare');
+            const imgHero = document.getElementById('cropImgHero');
+            const imgSquare = document.getElementById('cropImgSquare');
+            
+            setupSingleCropDrag(previewHero, imgHero, 'hero');
+            setupSingleCropDrag(previewSquare, imgSquare, 'square');
+        }
+
+        function setupSingleCropDrag(container, img, type) {
+            container.onmousedown = function(e) {
+                if (e.target !== img) return;
+                e.preventDefault();
+                isDraggingCrop = true;
+                activeCropPreview = type;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                dragStartPosX = parseInt(img.style.left) || 0;
+                dragStartPosY = parseInt(img.style.top) || 0;
+                img.style.cursor = 'grabbing';
+            };
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isDraggingCrop || activeCropPreview !== type) return;
+                
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                
+                let newLeft = dragStartPosX + deltaX;
+                let newTop = dragStartPosY + deltaY;
+                
+                // Limitar para que no salga del contenedor
+                const containerRect = container.getBoundingClientRect();
+                const maxLeft = 0;
+                const minLeft = containerRect.width - img.offsetWidth;
+                const maxTop = 0;
+                const minTop = containerRect.height - img.offsetHeight;
+                
+                newLeft = Math.min(maxLeft, Math.max(minLeft, newLeft));
+                newTop = Math.min(maxTop, Math.max(minTop, newTop));
+                
+                img.style.left = newLeft + 'px';
+                img.style.top = newTop + 'px';
+                
+                // Calcular posición en porcentaje
+                const rangeX = Math.abs(minLeft);
+                const rangeY = Math.abs(minTop);
+                cropPositions[type].x = rangeX > 0 ? Math.round(((maxLeft - newLeft) / rangeX) * 100) : 50;
+                cropPositions[type].y = rangeY > 0 ? Math.round(((maxTop - newTop) / rangeY) * 100) : 50;
+            });
+            
+            document.addEventListener('mouseup', function() {
+                if (isDraggingCrop && activeCropPreview === type) {
+                    isDraggingCrop = false;
+                    img.style.cursor = 'move';
+                    activeCropPreview = null;
+                }
+            });
+        }
+
+        function applyCrop() {
+            if (!currentCropFrame || !currentCropImageUrl) return;
+            
+            // Determinar qué tipo de frame es
+            const isHero = currentCropFrame.classList.contains('hero');
+            const position = isHero ? cropPositions.hero : cropPositions.square;
+            
+            // Guardar posición en el frame
+            const posData = JSON.stringify({ x: position.x, y: position.y, zoom: cropZoom });
+            currentCropFrame.dataset.cropPosition = posData;
+            
+            // Aplicar imagen
+            currentCropFrame.style.backgroundImage = 'url(' + currentCropImageUrl + ')';
+            currentCropFrame.style.backgroundSize = (cropZoom * 1.2) + '%';
+            currentCropFrame.style.backgroundPosition = position.x + '% ' + position.y + '%';
+            currentCropFrame.classList.add('has-image');
+            currentCropFrame.dataset.imageUrl = currentCropImageUrl;
+            
+            const placeholder = currentCropFrame.querySelector('.photo-placeholder');
+            if (placeholder) placeholder.style.display = 'none';
+            
+            showToast('✂️ Recorte aplicado correctamente');
+            closeCropModal();
+            setTimeout(function() { expandPageToFit(); }, 100);
         }
 
         function changePhoto(button) {
@@ -1448,6 +1680,9 @@
             input.accept = 'image/*';
             input.onchange = function(e) {
                 if (e.target.files[0]) {
+                    // Limpiar posición de recorte anterior para que se abra el modal
+                    delete frame.dataset.cropPosition;
+                    delete frame.dataset.imageUrl;
                     loadImageToFrame(frame, e.target.files[0]);
                 }
             };
@@ -1457,6 +1692,10 @@
         function removePhoto(button) {
             const frame = button.closest('.photo-frame');
             frame.style.backgroundImage = '';
+            frame.style.backgroundSize = '';
+            frame.style.backgroundPosition = '';
+            delete frame.dataset.cropPosition;
+            delete frame.dataset.imageUrl;
             frame.classList.remove('has-image');
             const placeholder = frame.querySelector('.photo-placeholder');
             if (placeholder) placeholder.style.display = 'block';
@@ -1833,6 +2072,14 @@
             }, 1000);
         }
 
+        function toggleControlPanel() {
+            const panel = document.getElementById('controlPanel');
+            const toggle = panel.querySelector('.panel-toggle');
+            panel.classList.toggle('collapsed');
+            toggle.textContent = panel.classList.contains('collapsed') ? '⚙️' : '✕';
+            toggle.title = panel.classList.contains('collapsed') ? 'Expandir Panel' : 'Colapsar Panel';
+        }
+
         function togglePreview() {
             const isPreview = document.body.classList.toggle('preview-mode');
             
@@ -2045,7 +2292,12 @@
         .editable { background: rgba(255, 107, 97, 0.1); padding: 2px 4px; border-radius: 3px; border: 1px dashed var(--coral); cursor: text; position: relative; min-height: 1.2em; word-wrap: break-word; }
         .editable:hover { background: rgba(255, 107, 97, 0.2); }
         .editable:focus { background: rgba(255, 107, 97, 0.3); outline: none; }
-        .control-panel { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; background: var(--white); padding: 12px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .control-panel { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; background: var(--white); padding: 12px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); transition: all 0.3s ease; max-height: 90vh; overflow-y: auto; }
+        .control-panel.collapsed { padding: 0; background: transparent; box-shadow: none; gap: 0; }
+        .control-panel.collapsed > *:not(.panel-toggle) { display: none !important; }
+        .panel-toggle { background: var(--teal-primary); color: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .panel-toggle:hover { transform: scale(1.1); background: var(--teal-light); }
+        .control-panel.collapsed .panel-toggle { background: var(--coral); }
         .control-btn-main { padding: 8px 12px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500; transition: all 0.2s; position: relative; }
         .control-btn-main:hover { transform: translateY(-1px); }
         .upload-images-btn { background: #2196F3; color: var(--white); }
@@ -2079,12 +2331,36 @@
             .edit-link-btn { display: none !important; }
             .map-link:not(.has-link), .map-link-container:has(.map-link:not(.has-link)) { display: none !important; }
         }
+        .crop-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .crop-modal.active { display: flex; }
+        .crop-container { background: white; border-radius: 12px; padding: 20px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .crop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .crop-header h3 { margin: 0; color: var(--teal-primary); font-family: 'Montserrat', sans-serif; }
+        .crop-close { background: var(--coral); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; cursor: pointer; }
+        .crop-previews { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .crop-preview-box { background: #f5f5f5; border-radius: 8px; padding: 12px; }
+        .crop-preview-box h4 { margin: 0 0 8px 0; font-size: 12px; color: #666; text-align: center; }
+        .crop-preview-frame { position: relative; overflow: hidden; border: 2px solid var(--teal-primary); border-radius: 6px; cursor: move; }
+        .crop-preview-frame.ratio-hero { aspect-ratio: 2.5/1; }
+        .crop-preview-frame.ratio-square { aspect-ratio: 1/1; }
+        .crop-preview-frame img { position: absolute; cursor: move; user-select: none; -webkit-user-drag: none; }
+        .crop-controls { display: flex; gap: 12px; align-items: center; justify-content: center; margin-bottom: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px; flex-wrap: wrap; }
+        .crop-zoom-slider { width: 150px; }
+        .crop-zoom-label { font-size: 11px; color: #666; }
+        .crop-actions { display: flex; gap: 12px; justify-content: center; }
+        .crop-btn { padding: 10px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .crop-btn.confirm { background: var(--teal-primary); color: white; }
+        .crop-btn.confirm:hover { background: var(--teal-light); }
+        .crop-btn.cancel { background: #e0e0e0; color: #333; }
+        .crop-btn.cancel:hover { background: #ccc; }
+        .crop-info { text-align: center; font-size: 11px; color: #888; margin-top: 12px; }
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="control-panel">
+    <div class="control-panel" id="controlPanel">
+        <button class="panel-toggle" onclick="toggleControlPanel()" title="Mostrar/Ocultar Panel">⚙️</button>
         <button class="control-btn-main upload-images-btn" onclick="uploadMultipleImages()">📷 Subir Imágenes</button>
         <button class="control-btn-main help-btn" onclick="toggleHelp()">❓ Ayuda</button>
         <button class="control-btn-main save-btn" onclick="autosaveJSON()">💾 Guardar Sesión</button>
@@ -2218,5 +2494,43 @@
             </div>
         </div>
     </div>
+<!-- Modal de Recorte de Imagen -->
+    <div class="crop-modal" id="cropModal">
+        <div class="crop-container">
+            <div class="crop-header">
+                <h3>✂️ Ajustar Imagen</h3>
+                <button class="crop-close" onclick="closeCropModal()">×</button>
+            </div>
+            <p style="font-size: 12px; color: #666; margin-bottom: 16px; text-align: center;">
+                Arrastra la imagen en cada cuadro para ajustar qué parte se mostrará. Usa el zoom para acercar/alejar.
+            </p>
+            <div class="crop-previews">
+                <div class="crop-preview-box">
+                    <h4>📐 Vista Hero (2.5:1)</h4>
+                    <div class="crop-preview-frame ratio-hero" id="cropPreviewHero">
+                        <img id="cropImgHero" src="" alt="Preview Hero">
+                    </div>
+                </div>
+                <div class="crop-preview-box">
+                    <h4>📷 Vista Cuadrada (1:1)</h4>
+                    <div class="crop-preview-frame ratio-square" id="cropPreviewSquare">
+                        <img id="cropImgSquare" src="" alt="Preview Square">
+                    </div>
+                </div>
+            </div>
+            <div class="crop-controls">
+                <span class="crop-zoom-label">🔍 Zoom:</span>
+                <input type="range" class="crop-zoom-slider" id="cropZoomSlider" min="100" max="300" value="100" oninput="updateCropZoom(this.value)">
+                <span id="cropZoomValue" style="font-size: 11px; color: #666; min-width: 40px;">100%</span>
+                <button class="crop-btn cancel" onclick="resetCropPosition()" style="padding: 6px 12px; font-size: 11px;">↺ Reset</button>
+            </div>
+            <div class="crop-actions">
+                <button class="crop-btn cancel" onclick="closeCropModal()">Cancelar</button>
+                <button class="crop-btn confirm" onclick="applyCrop()">✓ Aplicar</button>
+            </div>
+            <p class="crop-info">💡 La posición que elijas se aplicará a la imagen en el formato correspondiente</p>
+        </div>
+    </div>
+
 </body>
 </html>
