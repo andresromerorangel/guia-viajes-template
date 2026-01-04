@@ -33,6 +33,7 @@
             // === CONFIGURACIÓN DE MAPA ===
             mapa_tipo: "upload",
             mapa_url: "",
+            mapa_enlace_google: "", // Enlace a Google My Maps (ej: "https://www.google.com/maps/d/...")
             
             // === CIUDADES (Si eliminas ciudad4, desaparecerá automáticamente) ===
             ciudad1: "Tokio — Capital moderna y tradicional",
@@ -170,6 +171,9 @@
             
             // Inicializar mapa
             initializeMap(config);
+
+            // Cargar enlace de Google Maps
+            updateMapLink(config);
             
             // Actualizar contadores
             counters.cities = counts.ciudades;
@@ -458,6 +462,63 @@
                     break;
             }
         }
+
+        // ===== FUNCIONES DE ENLACE GOOGLE MAPS =====
+        function updateMapLink(config) {
+            const linkElement = document.getElementById('googleMapsLink');
+            const linkText = linkElement.querySelector('.link-text');
+    
+            if (config.mapa_enlace_google && config.mapa_enlace_google.trim() !== '') {
+                linkElement.href = config.mapa_enlace_google;
+                linkElement.classList.add('has-link');
+        
+                // Mostrar URL acortada o texto personalizado
+                const url = config.mapa_enlace_google;
+                if (url.includes('google.com/maps')) {
+                    linkText.textContent = '📍 Abrir en Google My Maps';
+                } else {
+                    linkText.textContent = url.length > 40 ? url.substring(0, 40) + '...' : url;
+                }
+            } else {
+                linkElement.href = '#';
+                linkElement.classList.remove('has-link');
+                linkText.textContent = 'Click para agregar enlace de Google My Maps';
+            }
+        }
+
+        function editMapLink() {
+            const currentLink = TEMPLATE_CONFIG.mapa_enlace_google || '';
+            const newLink = prompt(
+                '🗺️ Ingresa el enlace de Google My Maps:\n\n' +
+                'Puedes obtenerlo desde Google My Maps:\n' +
+                '1. Abre tu mapa en Google My Maps\n' +
+                '2. Click en "Compartir"\n' +
+                '3. Copia el enlace\n\n' +
+                'Enlace actual:',
+                currentLink
+            );
+    
+            if (newLink !== null) {
+                TEMPLATE_CONFIG.mapa_enlace_google = newLink.trim();
+                updateMapLink(TEMPLATE_CONFIG);
+        
+                if (newLink.trim() !== '') {
+                    showToast('🗺️ Enlace de mapa actualizado');
+                } else {
+                    showToast('🗑️ Enlace de mapa eliminado');
+                }
+            }
+        }
+
+        function handleMapLinkClick(element) {
+            // Si no tiene enlace, abrir editor
+            if (!element.classList.contains('has-link')) {
+                editMapLink();
+                return false; // Prevenir navegación
+            }
+            // Si tiene enlace, permitir navegación normal
+            return true;
+        }
         
         function setupMapUpload() {
             const uploadBtn = document.getElementById('uploadMapBtn');
@@ -735,7 +796,8 @@
                 components: {},
                 mapData: {
                     type: TEMPLATE_CONFIG.mapa_tipo,
-                    url: TEMPLATE_CONFIG.mapa_url
+                    url: TEMPLATE_CONFIG.mapa_url,
+                    enlace_google: TEMPLATE_CONFIG.mapa_enlace_google
                 },
                 // NUEVO: Guardar colores personalizados
                 colors: {
@@ -909,8 +971,40 @@
                 TEMPLATE_CONFIG.coste_nivel = data.components.costRating;
             }
             
+            // Restaurar enlace de Google Maps
+            if (data.mapData?.enlace_google) {
+                TEMPLATE_CONFIG.mapa_enlace_google = data.mapData.enlace_google;
+                updateMapLink(TEMPLATE_CONFIG);
+            }
+
             // Restaurar mapa
             if (data.mapData?.url) {
+            ```
+
+            ---
+
+            ## 📝 RESUMEN
+
+            | Paso | Acción | Ubicación |
+            |------|--------|-----------|
+            | 1 | Variable en config | `TEMPLATE_CONFIG` |
+            | 2 | HTML del enlace | Antes de `.map-controls` |
+            | 3 | CSS del enlace | Después de `.map-btn:hover` |
+            | 4 | Funciones JS | Antes de `setupMapUpload()` |
+            | 5 | Inicialización | En `initializeFromConfig()` |
+            | 6 | Estilos de impresión | En `@media print` |
+            | 7 | Serialización | En `serializeTemplate()` |
+            | 8 | Restauración | En `restoreTemplate()` |
+
+            ---
+
+            ## 🎨 Vista previa del resultado
+
+            El enlace aparecerá así en la plantilla:
+            ```
+            ┌─────────────────────────────────────────────────────┐
+            │ 🗺️ Ver ruta interactiva: [📍 Abrir en Google My Maps] ✏️ │
+            └─────────────────────────────────────────────────────┘
                 const mapContainer = document.querySelector('.map-container');
                 const img = document.createElement('img');
                 img.src = data.mapData.url;
@@ -2793,6 +2887,85 @@
             transform: translateY(-1px);
         }
 
+        /* Enlace de Google My Maps */
+        .map-link-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(15, 122, 120, 0.2);
+        }
+
+        .map-link-icon {
+            font-size: 16px;
+        }
+
+        .map-link-label {
+            font-size: 10px;
+            color: var(--text-dark);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .map-link {
+            flex: 1;
+            font-size: 10px;
+            color: var(--teal-primary);
+            text-decoration: none;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 4px;
+            border: 1px dashed rgba(15, 122, 120, 0.3);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .map-link:hover {
+            background: rgba(255,255,255,0.9);
+            border-color: var(--teal-primary);
+        }
+
+        .map-link.has-link {
+            border-style: solid;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        .map-link.has-link:hover {
+            text-decoration: underline;
+            background: #e8f0fe;
+        }
+
+        .map-link .link-text {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .edit-link-btn {
+            background: var(--teal-light);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .edit-link-btn:hover {
+            background: var(--teal-primary);
+            transform: scale(1.1);
+        }
         .map-container {
             width: 100%;
             height: 140px;  /* Altura inicial */
@@ -3208,6 +3381,30 @@
                 display: none !important;
             }
 
+            /* Enlace de Google Maps en PDF */
+            .map-link-container {
+                background: #f0f7f0 !important;
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            .edit-link-btn {
+                display: none !important;
+            }
+
+            .map-link {
+                border: none !important;
+                background: transparent !important;
+                color: #1a73e8 !important;
+            }
+
+            .map-link:not(.has-link) {
+                display: none !important;
+            }
+
+            .map-link-container:has(.map-link:not(.has-link)) {
+                display: none !important;
+            }
+
             /* Ocultar badges de dimensiones de fotos */
             .dimension-badge {
                 display: none !important;
@@ -3526,6 +3723,16 @@
                                 </div>
                             </div>
                             
+                            <!-- Enlace a Google My Maps -->
+                            <div class="map-link-container">
+                                <span class="map-link-icon">🗺️</span>
+                                <span class="map-link-label">Ver ruta interactiva:</span>
+                                <a href="#" class="map-link editable-link" id="googleMapsLink" data-var="MAPA_ENLACE" target="_blank" onclick="return handleMapLinkClick(this)">
+                                    <span class="link-text">Click para agregar enlace de Google My Maps</span>
+                                </a>
+                                <button class="edit-link-btn" onclick="editMapLink()" title="Editar enlace">✏️</button>
+                            </div>
+
                             <div class="map-controls">
                                 <button class="map-btn" id="uploadMapBtn" onclick="uploadMapImage()">📤 Subir Mapa</button>
                                 <button class="map-btn" onclick="autoPlacePins()">🎯 Auto-ubicar</button>
@@ -3598,6 +3805,7 @@
     </div>
 </body>
 </html>
+
 
 
 
