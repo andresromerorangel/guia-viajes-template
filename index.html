@@ -100,10 +100,10 @@
             logo: "",
 
             // === COLORES PERSONALIZABLES ===
-            color_fondo: "#F6EFE6",        // Fondo general (arena/beige)
-            color_primario: "#0F7A78",     // Color principal (teal oscuro)
-            color_secundario: "#5FB4B2",   // Color secundario (teal claro)
-            color_acento: "#FF6B61",       // Color de acento (coral)
+            color_fondo: "#000000",        // Fondo general (negro)
+            color_primario: "#337653",     // Color principal (verde oscuro)
+            color_secundario: "#1DAA2D",   // Color secundario (verde brillante)
+            color_acento: "#EE3344",       // Color de acento (rojo)
             color_texto: "#2F3A3A",        // Texto oscuro
             color_fondo_logo: "#FFFFFF",   // Fondo del logo (blanco por defecto)
         };
@@ -282,7 +282,7 @@
             
             div.innerHTML = `
                 <div style="width: 16px; height: 16px; background: var(--teal-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600;">${number}</div>
-                <span class="editable" data-limit="25" data-var="CIUDAD_${number}">${text}</span>
+                <span class="editable" data-limit="500" data-var="CIUDAD_${number}">${text}</span>
                 <div class="component-controls">
                     <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
                     <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
@@ -316,9 +316,9 @@
             
             div.innerHTML = `
                 <div class="day-title">
-                    🕐 <span class="editable" data-limit="20" data-var="DIA_${number}">${dayText}</span>
+                    🕐 <span class="editable" data-limit="500" data-var="DIA_${number}">${dayText}</span>
                 </div>
-                <div class="day-activity editable" data-limit="120" data-var="ACTIVIDAD_${number}">${activityText}</div>
+                <div class="day-activity editable" data-limit="500" data-var="ACTIVIDAD_${number}">${activityText}</div>
                 <div class="component-controls">
                     <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
                     <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
@@ -361,10 +361,10 @@
             div.innerHTML = `
                 <span class="place-badge ${tipo}" onclick="cyclePlaceBadge(this)" style="background: ${badgeColor}">${badgeContent}</span>
                 <div class="place-text">
-                    <div class="place-name editable" data-limit="20" data-var="LUGAR_${number}">${lugar}</div>
+                    <div class="place-name editable" data-limit="500" data-var="LUGAR_${number}">${lugar}</div>
                     <div style="font-size: 9px; color: var(--text-light);">
-                        <span class="editable" data-limit="15" data-var="CIUDAD_LUGAR_${number}">${ciudad}</span> — 
-                        <span class="editable" data-limit="30" data-var="DESC_LUGAR_${number}">${desc}</span>
+                        <span class="editable" data-limit="500" data-var="CIUDAD_LUGAR_${number}">${ciudad}</span> — 
+                        <span class="editable" data-limit="500" data-var="DESC_LUGAR_${number}">${desc}</span>
                     </div>
                 </div>
                 <div class="component-controls">
@@ -401,7 +401,7 @@
             
             div.innerHTML = `
                 <div class="tip-icon">${icon}</div>
-                <span class="editable" data-limit="80" data-var="TIP_${number}">${text}</span>
+                <span class="editable" data-limit="500" data-var="TIP_${number}">${text}</span>
                 <div class="component-controls">
                     <button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button>
                     <button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button>
@@ -667,18 +667,9 @@
         }
 
         function enforceLimit(element, limit) {
-            let text = element.textContent.trim();
-            
-            if (text.length > limit) {
-                element.textContent = text.substring(0, limit);
-                // Mover cursor al final
-                const range = document.createRange();
-                const sel = window.getSelection();
-                range.selectNodeContents(element);
-                range.collapse(false);
-                sel.removeAllRanges();
-                sel.addRange(range);
-            }
+            // Ya no truncamos, solo permitimos que el texto fluya libremente
+            // El contenedor se expandirá automáticamente
+            return;
         }
         
         // ===== FUNCIONES DE GUARDADO =====
@@ -1476,63 +1467,86 @@
         }
 
         function setupPhotoDragDropSingle(frame) {
+            // Remover listeners previos clonando
+            const newFrame = frame.cloneNode(true);
+            frame.parentNode.replaceChild(newFrame, frame);
+            frame = newFrame;
+    
             frame.addEventListener('dragover', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 this.style.borderColor = 'var(--teal-primary)';
+                this.style.background = '#f0f9f9';
             });
 
             frame.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 this.style.borderColor = '#ccc';
+                this.style.background = '#f8f9fa';
             });
 
             frame.addEventListener('drop', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 this.style.borderColor = '#ccc';
+                this.style.background = '#f8f9fa';
                 const files = e.dataTransfer.files;
                 if (files.length > 0 && files[0].type.startsWith('image/')) {
                     loadImageToFrame(this, files[0]);
                 }
             });
 
-            frame.addEventListener('click', function() {
-                if (!this.classList.contains('has-image')) {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.onchange = (e) => {
-                        if (e.target.files[0]) {
-                            loadImageToFrame(this, e.target.files[0]);
-                        }
-                    };
-                    input.click();
+            // Click para subir imagen - solo en el área del placeholder
+            frame.addEventListener('click', function(e) {
+                // No abrir selector si se hizo clic en un botón de control
+                if (e.target.classList.contains('photo-btn') || 
+                    e.target.classList.contains('control-btn') ||
+                    e.target.classList.contains('dimension-badge')) {
+                    return;
                 }
+        
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (ev) => {
+                    if (ev.target.files[0]) {
+                        loadImageToFrame(this, ev.target.files[0]);
+                    }
+                };
+                input.click();
             });
         }
 
         function loadImageToFrame(frame, file, url = null) {
-            if (url) {
-                frame.style.backgroundImage = `url(${url})`;
+            const applyImage = (imageUrl) => {
+                frame.style.backgroundImage = `url(${imageUrl})`;
                 frame.style.backgroundSize = 'cover';
                 frame.style.backgroundPosition = 'center';
                 frame.classList.add('has-image');
+        
                 const placeholder = frame.querySelector('.photo-placeholder');
                 if (placeholder) placeholder.style.display = 'none';
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                frame.style.backgroundImage = `url(${e.target.result})`;
-                frame.style.backgroundSize = 'cover';
-                frame.style.backgroundPosition = 'center';
-                frame.classList.add('has-image');
-                
-                const placeholder = frame.querySelector('.photo-placeholder');
-                if (placeholder) placeholder.style.display = 'none';
-                
+        
+                showToast('📸 Imagen cargada');
                 setTimeout(() => expandPageToFit(), 100);
             };
-            reader.readAsDataURL(file);
+    
+            if (url) {
+                applyImage(url);
+                return;
+            }
+        
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    applyImage(e.target.result);
+                };
+                reader.onerror = function() {
+                    showToast('❌ Error al cargar imagen', 'error');
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         function changePhoto(button) {
@@ -1633,23 +1647,23 @@
 
         // ===== FUNCIONES DE UTILIDAD =====
         function setupCostRating() {
-            const circles = document.querySelectorAll('.cost-circle');
+            const costCircles = document.querySelectorAll('.cost-circle');
             
-            circles.forEach((circle, index) => {
-                // Remover listeners anteriores clonando el elemento
-                const newCircle = circle.cloneNode(true);
-                circle.parentNode.replaceChild(newCircle, circle);
+            costCircles.forEach((circle) => {
+                // Usar el valor del data-value para determinar el índice
+                const value = parseInt(circle.getAttribute('data-value'));
                 
-                newCircle.addEventListener('click', function(e) {
+                circle.addEventListener('click', function(e) {
                     e.stopPropagation();
+                    e.preventDefault();
                     saveState();
                     
-                    const allCircles = this.parentElement.querySelectorAll('.cost-circle');
-                    const value = index + 1;
-                    
+                    const allCircles = document.querySelectorAll('.cost-circle');
+            
                     // Actualizar visualización
-                    allCircles.forEach((c, i) => {
-                        if (i < value) {
+                    allCircles.forEach((c) => {
+                        const circleValue = parseInt(c.getAttribute('data-value'));
+                        if (circleValue <= value) {
                             c.classList.remove('empty');
                         } else {
                             c.classList.add('empty');
@@ -1662,10 +1676,10 @@
                     if (costText) {
                         costText.textContent = `${value}/5 — ${labels[value-1]}`;
                     }
-                    
+            
                     // Actualizar TEMPLATE_CONFIG
                     TEMPLATE_CONFIG.coste_nivel = value;
-                    
+            
                     // Feedback visual
                     showToast(`💰 Nivel de coste: ${value}/5 - ${labels[value-1]}`);
                 });
@@ -2193,10 +2207,10 @@
         }
 
         :root {
-            --teal-primary: #0F7A78;
-            --teal-light: #5FB4B2;
-            --sand: #F6EFE6;
-            --coral: #FF6B61;
+            --teal-primary: #337653;
+            --teal-light: #1DAA2D;
+            --sand: #000000;
+            --coral: #EE3344;
             --white: #ffffff;
             --text-dark: #2F3A3A;
             --text-light: #666;
@@ -3285,29 +3299,29 @@
                 <div class="color-input-group">
                     <label style="font-size: 9px; color: #888;">Primario</label>
                     <div style="display: flex; gap: 4px; align-items: center;">
-                        <input type="color" id="colorPrimario" value="#0F7A78" onchange="updateColor('--teal-primary', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
-                        <span id="colorPrimarioCode" style="font-size: 8px; color: #666;">#0F7A78</span>
+                        <input type="color" id="colorPrimario" value="#337653" onchange="updateColor('--teal-primary', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
+                        <span id="colorPrimarioCode" style="font-size: 8px; color: #666;">#337653</span>
                     </div>
                 </div>
                 <div class="color-input-group">
                     <label style="font-size: 9px; color: #888;">Secundario</label>
                     <div style="display: flex; gap: 4px; align-items: center;">
-                        <input type="color" id="colorSecundario" value="#5FB4B2" onchange="updateColor('--teal-light', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
-                        <span id="colorSecundarioCode" style="font-size: 8px; color: #666;">#5FB4B2</span>
+                        <input type="color" id="colorSecundario" value="#1DAA2D" onchange="updateColor('--teal-light', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
+                        <span id="colorSecundarioCode" style="font-size: 8px; color: #666;">#1DAA2D</span>
                     </div>
                 </div>
                 <div class="color-input-group">
                     <label style="font-size: 9px; color: #888;">Acento</label>
                     <div style="display: flex; gap: 4px; align-items: center;">
-                        <input type="color" id="colorAcento" value="#FF6B61" onchange="updateColor('--coral', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
-                        <span id="colorAcentoCode" style="font-size: 8px; color: #666;">#FF6B61</span>
+                        <input type="color" id="colorAcento" value="#EE3344" onchange="updateColor('--coral', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
+                        <span id="colorAcentoCode" style="font-size: 8px; color: #666;">#EE3344</span>
                     </div>
                 </div>
                 <div class="color-input-group">
                     <label style="font-size: 9px; color: #888;">Fondo</label>
                     <div style="display: flex; gap: 4px; align-items: center;">
-                        <input type="color" id="colorFondo" value="#F6EFE6" onchange="updateColor('--sand', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
-                        <span id="colorFondoCode" style="font-size: 8px; color: #666;">#F6EFE6</span>
+                        <input type="color" id="colorFondo" value="#000000" onchange="updateColor('--sand', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;">
+                        <span id="colorFondoCode" style="font-size: 8px; color: #666;">#000000</span>
                     </div>
                 </div>
             </div>
@@ -3335,7 +3349,7 @@
                         <img src="" alt="Bandera" style="display: none;" />
                         <div class="flag-placeholder">🏳️<br><small>Click</small></div>
                     </div>
-                    <div class="country-title editable" data-limit="30" data-var="PAIS">{{PAÍS}}</div>
+                    <div class="country-title editable" data-limit="500" data-var="PAIS">{{PAÍS}}</div>
                     <div class="page-indicator">Página 1 de 1</div>
                 </div>
 
@@ -3345,15 +3359,15 @@
                     <div class="left-column">
                         <!-- Tarjeta resumen -->
                         <div class="summary-card component flow-item">
-                            <div class="summary-title editable" data-limit="25" data-var="NOMBRE_PAIS">{{NOMBRE DEL PAÍS}}</div>
+                            <div class="summary-title editable" data-limit="500" data-var="NOMBRE_PAIS">{{NOMBRE DEL PAÍS}}</div>
                             
                             <div class="summary-item">
                                 <span class="summary-label">Fechas:</span> 
-                                <span class="editable" data-limit="20" data-var="FECHAS">{{Fechas}}</span>
+                                <span class="editable" data-limit="500" data-var="FECHAS">{{Fechas}}</span>
                             </div>
                             <div class="summary-item">
                                 <span class="summary-label">Duración:</span> 
-                                <span class="editable" data-limit="15" data-var="DURACION">{{Duración}}</span>
+                                <span class="editable" data-limit="500" data-var="DURACION">{{Duración}}</span>
                             </div>
                             
                             <!-- Nivel de coste -->
@@ -3374,11 +3388,11 @@
                                 <div class="budget-title">💰 Presupuesto</div>
                                 <div class="budget-item">
                                     <span class="budget-label">Por día:</span>
-                                    <span class="budget-value editable" data-limit="25" data-var="PRESUPUESTO_DIA">{{Presupuesto/día}}</span>
+                                    <span class="budget-value editable" data-limit="500" data-var="PRESUPUESTO_DIA">{{Presupuesto/día}}</span>
                                 </div>
                                 <div class="budget-item">
                                     <span class="budget-label">Total gastado:</span>
-                                    <span class="budget-value editable" data-limit="25" data-var="TOTAL_GASTADO">{{Total}}</span>
+                                    <span class="budget-value editable" data-limit="500" data-var="TOTAL_GASTADO">{{Total}}</span>
                                 </div>
                             </div>
 
@@ -3386,27 +3400,27 @@
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">💰</div>
-                                    <span class="editable" data-limit="15" data-var="MONEDA">{{Moneda}}</span>
+                                    <span class="editable" data-limit="500" data-var="MONEDA">{{Moneda}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🏨</div>
-                                    <span class="editable" data-limit="20" data-var="COSTO_HOSPEDAJE">{{Hospedaje}}</span>
+                                    <span class="editable" data-limit="500" data-var="COSTO_HOSPEDAJE">{{Hospedaje}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🍽️</div>
-                                    <span class="editable" data-limit="20" data-var="COSTO_COMIDA">{{Comida}}</span>
+                                    <span class="editable" data-limit="500" data-var="COSTO_COMIDA">{{Comida}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🗣️</div>
-                                    <span class="editable" data-limit="20" data-var="IDIOMA">{{Idioma}}</span>
+                                    <span class="editable" data-limit="500" data-var="IDIOMA">{{Idioma}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🍺</div>
-                                    <span class="editable" data-limit="15" data-var="COSTO_BEBIDA">{{Bebida}}</span>
+                                    <span class="editable" data-limit="500" data-var="COSTO_BEBIDA">{{Bebida}}</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 6px; font-size: 10px;">
                                     <div style="width: 16px; height: 16px; background: var(--teal-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 8px;">🛐</div>
-                                    <span class="editable" data-limit="30" data-var="RELIGIONES">{{Religiones}}</span>
+                                    <span class="editable" data-limit="500" data-var="RELIGIONES">{{Religiones}}</span>
                                 </div>
                             </div>
                         </div>
@@ -3562,8 +3576,8 @@
                 <!-- Footer -->
                 <div class="master-footer">
                     <div>
-                        <strong>Creado:</strong> <span class="editable" data-limit="15" data-var="FECHA_CREACION">{{Fecha}}</span> | 
-                        <strong>Créditos:</strong> <span class="editable" data-limit="50" data-var="CREDITOS">{{Créditos}}</span>
+                        <strong>Creado:</strong> <span class="editable" data-limit="500" data-var="FECHA_CREACION">{{Fecha}}</span> | 
+                        <strong>Créditos:</strong> <span class="editable" data-limit="500" data-var="CREDITOS">{{Créditos}}</span>
                     </div>
                     <div style="margin-top: 4px;">⚠️ Información aproximada — verificar requisitos oficiales</div>
                 </div>
@@ -3572,6 +3586,7 @@
     </div>
 </body>
 </html>
+
 
 
 
