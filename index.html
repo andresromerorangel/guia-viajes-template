@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plantilla Guía de Viaje V5.1 - CORREGIDO</title>
+    <title>Plantilla Guía de Viaje V5.3 - Pins y Emojis Corregidos</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <!-- ===== CONFIGURACIÓN DE VARIABLES ===== -->
@@ -337,8 +337,9 @@
             const div = document.createElement('div');
             div.className = 'tip-item component flow-item';
             div.setAttribute('data-component', 'TIP_ITEM');
+            div.setAttribute('data-tip-number', number);
             
-            div.innerHTML = '<div class="tip-icon">' + icon + '</div><span class="editable" data-limit="500" data-var="TIP_' + number + '">' + text + '</span><div class="component-controls"><button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button><button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button></div>';
+            div.innerHTML = '<div class="tip-icon" onclick="openEmojiSelector(this)" title="Click para cambiar emoji" data-emoji="' + icon + '">' + icon + '</div><span class="editable" data-limit="500" data-var="TIP_' + number + '">' + text + '</span><div class="component-controls"><button class="control-btn duplicate-btn" onclick="duplicateComponent(this)">⧉</button><button class="control-btn delete-btn" onclick="deleteComponent(this)">×</button></div>';
             
             return div;
         }
@@ -739,7 +740,76 @@
                 return { index: index + 1, category: categoryClass };
             });
             
+            // V5.3: Guardar emojis de consejos
+            const tipIcons = document.querySelectorAll('.tip-icon');
+            data.components.tipEmojis = Array.from(tipIcons).map(function(icon) {
+                return icon.getAttribute('data-emoji') || icon.textContent.trim();
+            });
+            
             return data;
+        }
+
+        // 🗺️ V5.3: FUNCIÓN CENTRALIZADA PARA RESTAURAR MAPA Y PINS
+        function restoreMapWithPins(data) {
+            const mapContainer = document.querySelector('.map-container');
+            
+            // Función para crear todos los pins
+            function createAllPins() {
+                // Limpiar pins existentes
+                mapContainer.querySelectorAll('.map-pin').forEach(function(pin) { pin.remove(); });
+                
+                // Si hay pins guardados, usarlos
+                if (data.components && data.components.mapPins && data.components.mapPins.length > 0) {
+                    data.components.mapPins.forEach(function(pinData) {
+                        const pin = document.createElement('div');
+                        pin.className = 'map-pin component';
+                        pin.setAttribute('data-component', 'MAP_PIN');
+                        pin.setAttribute('data-pin', pinData.number);
+                        pin.textContent = pinData.number;
+                        pin.style.top = pinData.top;
+                        pin.style.left = pinData.left;
+                        
+                        mapContainer.appendChild(pin);
+                        setupMapPinSingle(pin);
+                    });
+                    console.log('📍 Pins restaurados desde datos:', data.components.mapPins.length);
+                } else if (data.counters && data.counters.cities > 0) {
+                    // Si no hay pins guardados pero hay ciudades, regenerar
+                    regenerateMapPins(data.counters.cities, TEMPLATE_CONFIG);
+                    console.log('📍 Pins regenerados para ciudades:', data.counters.cities);
+                }
+            }
+            
+            // Si hay imagen de mapa personalizada
+            if (data.mapData && data.mapData.url) {
+                // Limpiar contenedor
+                mapContainer.innerHTML = '';
+                
+                // Crear y cargar imagen
+                const img = document.createElement('img');
+                img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; object-position: center;';
+                img.alt = 'Mapa personalizado';
+                
+                // Cuando la imagen cargue, agregar los pins
+                img.onload = function() {
+                    mapContainer.classList.add('has-custom-map');
+                    // Pequeño delay para asegurar que la imagen esté renderizada
+                    setTimeout(createAllPins, 50);
+                };
+                
+                img.onerror = function() {
+                    console.error('Error al cargar imagen del mapa');
+                    // Aún así intentar crear los pins
+                    createAllPins();
+                };
+                
+                img.src = data.mapData.url;
+                mapContainer.appendChild(img);
+                TEMPLATE_CONFIG.mapa_url = data.mapData.url;
+            } else {
+                // No hay imagen personalizada, solo crear pins
+                setTimeout(createAllPins, 100);
+            }
         }
 
         function restoreTemplate(data) {
@@ -865,39 +935,8 @@
                 updateMapLink(TEMPLATE_CONFIG);
             }
 
-            if (data.mapData && data.mapData.url) {
-                const mapContainer = document.querySelector('.map-container');
-                const img = document.createElement('img');
-                img.src = data.mapData.url;
-                img.style.cssText = 'width: 100%; height: 100%; object-fit: contain;';
-                mapContainer.innerHTML = '';
-                mapContainer.appendChild(img);
-                mapContainer.classList.add('has-custom-map');
-                TEMPLATE_CONFIG.mapa_url = data.mapData.url;
-            }
-            
-            // CORREGIDO: Restaurar pins del mapa
-            if (data.components && data.components.mapPins && data.components.mapPins.length > 0) {
-                setTimeout(function() {
-                    const mapContainer = document.querySelector('.map-container');
-                    mapContainer.querySelectorAll('.map-pin').forEach(function(pin) { pin.remove(); });
-                    
-                    data.components.mapPins.forEach(function(pinData) {
-                        const pin = document.createElement('div');
-                        pin.className = 'map-pin component';
-                        pin.setAttribute('data-component', 'MAP_PIN');
-                        pin.setAttribute('data-pin', pinData.number);
-                        pin.textContent = pinData.number;
-                        pin.style.top = pinData.top;
-                        pin.style.left = pinData.left;
-                        
-                        mapContainer.appendChild(pin);
-                        setupMapPinSingle(pin);
-                    });
-                    
-                    console.log('📍 Pins del mapa restaurados:', data.components.mapPins.length);
-                }, 200);
-            }
+            // CORREGIDO V5.3: Función centralizada para restaurar mapa y pins
+            restoreMapWithPins(data);
             
             if (data.components && data.components.placeCategories) {
                 setTimeout(function() {
@@ -912,6 +951,20 @@
                         }
                     });
                 }, 200);
+            }
+            
+            // V5.3: Restaurar emojis de consejos
+            if (data.components && data.components.tipEmojis) {
+                setTimeout(function() {
+                    const tipIcons = document.querySelectorAll('.tip-icon');
+                    data.components.tipEmojis.forEach(function(emoji, index) {
+                        if (tipIcons[index] && emoji) {
+                            tipIcons[index].textContent = emoji;
+                            tipIcons[index].setAttribute('data-emoji', emoji);
+                        }
+                    });
+                    console.log('🎨 Emojis de consejos restaurados');
+                }, 250);
             }
             
             updateAllCounters();
@@ -1207,6 +1260,96 @@
             updateCounterDisplay('places');
             placeElement.querySelectorAll('.editable').forEach(setupEditableElement);
             setTimeout(function() { expandPageToFit(); }, 100);
+        }
+
+        // 🎨 V5.3: SELECTOR DE EMOJIS PARA CONSEJOS
+        const TIP_EMOJIS = [
+            { emoji: '💰', label: 'Dinero' },
+            { emoji: '🚌', label: 'Transporte' },
+            { emoji: '🔒', label: 'Seguridad' },
+            { emoji: '📱', label: 'Tecnología' },
+            { emoji: '🍽️', label: 'Comida' },
+            { emoji: '⚡', label: 'Electricidad' },
+            { emoji: '🎯', label: 'Importante' },
+            { emoji: '📍', label: 'Ubicación' },
+            { emoji: '🗺️', label: 'Mapa' },
+            { emoji: '⏰', label: 'Tiempo' },
+            { emoji: '🎌', label: 'Cultura' },
+            { emoji: '🍜', label: 'Gastronomía' },
+            { emoji: '💡', label: 'Idea' },
+            { emoji: '⚠️', label: 'Advertencia' },
+            { emoji: '✈️', label: 'Vuelo' },
+            { emoji: '🏨', label: 'Hotel' },
+            { emoji: '👕', label: 'Ropa' },
+            { emoji: '💊', label: 'Salud' },
+            { emoji: '📷', label: 'Fotos' },
+            { emoji: '🌡️', label: 'Clima' },
+            { emoji: '💳', label: 'Tarjetas' },
+            { emoji: '🛂', label: 'Documentos' },
+            { emoji: '🗣️', label: 'Idioma' },
+            { emoji: '🎒', label: 'Equipaje' }
+        ];
+        
+        let currentEmojiTarget = null;
+        
+        function openEmojiSelector(iconElement) {
+            event.stopPropagation();
+            currentEmojiTarget = iconElement;
+            
+            // Cerrar selector si ya existe
+            closeEmojiSelector();
+            
+            // Crear popup de emojis
+            const popup = document.createElement('div');
+            popup.className = 'emoji-selector-popup';
+            popup.id = 'emojiSelectorPopup';
+            
+            let gridHTML = '<div class="emoji-selector-header">Selecciona un emoji</div><div class="emoji-selector-grid">';
+            TIP_EMOJIS.forEach(function(item) {
+                gridHTML += '<div class="emoji-option" onclick="selectEmoji(\'' + item.emoji + '\')" title="' + item.label + '">' + item.emoji + '</div>';
+            });
+            gridHTML += '</div>';
+            
+            popup.innerHTML = gridHTML;
+            
+            // Posicionar cerca del elemento clickeado
+            const rect = iconElement.getBoundingClientRect();
+            popup.style.position = 'fixed';
+            popup.style.left = Math.max(10, rect.left - 100) + 'px';
+            popup.style.top = (rect.bottom + 5) + 'px';
+            popup.style.zIndex = '3000';
+            
+            document.body.appendChild(popup);
+            
+            // Cerrar al hacer click fuera
+            setTimeout(function() {
+                document.addEventListener('click', closeEmojiSelectorOnClickOutside);
+            }, 100);
+        }
+        
+        function closeEmojiSelector() {
+            const existing = document.getElementById('emojiSelectorPopup');
+            if (existing) {
+                existing.remove();
+            }
+            document.removeEventListener('click', closeEmojiSelectorOnClickOutside);
+        }
+        
+        function closeEmojiSelectorOnClickOutside(e) {
+            const popup = document.getElementById('emojiSelectorPopup');
+            if (popup && !popup.contains(e.target)) {
+                closeEmojiSelector();
+            }
+        }
+        
+        function selectEmoji(emoji) {
+            if (currentEmojiTarget) {
+                currentEmojiTarget.textContent = emoji;
+                currentEmojiTarget.setAttribute('data-emoji', emoji);
+                showToast('✅ Emoji actualizado: ' + emoji);
+            }
+            closeEmojiSelector();
+            currentEmojiTarget = null;
         }
 
         function addTip() {
@@ -1999,36 +2142,15 @@
                             for (let i = 1; i <= data.counters.tips; i++) {
                                 const container = document.querySelector('#tipsList');
                                 const tipText = data.editableContent['TIP_' + i] || 'Consejo ' + i;
-                                const tipElement = createTipElement(i, tipText, iconos[i-1] || '💡');
+                                // V5.3: Restaurar emoji guardado o usar default
+                                const savedEmoji = (data.components && data.components.tipEmojis && data.components.tipEmojis[i-1]) 
+                                    ? data.components.tipEmojis[i-1] 
+                                    : iconos[i-1] || '💡';
+                                const tipElement = createTipElement(i, tipText, savedEmoji);
                                 container.appendChild(tipElement);
                             }
                             
-                            // CORREGIDO: Regenerar pins del mapa con posiciones guardadas
-                            setTimeout(function() {
-                                const mapContainer = document.querySelector('.map-container');
-                                
-                                if (data.components && data.components.mapPins && data.components.mapPins.length > 0) {
-                                    mapContainer.querySelectorAll('.map-pin').forEach(function(pin) { pin.remove(); });
-                                    
-                                    data.components.mapPins.forEach(function(pinData) {
-                                        const pin = document.createElement('div');
-                                        pin.className = 'map-pin component';
-                                        pin.setAttribute('data-component', 'MAP_PIN');
-                                        pin.setAttribute('data-pin', pinData.number);
-                                        pin.textContent = pinData.number;
-                                        pin.style.top = pinData.top;
-                                        pin.style.left = pinData.left;
-                                        
-                                        mapContainer.appendChild(pin);
-                                        setupMapPinSingle(pin);
-                                    });
-                                    
-                                    console.log('📍 Pins restaurados desde archivo:', data.components.mapPins.length);
-                                } else {
-                                    regenerateMapPins(data.counters.cities, TEMPLATE_CONFIG);
-                                    console.log('📍 Pins regenerados para ciudades:', data.counters.cities);
-                                }
-                            }, 300);
+                            // V5.3: Los pins del mapa ahora se restauran centralizadamente en restoreTemplate
                         }
                         
                         restoreTemplate(data);
@@ -2122,7 +2244,7 @@
         }
 
         function toggleHelp() {
-            alert('🎯 GUÍA DE VIAJE V5.2 - CORREGIDO\n\n📋 FUNCIONALIDADES:\n\n🖼️ FOTOS: Click en badge para cambiar ratio\n📍 CATEGORÍAS: 40+ categorías con emojis\n🎨 COLORES: Edita desde el panel lateral\n📱 RESPONSIVE: Funciona en móvil\n💾 GUARDAR: Ctrl+S guarda sesión\n↶ DESHACER: Ctrl+Z deshace cambios\n👁️ PREVIEW: Escape para salir\n\n✅ CORREGIDO: Pins del mapa se mantienen al importar');
+            alert('🎯 GUÍA DE VIAJE V5.3\n\n📋 FUNCIONALIDADES:\n\n🖼️ FOTOS: Click en badge para cambiar ratio\n📍 CATEGORÍAS: 40+ categorías con emojis\n🎨 COLORES: Edita desde el panel lateral\n📱 RESPONSIVE: Funciona en móvil\n💾 GUARDAR: Ctrl+S guarda sesión\n↶ DESHACER: Ctrl+Z deshace cambios\n👁️ PREVIEW: Escape para salir\n\n✅ NUEVO V5.3:\n• Pins del mapa ahora se muestran todos\n• Click en emoji de consejos para cambiarlo\n• 24 emojis disponibles para personalizar');
         }
 
         // ===== VARIABLES GLOBALES =====
@@ -2136,7 +2258,7 @@
             loadFromLocalStorage();
             setupEventListeners();
             setupKeyboardShortcuts();
-            console.log('✅ V5.2 CORREGIDO cargado');
+            console.log('✅ V5.3 cargado - Pins y Emojis');
         });
 
         function setupEventListeners() {
@@ -2288,7 +2410,13 @@
         .quick-tips { background: var(--white); border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(15, 122, 120, 0.1); }
         .tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .tip-item { display: flex; align-items: center; gap: 6px; font-size: 9px; padding: 8px; background: #f8fffe; border-radius: 6px; position: relative; break-inside: avoid; }
-        .tip-icon { width: 16px; height: 16px; background: var(--coral); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 8px; flex-shrink: 0; }
+        .tip-icon { width: 16px; height: 16px; background: var(--coral); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 8px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .tip-icon:hover { transform: scale(1.2); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .emoji-selector-popup { background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); padding: 12px; min-width: 220px; }
+        .emoji-selector-header { font-size: 11px; font-weight: 600; color: #666; margin-bottom: 10px; text-align: center; }
+        .emoji-selector-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+        .emoji-option { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+        .emoji-option:hover { background: #f0f0f0; transform: scale(1.15); }
         .editable { background: rgba(255, 107, 97, 0.1); padding: 2px 4px; border-radius: 3px; border: 1px dashed var(--coral); cursor: text; position: relative; min-height: 1.2em; word-wrap: break-word; }
         .editable:hover { background: rgba(255, 107, 97, 0.2); }
         .editable:focus { background: rgba(255, 107, 97, 0.3); outline: none; }
@@ -2378,7 +2506,7 @@
                 <div><label style="font-size: 9px; color: #888;">Fondo</label><div style="display: flex; gap: 4px; align-items: center;"><input type="color" id="colorFondo" value="#000000" onchange="updateColor('--sand', this.value)" style="width: 24px; height: 24px; border: none; cursor: pointer;"><span id="colorFondoCode" style="font-size: 8px; color: #666;">#000000</span></div></div>
             </div>
         </div>
-        <div class="status-bar"><div class="status-indicator"><div class="status-dot" id="saveStatus"></div><span id="saveText">V5.2 CORREGIDO</span></div></div>
+        <div class="status-bar"><div class="status-indicator"><div class="status-dot" id="saveStatus"></div><span id="saveText">V5.3</span></div></div>
     </div>
 
     <div class="document-container">
